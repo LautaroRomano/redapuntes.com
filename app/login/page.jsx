@@ -40,7 +40,7 @@ export default function LoginPage() {
 
         <CardHeader className="justify-center">
           <div className="flex gap-5 w-full">
-            <div className="flex flex-col gap-1 items-center justify-center w-full my-2 gap-2">
+            <div className="flex flex-col gap-1 items-center justify-center w-full my-2">
               <h5 className="text-small tracking-tight text-default-400">Ingresa con Google</h5>
               <Button
                 className={""}
