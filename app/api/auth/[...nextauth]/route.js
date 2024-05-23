@@ -67,7 +67,6 @@ const getUser = async (username, password) => {
         }
 
         const user = result[0];
-        console.log("🚀 ~ getUser ~ user:", user)
         const isPasswordMatch = await bcrypt.compare(password, user.password_hash);
 
         if (isPasswordMatch) {

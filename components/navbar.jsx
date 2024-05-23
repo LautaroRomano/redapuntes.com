@@ -29,7 +29,6 @@ export const Navbar = () => {
 
   const { data: session, status } = useSession();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  console.log("🚀 ~ Navbar ~ session, status:", session, status)
 
   const searchInput = (
     <Input

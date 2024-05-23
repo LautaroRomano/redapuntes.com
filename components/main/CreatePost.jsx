@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Modal, Textarea, Input, Spacer, ModalBody, ModalHeader, ModalFooter, useDisclosure, ModalContent } from "@nextui-org/react";
 import { LuFiles } from "react-icons/lu";
 import { create } from "@/app/actions/posts";
 import { FaCheckCircle } from "react-icons/fa";
+import { uploadFile } from "@/app/lib/firebase";
+import { useSession } from "next-auth/react";
+import { Spinner } from "@nextui-org/spinner";
+
+
 
 export default function CreatePost() {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { data: session, status } = useSession()
 
     return (
         <>
@@ -15,16 +21,24 @@ export default function CreatePost() {
                 </CardHeader>
 
                 <CardBody className="px-3 py-0 text-small text-default-400">
-                    <div onClick={onOpen}>
-                        <p>Iniciar una publicacion</p>
-                    </div>
+                    {status === 'authenticated' ?
+                        <div onClick={onOpen}>
+                            <p>Iniciar una publicacion</p>
+                        </div>
+                        :
+                        <div>
+                            <p>Debes iniciar sesion para publicar</p>
+                        </div>
+                    }
                 </CardBody>
 
                 <CardFooter className="gap-3">
 
                 </CardFooter>
             </Card>
-            <NewPost isOpen={isOpen} onOpenChange={onOpenChange}></NewPost>
+            {status === 'authenticated' &&
+                <NewPost isOpen={isOpen} onOpenChange={onOpenChange}></NewPost>
+            }
         </>
     );
 }
@@ -34,29 +48,55 @@ const NewPost = ({ isOpen, onOpenChange }) => {
     const [files, setFiles] = useState([]);
     const [success, setSucces] = useState(false)
     const [error, setError] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const fileInputRef = useRef(null);
 
-
-    const handleFileChange = (event) => {
-        setFiles([...event.target.files]);
+    const handleFileChange = async (event) => {
+        setLoading(true)
+        const selectedFiles = Array.from(event.target.files);
+        try {
+            const files = []
+            for (const file of selectedFiles) {
+                const url = await uploadFile(file)
+                files.push({
+                    file_name: file.name,
+                    file_path: url,
+                    file_type: file.type
+                })
+            }
+            setFiles(prevFiles => [...prevFiles, ...files]);
+            setLoading(false)
+        } catch (error) {
+            setLoading(false)
+            console.error(error);
+            setError('Ocurrio un error inesperado!');
+        }
     };
 
-    const handleSubmit = () => {
-        // Aquí puedes manejar el envío del formulario
-        console.log("Content:", content);
-        console.log("Files:", files);
+    const handleFileButtonClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleSubmit = async () => {
+        setLoading(true)
         try {
-            //create(3, content)
+            const res = await create(content, files);
+            if (res.error) setError(res.error)
             setSucces(true)
 
             setTimeout(() => {
+                setLoading(false)
                 setContent("");
                 setFiles([]);
                 setSucces(false);
+                setError(false);
                 onOpenChange();
             }, 1000);
 
         } catch (error) {
-            setError(true)
+            console.log(error)
+            setLoading(false)
+            setError('Ocurrio un error inesperado!');
         }
 
     };
@@ -82,10 +122,42 @@ const NewPost = ({ isOpen, onOpenChange }) => {
                             </Card>
                             <Spacer y={1} />
                             <div>
-                                <Button auto flat color="error" onPress={onOpenChange} startContent={<LuFiles />} >
-                                    Agregar
+                                {files.map((file, index) => (
+                                    <li key={index} className="mt-2 flex items-center justify-between">
+                                        <span>{file.file_name}</span>
+                                        <Button
+                                            rel="noopener noreferrer"
+                                            color="primary"
+                                            size="sm"
+                                            variant="ghost"
+                                            onClick={() => {
+                                                setFiles(prev => prev.filter(f => f.file_path === file.file_path))
+                                            }}
+                                        >
+                                            Borrar
+                                        </Button>
+                                    </li>
+                                ))}
+                                <Button
+                                    auto
+                                    flat
+                                    color="error"
+                                    onPress={!loading && handleFileButtonClick}
+                                    startContent={loading ? <Spinner size="sm" /> : <LuFiles />}
+                                >
+                                    Agregar archivos
                                 </Button>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                    multiple
+                                    onChange={handleFileChange}
+                                />
                             </div>
+                            {error &&
+                                < h5 className="text-red-400">{error}</h5>
+                            }
                         </ModalBody>
 
                         <ModalFooter>
@@ -97,7 +169,7 @@ const NewPost = ({ isOpen, onOpenChange }) => {
                                     Publicado
                                 </Button>
                                 :
-                                <Button auto onPress={handleSubmit}>
+                                <Button auto onPress={!loading && handleSubmit} startContent={loading && <Spinner size="sm" />} >
                                     Publicar
                                 </Button>
                             }
@@ -105,6 +177,6 @@ const NewPost = ({ isOpen, onOpenChange }) => {
                     </>
                 )}
             </ModalContent>
-        </Modal>
+        </Modal >
     );
 };

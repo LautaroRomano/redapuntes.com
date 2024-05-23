@@ -1,14 +1,40 @@
 'use server'
+import { getServerSession } from 'next-auth'
 import conn from '../lib/db'
+import { authOptions } from '../api/auth/[...nextauth]/route'
 
-export async function create(user_id, content) {
+export async function create(content, files) {
+    console.log("🚀files:", files)
     try {
-        await conn.query(`
-        insert into posts(user_id,"content") values($1,$2)
-        `, [user_id, content])
-        return true
+        const session = await getServerSession(authOptions)
+        if (!session || !session.user.email) return { error: 'Ocurrio un error!' }
+
+        const { rows: result } = await conn.query(
+            'SELECT * FROM users WHERE email=$1',
+            [session.user.email]
+        );
+
+        const user = result[0]
+        if (!user) return { error: 'Ocurrio un error!' }
+
+        const { rows: posts } = await conn.query(`
+            INSERT INTO posts(user_id, content) 
+            VALUES ($1, $2) 
+            RETURNING post_id
+        `, [user.user_id, content]);
+
+        const insertedPostId = posts[0].post_id;
+
+        for (const file of files) {
+            await conn.query(`
+            insert into pdf_files(post_id,file_name,file_path) values($1,$2,$3)
+            `, [insertedPostId, file.file_name, file.file_path])
+        }
+
+        return { ok: true }
     } catch (error) {
         console.log("🚀 ~ get ~ error:", error)
+        return { error: 'Ocurrio un error!' }
     }
 }
 
