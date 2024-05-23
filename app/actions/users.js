@@ -1,14 +1,25 @@
 'use server'
 import conn from '../lib/db'
+import bcrypt from 'bcryptjs'
 
-export async function create(user_id, content) {
+export async function create({ email, password, confirmPassword, accountname, username }) {
     try {
+        if (!email || !password || !confirmPassword || !accountname || !username)
+            return { error: 'Debe completar todos los campos' }
+
+        if (password !== confirmPassword)
+            return { error: 'Las contrasenas no coinciden' }
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+
         await conn.query(`
-        insert into posts(user_id,"content") values($1,$2)
-        `, [user_id, content])
-        return true
+        insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4)
+        `, [email, hashedPassword, accountname, username])
+        return { ok: true }
+
     } catch (error) {
         console.log("🚀 ~ get ~ error:", error)
+        return { error: 'Error inesperado' }
     }
 }
 

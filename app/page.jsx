@@ -37,7 +37,7 @@ export default function Home() {
         {
           postsList.map(post => {
             return (
-              <PostCard key={post.post_id} content={post.content} name={post.last_name && post.first_name && `${post.last_name} ${post.first_name}`} username={post.username} files={post.files} />
+              <PostCard key={post.post_id} content={post.content} name={post.accountname && `${post.accountname}`} username={post.username} files={post.files} />
             )
           })
         }

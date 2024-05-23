@@ -59,17 +59,16 @@ export { handler as GET, handler as POST };
 const getUser = async (username, password) => {
     try {
         const { rows: result } = await conn.query(
-            'SELECT * FROM users WHERE username=$1',
-            [username]
+            'SELECT * FROM users WHERE username=$1 or email=$2',
+            [username, username]
         );
-        console.log("🚀 ~ getUser ~ result:", result)
-
         if (result.length === 0) {
             return null;
         }
 
         const user = result[0];
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        console.log("🚀 ~ getUser ~ user:", user)
+        const isPasswordMatch = await bcrypt.compare(password, user.password_hash);
 
         if (isPasswordMatch) {
             /* await conn.query(
