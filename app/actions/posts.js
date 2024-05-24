@@ -4,7 +4,6 @@ import conn from '../lib/db'
 import { authOptions } from '../api/auth/[...nextauth]/route'
 
 export async function create(content, files) {
-    console.log("🚀files:", files)
     try {
         const session = await getServerSession(authOptions)
         if (!session || !session.user.email) return { error: 'Ocurrio un error!' }

@@ -4,6 +4,8 @@ CREATE TABLE users (
     email VARCHAR(100) UNIQUE NOT NULL,
     accountname varchar(250) null,
     password_hash VARCHAR(255) NOT NULL,
+    img varchar(500) NULL,
+    about varchar(1000) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
