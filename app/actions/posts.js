@@ -72,13 +72,23 @@ export async function get() {
             select count(*) from post_likes pl where pl.post_id = $1
             `, [dat.post_id])
 
+            const { rows: comments } = await conn.query(`
+            select count(*) from "comments" c where c.post_id = $1
+            `, [dat.post_id])
+
             const { rows: liked } = await conn.query(`
             select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2
             `, [dat.post_id, user.user_id])
 
             const isLiked = !!liked[0]
 
-            response.push({ ...dat, files, isLiked, likes: likes[0].count * 1 })
+            response.push({
+                ...dat,
+                files,
+                isLiked,
+                likes: likes[0].count * 1,
+                comments: comments[0].count * 1,
+            })
         }
 
         return response
@@ -106,13 +116,23 @@ export async function getPostById(post_id) {
             select count(*) from post_likes pl where pl.post_id = $1
             `, [data[0].post_id])
 
+        const { rows: comments } = await conn.query(`
+            select count(*) from "comments" c where c.post_id = $1
+            `, [data[0].post_id])
+
         const { rows: liked } = await conn.query(`
             select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2
             `, [data[0].post_id, user.user_id])
 
         const isLiked = !!liked[0]
 
-        return { ...data[0], files, isLiked, likes: likes[0].count * 1 }
+        return {
+            ...data[0],
+            files,
+            isLiked,
+            likes: likes[0].count * 1,
+            comments: comments[0].count * 1,
+        }
     } catch (error) {
         console.log("🚀 ~ get ~ error:", error)
     }
@@ -145,7 +165,7 @@ export async function getComments(post_id) {
         */
 
         const { rows: comments } = await conn.query(`
-        select c.comment_id,c."content",u.username,u.img
+        select c.comment_id,c."content",u.username,u.img,c.created_at
         from "comments" c 
         join users u on u.user_id = c.user_id
         where c.post_id = $1
@@ -170,7 +190,7 @@ export async function setComment(post_id, content) {
         `, [post_id, user.user_id, content])
 
         const { rows: comments } = await conn.query(`
-        select c.comment_id,c."content",u.username,u.img
+        select c.comment_id,c."content",u.username,u.img,c.created_at
         from "comments" c 
         join users u on u.user_id = c.user_id
         where c.post_id = $1

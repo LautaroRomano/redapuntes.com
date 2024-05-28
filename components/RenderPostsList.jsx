@@ -37,6 +37,7 @@ export default function RenderPostsList({ postsList, disabled }) {
                             likes={post.likes}
                             isLiked={post.isLiked}
                             disabled={disabled}
+                            {...post}
                         />
                     )
                 })

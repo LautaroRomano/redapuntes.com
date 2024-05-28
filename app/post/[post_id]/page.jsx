@@ -1,9 +1,7 @@
 'use client';
 import { Avatar, Button, Card, CardBody, CardFooter, CardHeader, Input, Link, Textarea } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { FaCheckCircle, FaGoogle } from "react-icons/fa";
 import NextLink from "next/link";
-import { title } from "@/components/primitives";
 import { useRouter } from "next/navigation";
 import { getComments, getPostById, setComment } from '../../actions/posts'
 import RenderPostsList from "@/components/RenderPostsList";
@@ -36,6 +34,7 @@ export default function PostPage({ params }) {
   const setNewComment = async () => {
     const newComments = await setComment(params.post_id, myComment)
     setComments(newComments)
+    setMyComment('')
   }
 
   return (
@@ -56,56 +55,25 @@ export default function PostPage({ params }) {
                 value={myComment}
                 onChange={({ target }) => setMyComment(target.value)}
               />
-              <Button onClick={setNewComment}>Comentar</Button>
+              <Button onClick={setNewComment} color={myComment.length < 1 ? 'default' :'primary'} disabled={myComment.length < 1}>Comentar</Button>
             </div>
 
             {comments.map((com) => {
               return (
-                <Card className="mb-4" key={com.comment_id}>
-                  <CardHeader className="justify-between">
-                    <div className="flex gap-5">
-                      <Avatar isBordered radius="full" size="md" src={com.img} />
-                      <div className="flex flex-col gap-1 items-start justify-center">
-                        <h5 className="text-small tracking-tight text-default-400">@{com.username}</h5>
+                <Card className="my-2" key={com.comment_id}>
+                  <CardBody className="px-3 py-4 text-small text-default-400">
+                    <div className="flex gap-2">
+                      <div className="me-2">
+                        <Avatar isBordered radius="full" size="md" src={com.img} />
+                      </div>
+                      <div className="flex flex-col gap-1 items-start justify-start">
+                        <p><span className="text-small text-white tracking-tight cursor-pointer me-3">@{com.username}</span>{com.content}</p>
                       </div>
                     </div>
-                  </CardHeader>
-
-                  <CardBody className="px-3 py-0 text-small text-default-400">
-                    <p>{com.content}</p>
+                    <div className="flex justify-end mt-0 text-small">
+                      <p>Hace {tiempoTranscurrido(com.created_at)}</p>
+                    </div>
                   </CardBody>
-
-                  {/*  <CardFooter className="gap-3 justify-between mt-3">
-                  <div className="flex gap-3">
-                    <div className="flex gap-1 items-center justify-center">
-                      <p className=" text-default-400 text-small">
-                        {
-                          <Button color="primary" variant={isLiked ? "solid" : 'ghost'} aria-label="Like" size="sm" onClick={() => handleLike(id)}>
-                            {isLiked ? <AiOutlineLike /> : <AiFillLike />}
-                            {likes}
-                          </Button>
-                        }
-                      </p>
-                    </div>
-                    <div className="flex gap-1 items-center justify-center">
-                      <p className=" text-default-400 text-small">
-                        {
-                          <Button as={'a'} href={`/post/${id}`} color="primary" variant="ghost" aria-label="Like" size="sm">
-                            <FaRegComment />
-                          </Button>
-                        }
-                      </p>
-                    </div>
-                  </div>
-                  {(!props.disabled || !props.disabled.linkComments) &&
-                    <div className="flex gap-1  items-center justify-center">
-                      <p className="text-default-400 text-small">
-                        <NextLink href={`/post/${id}`}>
-                          Ver los 80 comentarios
-                        </NextLink>
-                      </p>
-                    </div>}
-                </CardFooter> */}
                 </Card>
               )
             })}
@@ -115,4 +83,30 @@ export default function PostPage({ params }) {
       </Card >
     </div>
   );
+
+  function tiempoTranscurrido(fecha) {
+    const fechaActual = new Date();
+    const fechaDadaUTC = new Date(fecha);
+
+    // Convertir fecha UTC a la zona horaria local
+    const offset = fechaDadaUTC.getTimezoneOffset();
+    const fechaDada = new Date(fechaDadaUTC.getTime() - offset * 60 * 1000);
+
+    const diferencia = fechaActual - fechaDada;
+
+    const segundos = Math.floor(diferencia / 1000);
+    const minutos = Math.floor(segundos / 60);
+    const horas = Math.floor(minutos / 60);
+    const dias = Math.floor(horas / 24);
+
+    if (segundos < 60) {
+      return `${segundos} segundos`;
+    } else if (minutos < 60) {
+      return `${minutos} minutos`;
+    } else if (horas < 24) {
+      return `${horas} horas`;
+    } else {
+      return `${dias} días`;
+    }
+  }
 }

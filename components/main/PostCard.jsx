@@ -6,7 +6,6 @@ import { FaComment, FaRegComment } from "react-icons/fa";
 
 export default function PostCard({ id, content, name, username, files = [], profile, handleLike, likes, isLiked, ...props }) {
     const [isFollowed, setIsFollowed] = useState(false);
-
     return (
         <Card className="mb-4">
             <CardHeader className="justify-between">
@@ -15,6 +14,9 @@ export default function PostCard({ id, content, name, username, files = [], prof
                     <div className="flex flex-col gap-1 items-start justify-center">
                         {name && <h4 className="text-small font-semibold leading-none text-default-600">{name}</h4>}
                         <h5 className="text-small tracking-tight text-default-400">@{username}</h5>
+                    </div>
+                    <div className="text-small tracking-tight text-default-400">
+                        <p>Hace {tiempoTranscurrido(props.created_at)}</p>
                     </div>
                 </div>
                 <Button
@@ -68,25 +70,54 @@ export default function PostCard({ id, content, name, username, files = [], prof
                             }
                         </p>
                     </div>
-                    <div className="flex gap-1 items-center justify-center">
-                        <p className=" text-default-400 text-small">
-                            {
-                                <Button as={'a'} href={`/post/${id}`} color="primary" variant="ghost" aria-label="Like" size="sm">
-                                    <FaRegComment />
-                                </Button>
-                            }
-                        </p>
-                    </div>
+                    {
+                        (!props.disabled || !props.disabled.linkComments) &&
+                        <div className="flex gap-1 items-center justify-center">
+                            <p className=" text-default-400 text-small">
+                                {
+                                    <Button as={'a'} href={`/post/${id}`} color="primary" variant="ghost" aria-label="Like" size="sm">
+                                        <FaRegComment />
+                                    </Button>
+                                }
+                            </p>
+                        </div>
+                    }
                 </div>
                 {(!props.disabled || !props.disabled.linkComments) &&
                     <div className="flex gap-1  items-center justify-center">
                         <p className="text-default-400 text-small">
                             <NextLink href={`/post/${id}`}>
-                                Ver los 80 comentarios
+                                {props.comments} comentarios
                             </NextLink>
                         </p>
                     </div>}
             </CardFooter>
         </Card>
     );
+}
+
+function tiempoTranscurrido(fecha) {
+    const fechaActual = new Date();
+    const fechaDadaUTC = new Date(fecha);
+
+    // Convertir fecha UTC a la zona horaria local
+    const offset = fechaDadaUTC.getTimezoneOffset();
+    const fechaDada = new Date(fechaDadaUTC.getTime() - offset * 60 * 1000);
+
+    const diferencia = fechaActual - fechaDada;
+
+    const segundos = Math.floor(diferencia / 1000);
+    const minutos = Math.floor(segundos / 60);
+    const horas = Math.floor(minutos / 60);
+    const dias = Math.floor(horas / 24);
+
+    if (segundos < 60) {
+        return `${segundos} segundos`;
+    } else if (minutos < 60) {
+        return `${minutos} minutos`;
+    } else if (horas < 24) {
+        return `${horas} horas`;
+    } else {
+        return `${dias} días`;
+    }
 }
