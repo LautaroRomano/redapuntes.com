@@ -87,7 +87,15 @@ export default function ProfilePage({ params }) {
         {
           profile.posts && profile.posts.map(post => {
             return (
-              <PostCard key={post.post_id} content={post.content} name={post.accountname && `${post.accountname}`} username={post.username} files={post.files} />
+              <PostCard 
+              key={post.post_id} 
+              id={post.post_id} 
+              content={post.content} 
+              name={post.accountname && `${post.accountname}`} 
+              username={post.username} 
+              files={post.files} 
+              profile={post.img}
+              />
             )
           })
         }

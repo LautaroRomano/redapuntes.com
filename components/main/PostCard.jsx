@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { Card, CardHeader, CardBody, CardFooter, Avatar, Button } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Spacer } from "@nextui-org/react";
+import { Link } from "@nextui-org/link";
+import { AiOutlineLike, AiFillLike } from "react-icons/ai";
+import { FaComment, FaRegComment } from "react-icons/fa";
 
-export default function PostCard({ content, name, username, files = [] }) {
+export default function PostCard({ id, content, name, username, files = [], profile, handleLike, likes, isLiked }) {
     const [isFollowed, setIsFollowed] = useState(false);
 
     return (
         <Card className="mb-4">
             <CardHeader className="justify-between">
                 <div className="flex gap-5">
-                    <Avatar isBordered radius="full" size="md" src="https://nextui.org/avatars/avatar-1.png" />
+                    <Avatar isBordered radius="full" size="md" src={profile} />
                     <div className="flex flex-col gap-1 items-start justify-center">
                         {name && <h4 className="text-small font-semibold leading-none text-default-600">{name}</h4>}
                         <h5 className="text-small tracking-tight text-default-400">@{username}</h5>
@@ -53,14 +56,34 @@ export default function PostCard({ content, name, username, files = [] }) {
                 )}
             </CardBody>
 
-            <CardFooter className="gap-3">
-                <div className="flex gap-1">
-                    <p className="font-semibold text-default-400 text-small">4</p>
-                    <p className=" text-default-400 text-small">Following</p>
+            <CardFooter className="gap-3 justify-between mt-3">
+                <div className="flex gap-3">
+                    <div className="flex gap-1 items-center justify-center">
+                        <p className=" text-default-400 text-small">
+                            {
+                                <Button color="primary" variant={isLiked ? "solid" : 'ghost'} aria-label="Like" size="sm" onClick={() => handleLike(id)}>
+                                    {isLiked ? <AiOutlineLike /> : <AiFillLike />}
+                                    {likes}
+                                </Button>
+                            }
+                        </p>
+                    </div>
+                    <div className="flex gap-1 items-center justify-center">
+                        <p className=" text-default-400 text-small">
+                            {
+                                <Button as={'a'} href={`/post/${id}`} color="primary" variant="ghost" aria-label="Like" size="sm">
+                                    <FaRegComment />
+                                </Button>
+                            }
+                        </p>
+                    </div>
                 </div>
-                <div className="flex gap-1">
-                    <p className="font-semibold text-default-400 text-small">97.1K</p>
-                    <p className="text-default-400 text-small">Followers</p>
+                <div className="flex gap-1  items-center justify-center">
+                    <p className="text-default-400 text-small">
+                        <Link href={`/post/${id}`}>
+                            Ver los 80 comentarios
+                        </Link>
+                    </p>
                 </div>
             </CardFooter>
         </Card>
