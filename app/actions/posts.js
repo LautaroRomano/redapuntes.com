@@ -136,3 +136,49 @@ export async function setLike(post_id) {
         return await getPostById(post_id)
     }
 }
+
+export async function getComments(post_id) {
+    try {
+        /*  
+        const user = await getMyUser();
+        if (user.error) return { error: 'Ocurrio un error!' } 
+        */
+
+        const { rows: comments } = await conn.query(`
+        select c.comment_id,c."content",u.username,u.img
+        from "comments" c 
+        join users u on u.user_id = c.user_id
+        where c.post_id = $1
+        `, [post_id]);
+
+        return comments
+    } catch (error) {
+        console.log("🚀 ~ get ~ error:", error)
+        return { error: 'Ocurrio un error!' }
+    }
+}
+
+export async function setComment(post_id, content) {
+    try {
+
+        const user = await getMyUser();
+        if (user.error) return { error: 'Ocurrio un error!' }
+
+
+        await conn.query(`
+        insert into "comments"(post_id,user_id,"content") values($1,$2,$3)
+        `, [post_id, user.user_id, content])
+
+        const { rows: comments } = await conn.query(`
+        select c.comment_id,c."content",u.username,u.img
+        from "comments" c 
+        join users u on u.user_id = c.user_id
+        where c.post_id = $1
+        `, [post_id]);
+
+        return comments
+    } catch (error) {
+        console.log("🚀 ~ get ~ error:", error)
+        return { error: 'Ocurrio un error!' }
+    }
+}

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Spacer } from "@nextui-org/react";
-import { Link } from "@nextui-org/link";
+import NextLink from "next/link";
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
 import { FaComment, FaRegComment } from "react-icons/fa";
 
-export default function PostCard({ id, content, name, username, files = [], profile, handleLike, likes, isLiked }) {
+export default function PostCard({ id, content, name, username, files = [], profile, handleLike, likes, isLiked, ...props }) {
     const [isFollowed, setIsFollowed] = useState(false);
 
     return (
@@ -78,13 +78,14 @@ export default function PostCard({ id, content, name, username, files = [], prof
                         </p>
                     </div>
                 </div>
-                <div className="flex gap-1  items-center justify-center">
-                    <p className="text-default-400 text-small">
-                        <Link href={`/post/${id}`}>
-                            Ver los 80 comentarios
-                        </Link>
-                    </p>
-                </div>
+                {(!props.disabled || !props.disabled.linkComments) &&
+                    <div className="flex gap-1  items-center justify-center">
+                        <p className="text-default-400 text-small">
+                            <NextLink href={`/post/${id}`}>
+                                Ver los 80 comentarios
+                            </NextLink>
+                        </p>
+                    </div>}
             </CardFooter>
         </Card>
     );
