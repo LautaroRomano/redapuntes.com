@@ -3,6 +3,8 @@ import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Spacer } from "
 import NextLink from "next/link";
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
 import { FaComment, FaRegComment } from "react-icons/fa";
+import Link from "next/link";
+import { IoMdDownload } from "react-icons/io";
 
 export default function PostCard({ id, content, name, username, files = [], profile, handleLike, likes, isLiked, ...props }) {
     const [isFollowed, setIsFollowed] = useState(false);
@@ -10,16 +12,20 @@ export default function PostCard({ id, content, name, username, files = [], prof
         <Card className="mb-4">
             <CardHeader className="justify-between">
                 <div className="flex gap-5">
-                    <Avatar isBordered radius="full" size="md" src={profile} />
+                    <Link href={`/profile/${username}`}>
+                        <Avatar isBordered radius="full" size="md" src={profile} />
+                    </Link>
                     <div className="flex flex-col gap-1 items-start justify-center">
-                        {name && <h4 className="text-small font-semibold leading-none text-default-600">{name}</h4>}
-                        <h5 className="text-small tracking-tight text-default-400">@{username}</h5>
+                        <Link href={`/profile/${username}`}>
+                            {name && <h4 className="text-small font-semibold leading-none text-default-600">{name}</h4>}
+                            <h5 className="text-small tracking-tight text-default-400 mt-1">@{username}</h5>
+                        </Link>
                     </div>
                     <div className="text-small tracking-tight text-default-400">
                         <p>Hace {tiempoTranscurrido(props.created_at)}</p>
                     </div>
                 </div>
-                <Button
+                {/* <Button
                     className={isFollowed ? "bg-transparent text-foreground border-default-200" : ""}
                     color="primary"
                     radius="full"
@@ -28,7 +34,7 @@ export default function PostCard({ id, content, name, username, files = [], prof
                     onPress={() => setIsFollowed(!isFollowed)}
                 >
                     {isFollowed ? "Unfollow" : "Follow"}
-                </Button>
+                </Button> */}
             </CardHeader>
 
             <CardBody className="px-3 py-0 text-small text-default-400">
@@ -43,13 +49,16 @@ export default function PostCard({ id, content, name, username, files = [], prof
                                     <Button
                                         as="a"
                                         href={file.file_path}
+                                        download={file.file_name}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         color="primary"
                                         size="sm"
-                                        variant="ghost"
+                                        variant="flat"
                                     >
-                                        Descargar
+                                        <p className="text-lg">
+                                            <IoMdDownload />
+                                        </p>
                                     </Button>
                                 </li>
                             ))}
@@ -64,7 +73,9 @@ export default function PostCard({ id, content, name, username, files = [], prof
                         <p className=" text-default-400 text-small">
                             {
                                 <Button color="primary" variant={isLiked ? "solid" : 'ghost'} aria-label="Like" size="sm" onClick={() => handleLike(id)}>
-                                    {isLiked ? <AiOutlineLike /> : <AiFillLike />}
+                                    <p className="text-lg">
+                                        {isLiked ? <AiOutlineLike /> : <AiFillLike />}
+                                    </p>
                                     {likes}
                                 </Button>
                             }
@@ -75,8 +86,10 @@ export default function PostCard({ id, content, name, username, files = [], prof
                         <div className="flex gap-1 items-center justify-center">
                             <p className=" text-default-400 text-small">
                                 {
-                                    <Button as={'a'} href={`/post/${id}`} color="primary" variant="ghost" aria-label="Like" size="sm">
-                                        <FaRegComment />
+                                    <Button as={'a'} href={`/ post / ${id}`} color="primary" variant="ghost" aria-label="Like" size="sm">
+                                        <p className="text-lg">
+                                            <FaRegComment />
+                                        </p>
                                     </Button>
                                 }
                             </p>
@@ -91,8 +104,8 @@ export default function PostCard({ id, content, name, username, files = [], prof
                             </NextLink>
                         </p>
                     </div>}
-            </CardFooter>
-        </Card>
+            </CardFooter >
+        </Card >
     );
 }
 

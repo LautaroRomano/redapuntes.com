@@ -1,8 +1,7 @@
 'use client'
-import { getUserByUsername, updateUser } from "@/app/actions/users";
+import { follow, getUserByUsername, unfollow, updateUser } from "@/app/actions/users";
 import { uploadFile } from "@/app/lib/firebase";
-import PostCard from "@/components/main/PostCard";
-import { title } from "@/components/primitives";
+import RenderPostsList from "@/components/RenderPostsList";
 import { Button } from "@nextui-org/button";
 import { Avatar, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Input, Textarea, Spinner, useDisclosure } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
@@ -27,6 +26,16 @@ export default function ProfilePage({ params }) {
       getUser(params.username)
   }, [params])
 
+  const handleUnfollow = async () => {
+    const res = await unfollow(profile.user_id)
+    if (res.ok) setProfile(prev => ({ ...prev, isFollow: false }))
+  }
+
+  const handleFollow = async () => {
+    const res = await follow(profile.user_id)
+    if (res.ok) setProfile(prev => ({ ...prev, isFollow: true }))
+  }
+
   if (notFound)
     return (
       <div>
@@ -37,7 +46,7 @@ export default function ProfilePage({ params }) {
     );
 
   return (
-    <div className="max-w-4xl mx-auto ">
+    <div className="max-w-4xl mx-auto lg:min-w-[600px]">
       <header className="flex items-center justify-between">
         <div className="flex items-center justify-between w-full">
           <Avatar
@@ -55,7 +64,10 @@ export default function ProfilePage({ params }) {
               profile.myProfile ?
                 <Button onClick={onOpen}>Editar</Button>
                 :
-                <Button>Seguir</Button>
+                profile.isFollow ?
+                  <Button color="default" onClick={handleUnfollow}>Dejar de seguir</Button>
+                  :
+                  <Button color="primary" onClick={handleFollow}>Seguir</Button>
             }
           </div>
         </div>
@@ -85,19 +97,7 @@ export default function ProfilePage({ params }) {
       <div className="mt-8">
         <p className="mb-2">Posteos</p>
         {
-          profile.posts && profile.posts.map(post => {
-            return (
-              <PostCard 
-              key={post.post_id} 
-              id={post.post_id} 
-              content={post.content} 
-              name={post.accountname && `${post.accountname}`} 
-              username={post.username} 
-              files={post.files} 
-              profile={post.img}
-              />
-            )
-          })
+          profile.posts && <RenderPostsList postsList={profile.posts} />
         }
       </div>
       <Edit isOpen={isOpen} onOpenChange={onOpenChange} profile={profile} reload={() => getUser(params.username)} />

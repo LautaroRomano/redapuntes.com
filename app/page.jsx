@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <section className="flex flex-col items-center  w-full">
 
-      <div className="mt-2 bg-[#181818] gap-4 p-2 w-full rounded-md max-w-3xl md:p-10" >
+      <div className="mt-0 gap-4 w-full rounded-md max-w-xl" >
         <CreatePost></CreatePost>
         <RenderPostsList postsList={postsList} />
       </div>
