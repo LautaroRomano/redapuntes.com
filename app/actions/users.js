@@ -26,10 +26,10 @@ export async function create({ email, password, confirmPassword, accountname, us
             return { error: 'Las contrasenas no coinciden' }
 
         const hashedPassword = await bcrypt.hash(password, 10)
-
+        const lowerEmail = email.toLowerCase()
         await conn.query(`
         insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4)
-        `, [email, hashedPassword, accountname, username])
+        `, [lowerEmail, hashedPassword, accountname, username])
         return { ok: true }
 
     } catch (error) {

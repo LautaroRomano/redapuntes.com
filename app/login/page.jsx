@@ -18,7 +18,7 @@ export default function LoginPage() {
   const { data: session, status } = useSession()
 
   useEffect(() => {
-    //if(status==='authenticated') router.push('/')
+    if(status==='authenticated') router.push('/')
   }, [status])
 
   const handleSubmit = async () => {

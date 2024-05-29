@@ -30,22 +30,6 @@ export const Navbar = () => {
   const { data: session, status } = useSession();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      labelPlacement="outside"
-      placeholder="Buscar..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
-
   return (
     <>
       <NextUINavbar maxWidth="xl" position="sticky">
@@ -62,10 +46,9 @@ export const Navbar = () => {
           className="hidden sm:flex basis-1/5 sm:basis-full"
           justify="end"
         >
-          <NavbarItem className="hidden sm:flex gap-2">
+          {/*  <NavbarItem className="hidden sm:flex gap-2">
             <ThemeSwitch />
-          </NavbarItem>
-          <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
+          </NavbarItem> */}
           <NavbarItem className="hidden md:flex">
 
             {status === 'authenticated' ?
@@ -117,7 +100,6 @@ export const Navbar = () => {
         </NavbarContent>
 
         <NavbarMenu>
-          {searchInput}
           <div className="mx-4 mt-2 flex flex-col gap-2">
             {siteConfig.navMenuItems.map((item, index) => (
               <NavbarMenuItem key={`${item}-${index}`}>
@@ -189,7 +171,9 @@ const Login = ({ isOpen, onOpenChange }) => {
                 onChange={(e) => setPassword(e.target.value)}
               />
               <NextLink className="text-blue-400" href={'#'}>Olvidaste tu contrasena?</NextLink>
-              <NextLink className="flex justify-start items-center gap-1" href="/register">No tienes cuenta? <p className="text-blue-400">Registrate aqui!</p></NextLink>
+              <NextLink className="flex justify-start items-center gap-1" href="/register">No tienes cuenta? <p className="text-blue-400"
+              onClick={onOpenChange}
+              >Registrate aqui!</p></NextLink>
             </ModalBody>
 
             <ModalFooter>
