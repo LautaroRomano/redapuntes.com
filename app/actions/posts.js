@@ -49,18 +49,34 @@ export async function create(content, files) {
     }
 }
 
-export async function get() {
+export async function get(type) {
     try {
         const user = await getMyUser();
         if (user.error) return { error: 'Ocurrio un error!' }
 
         const response = []
 
-        const { rows: data } = await conn.query(`
-        select p.post_id,p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
-        from posts p join users u ON p.user_id = u.user_id
-        order by p.created_at desc
-        `)
+        let data = []
+
+        if (type === 'Siguiendo') {
+            const { rows: posts } = await conn.query(`
+            select p.post_id,p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
+            from posts p 
+            join users u ON p.user_id = u.user_id
+            where u.user_id in (
+            select f.followed_id from follows f where f.follower_id = $1
+            )
+            order by p.created_at desc;
+            `, [user.user_id])
+            data = posts
+        } else {
+            const { rows: posts } = await conn.query(`
+            select p.post_id,p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
+            from posts p join users u ON p.user_id = u.user_id
+            order by p.created_at desc
+            `)
+            data = posts
+        }
 
         for (const dat of data) {
 
@@ -208,7 +224,7 @@ function transformQuery(query) {
     return query.split(' ').join(' & ');
 }
 
-async function searchPosts(query) {
+export async function searchPosts(query) {
     try {
         const transformedQuery = transformQuery(query);
 
