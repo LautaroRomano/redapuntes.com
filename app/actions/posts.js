@@ -202,3 +202,24 @@ export async function setComment(post_id, content) {
         return { error: 'Ocurrio un error!' }
     }
 }
+
+
+function transformQuery(query) {
+    return query.split(' ').join(' & ');
+}
+
+async function searchPosts(query) {
+    try {
+        const transformedQuery = transformQuery(query);
+
+        const { rows: res } = await conn.query(`
+        SELECT post_id, user_id, content, created_at
+        FROM posts
+        WHERE tsv @@ to_tsquery('spanish', $1);
+      `, [transformedQuery]);
+        return res
+    } catch (error) {
+        console.log("🚀 ~ get ~ error:", error)
+        return { error: 'Ocurrio un error!' }
+    }
+}

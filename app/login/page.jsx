@@ -1,10 +1,11 @@
 'use client';
-import { Button, Card, CardBody, CardFooter, CardHeader, Input, Link } from "@nextui-org/react";
-import { useState } from "react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Input, Link, Spinner } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 import { FaCheckCircle, FaGoogle } from "react-icons/fa";
 import NextLink from "next/link";
 import { title } from "@/components/primitives";
 import { useRouter } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -14,24 +15,37 @@ export default function LoginPage() {
 
   const router = useRouter()
 
-  const handleSubmit = () => {
+  const { data: session, status } = useSession()
+
+  useEffect(() => {
+    //if(status==='authenticated') router.push('/')
+  }, [status])
+
+  const handleSubmit = async () => {
     try {
-      signIn('credentials', { username, password })
+      await signIn('credentials', { username, password })
       setSucces(true)
-
-      setTimeout(() => {
-        setUsername("");
-        setPassword([]);
-        setSucces(false);
-        onOpenChange();
-        router.push('/')
-      }, 1000);
-
     } catch (error) {
+      console.log("🚀 ~ handleSubmit ~ error:", error)
       setError(true)
     }
-
   };
+
+  if (status === 'loading')
+    return (
+      <div className="flex justify-center items-center w-full gap-4 flex-col">
+        <Spinner />
+        <h1 className={''}>Cargando...</h1>
+      </div>
+    )
+
+  if (status === 'authenticated')
+    return (
+      <div className="flex justify-center items-center w-full gap-4 flex-col">
+        <Spinner />
+        <h1 className={''}>Usted ya inicio sesion, Redirigiendo...</h1>
+      </div>
+    )
 
   return (
     <div className="w-full">

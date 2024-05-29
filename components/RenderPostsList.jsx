@@ -8,7 +8,8 @@ export default function RenderPostsList({ postsList, disabled }) {
     const [posts, setPosts] = useState([])
 
     useEffect(() => {
-        setPosts(postsList)
+        if (Array.isArray(postsList))
+            setPosts(postsList)
     }, [postsList])
 
     const handleLike = async (post_id) => {

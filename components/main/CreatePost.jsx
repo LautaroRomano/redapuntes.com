@@ -16,11 +16,7 @@ export default function CreatePost() {
     return (
         <>
             <Card className="mb-4">
-                <CardHeader className="justify-between">
-
-                </CardHeader>
-
-                <CardBody className="px-3 py-0 text-small text-default-400">
+                <CardBody className="px-3 py-4 text-small text-default-400">
                     {status === 'authenticated' ?
                         <div onClick={onOpen}>
                             <p>Iniciar una publicacion</p>
@@ -31,10 +27,6 @@ export default function CreatePost() {
                         </div>
                     }
                 </CardBody>
-
-                <CardFooter className="gap-3">
-
-                </CardFooter>
             </Card>
             {status === 'authenticated' &&
                 <NewPost isOpen={isOpen} onOpenChange={onOpenChange}></NewPost>

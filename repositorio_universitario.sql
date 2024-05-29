@@ -13,6 +13,7 @@ CREATE TABLE posts (
     post_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
     content TEXT NOT NULL,
+    tsv tsvector,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -55,6 +56,17 @@ CREATE INDEX idx_post_likes_post_id ON post_likes(post_id);
 CREATE INDEX idx_post_likes_user_id ON post_likes(user_id);
 CREATE INDEX idx_comments_post_id ON comments(post_id);
 CREATE INDEX idx_comments_user_id ON comments(user_id);
+CREATE INDEX posts_tsv_idx ON posts USING gin(tsv);
 
+
+CREATE OR REPLACE FUNCTION update_tsvector_column() RETURNS TRIGGER AS $$
+BEGIN
+  NEW.tsv := to_tsvector('spanish', NEW.content);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON posts
+FOR EACH ROW EXECUTE FUNCTION update_tsvector_column();
 
 

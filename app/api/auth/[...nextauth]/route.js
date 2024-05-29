@@ -19,6 +19,7 @@ export const authOptions = {
             },
             async authorize(credentials, req) {
                 const user = await getUser(credentials.username, credentials.password)
+                console.log("🚀 ~ authorize ~ user:", user)
                 if (user) {
                     return user
                 } else {
