@@ -7,6 +7,7 @@ import { Input } from "@nextui-org/input";
 import { SearchIcon } from "@/components/icons";
 import { Button } from "@nextui-org/button";
 import { Select, SelectItem } from "@nextui-org/react";
+import { toast } from "react-toastify";
 
 export default function Home() {
 
@@ -17,6 +18,7 @@ export default function Home() {
   const getPosts = async (type) => {
     try {
       const data = await get(type)
+      if (data.error) return toast.error(data.error)
       setPostList(data)
     } catch (error) {
       console.log("🚀 ~ getPosts ~ error:", error)
@@ -36,6 +38,7 @@ export default function Home() {
   const handleSearch = async () => {
     try {
       const data = await searchPosts(search)
+      if (data.error) return toast.error(data.error)
       setPostList(data)
     } catch (error) {
       console.log("🚀 ~ getPosts ~ error:", error)

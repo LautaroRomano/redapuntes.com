@@ -6,6 +6,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { uploadFile } from "@/app/lib/firebase";
 import { useSession } from "next-auth/react";
 import { Spinner } from "@nextui-org/spinner";
+import { toast } from "react-toastify";
 
 
 
@@ -50,6 +51,7 @@ const NewPost = ({ isOpen, onOpenChange }) => {
             const files = []
             for (const file of selectedFiles) {
                 const url = await uploadFile(file)
+                if (url.error) return toast.error(res.error)
                 files.push({
                     file_name: file.name,
                     file_path: url,
@@ -73,7 +75,10 @@ const NewPost = ({ isOpen, onOpenChange }) => {
         setLoading(true)
         try {
             const res = await create(content, files);
-            if (res.error) setError(res.error)
+            if (res.error) {
+                setError(res.error)
+                return toast.error(res.error)
+            }
             setSucces(true)
 
             setTimeout(() => {

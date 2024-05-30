@@ -19,14 +19,14 @@ const getMyUser = async () => {
 export async function create(content, files) {
     try {
         const user = await getMyUser();
-        if (user.error) return { error: 'Ocurrio un error!' }
+        if (user.error) return { error: 'Debe iniciar sesion!' }
 
         const { rows: result } = await conn.query(
             'SELECT * FROM users WHERE email=$1',
             [user.email]
         );
 
-        if (!user) return { error: 'Ocurrio un error!' }
+        if (!user) return { error: 'Debe iniciar sesion para continuar!' }
 
         const { rows: posts } = await conn.query(`
             INSERT INTO posts(user_id, content) 
@@ -52,8 +52,6 @@ export async function create(content, files) {
 export async function get(type) {
     try {
         const user = await getMyUser();
-        //if (user.error) return { error: 'Ocurrio un error!' }
-
 
         let data = []
 
@@ -111,13 +109,14 @@ export async function get(type) {
         return response
     } catch (error) {
         console.log("🚀 ~ get ~ error:", error)
+        return { error: 'Ocurrio un error!' }
     }
 }
 export async function getPostById(post_id) {
     try {
 
         const user = await getMyUser();
-        if (user.error) return { error: 'Ocurrio un error!' }
+        // if (user.error) return { error: 'Debe iniciar sesion!' }
 
         const { rows: data } = await conn.query(`
         select p.post_id,p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
@@ -152,13 +151,14 @@ export async function getPostById(post_id) {
         }
     } catch (error) {
         console.log("🚀 ~ get ~ error:", error)
+        return { error: 'Ocurrio un error!' }
     }
 }
 
 export async function setLike(post_id) {
     try {
         const user = await getMyUser();
-        if (user.error) return { error: 'Ocurrio un error!' }
+        if (user.error) return { error: 'Debe iniciar sesion!' }
 
         const { rows: liked } = await conn.query(`select * from post_likes where user_id =$1 and post_id = $2`, [user.user_id, post_id]);
         const isLiked = !!liked[0]
@@ -178,7 +178,7 @@ export async function getComments(post_id) {
     try {
         /*  
         const user = await getMyUser();
-        if (user.error) return { error: 'Ocurrio un error!' } 
+        if (user.error) return { error: 'Debe iniciar sesion!' } 
         */
 
         const { rows: comments } = await conn.query(`
@@ -199,7 +199,7 @@ export async function setComment(post_id, content) {
     try {
 
         const user = await getMyUser();
-        if (user.error) return { error: 'Ocurrio un error!' }
+        if (user.error) return { error: 'Debe iniciar sesion!' }
 
 
         await conn.query(`

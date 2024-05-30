@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
+import { toast } from "react-toastify";
 
 export default function ProfilePage({ params }) {
   const [profile, setProfile] = useState({})
@@ -28,11 +29,13 @@ export default function ProfilePage({ params }) {
 
   const handleUnfollow = async () => {
     const res = await unfollow(profile.user_id)
+    if (res.error) return toast.error(res.error)
     if (res.ok) setProfile(prev => ({ ...prev, isFollow: false }))
   }
 
   const handleFollow = async () => {
     const res = await follow(profile.user_id)
+    if (res.error) return toast.error(res.error)
     if (res.ok) setProfile(prev => ({ ...prev, isFollow: true }))
   }
 
@@ -146,6 +149,7 @@ const Edit = ({ isOpen, onOpenChange, profile = {}, reload }) => {
     try {
       const file = selectedFiles[0]
       const url = await uploadFile(file)
+      if (url.error) return toast.error(url.error)
       setImg(url)
       setLoading(false)
     } catch (error) {

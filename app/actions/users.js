@@ -27,9 +27,10 @@ export async function create({ email, password, confirmPassword, accountname, us
 
         const hashedPassword = await bcrypt.hash(password, 10)
         const lowerEmail = email.toLowerCase()
+        const lowerUsername = username.toLowerCase()
         await conn.query(`
         insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4)
-        `, [lowerEmail, hashedPassword, accountname, username])
+        `, [lowerEmail, hashedPassword, accountname, lowerUsername])
         return { ok: true }
 
     } catch (error) {
@@ -116,7 +117,7 @@ export async function updateUser({ accountName, about, img }) {
 
 export async function follow(user_id) {
     const user = await getMyUser();
-    if (user.error) return { error: 'Ocurrio un error!' }
+    if (user.error) return { error: 'Debe iniciar sesion!' }
     try {
         await conn.query(`
         insert into follows(follower_id,followed_id) values($1,$2)
@@ -131,7 +132,7 @@ export async function follow(user_id) {
 
 export async function unfollow(user_id) {
     const user = await getMyUser();
-    if (user.error) return { error: 'Ocurrio un error!' }
+    if (user.error) return { error: 'Debe iniciar sesion!' }
     try {
         await conn.query(`
         delete from follows where follower_id = $1 and followed_id = $2

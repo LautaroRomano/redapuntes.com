@@ -80,6 +80,7 @@ export default function LoginPage() {
           <Input
             placeholder="Usuario o email"
             value={username}
+            startContent={'@'}
             onChange={(e) => setUsername(e.target.value)}
           />
           <Input

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import PostCard from "./main/PostCard"
 import { setLike } from "@/app/actions/posts"
+import { toast } from "react-toastify"
 
 
 export default function RenderPostsList({ postsList, disabled }) {
@@ -15,6 +16,7 @@ export default function RenderPostsList({ postsList, disabled }) {
     const handleLike = async (post_id) => {
         try {
             const newPost = await setLike(post_id)
+            if (newPost.error) return toast.error(newPost.error)
             setPosts(prev => prev.map(post => post.post_id === newPost.post_id ? newPost : post))
         } catch (error) {
             console.log(error)

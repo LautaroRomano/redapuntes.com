@@ -6,6 +6,7 @@ import { useState } from "react";
 import { FaCheckCircle, FaGoogle } from "react-icons/fa";
 import { create } from "../actions/users";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const [success, setSuccess] = useState(false)
@@ -22,15 +23,22 @@ export default function LoginPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    let newValue = value;
+    if (name === 'email' || name === 'username') {
+      newValue = value.replace(/\s+/g, '').toLowerCase()
+    }
+
     setData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: newValue,
     }));
   };
 
   const handleSubmit = async (e) => {
     try {
       const res = await create(data)
+      if (res.error) return toast.error(res.error)
       if (res.ok) {
         setSuccess(true)
         setError(false)

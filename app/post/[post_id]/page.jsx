@@ -5,6 +5,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { getComments, getPostById, setComment } from '../../actions/posts'
 import RenderPostsList from "@/components/RenderPostsList";
+import { toast } from 'react-toastify'
 
 export default function PostPage({ params }) {
   const [post, setPost] = useState("");
@@ -17,10 +18,12 @@ export default function PostPage({ params }) {
 
   const getPost = async (post_id) => {
     const myPost = await getPostById(post_id)
+    if (myPost.error) return toast.error(myPost.error)
     setPost(myPost)
   }
   const getCommentList = async (post_id) => {
     const commentList = await getComments(post_id)
+    if (commentList.error) return toast.error(commentList.error)
     setComments(commentList)
   }
 
@@ -33,6 +36,7 @@ export default function PostPage({ params }) {
 
   const setNewComment = async () => {
     const newComments = await setComment(params.post_id, myComment)
+    if (newComments.error) return toast.error(newComments.error)
     setComments(newComments)
     setMyComment('')
   }
@@ -45,7 +49,7 @@ export default function PostPage({ params }) {
 
         <CardBody className="px-3 py-0 text-small text-default-400 items-center gap-2">
 
-          <div className="my-5">
+          <div className="my-5 w-full">
             <RenderPostsList postsList={[post]} disabled={{ linkComments: true }} />
 
             <div className="w-full flex gap-2 items-center">
@@ -55,7 +59,7 @@ export default function PostPage({ params }) {
                 value={myComment}
                 onChange={({ target }) => setMyComment(target.value)}
               />
-              <Button onClick={setNewComment} color={myComment.length < 1 ? 'default' :'primary'} disabled={myComment.length < 1}>Comentar</Button>
+              <Button onClick={setNewComment} color={myComment.length < 1 ? 'default' : 'primary'} disabled={myComment.length < 1}>Comentar</Button>
             </div>
 
             {comments.map((com) => {

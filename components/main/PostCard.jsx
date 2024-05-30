@@ -86,7 +86,7 @@ export default function PostCard({ id, content, name, username, files = [], prof
                         <div className="flex gap-1 items-center justify-center">
                             <p className=" text-default-400 text-small">
                                 {
-                                    <Button as={'a'} href={`/ post / ${id}`} color="primary" variant="ghost" aria-label="Like" size="sm">
+                                    <Button as={'a'} href={`/post/${id}`} color="primary" variant="ghost" aria-label="Like" size="sm">
                                         <p className="text-lg">
                                             <FaRegComment />
                                         </p>
