@@ -37,13 +37,14 @@ export const Navbar = () => {
           <NavbarBrand as="li" className="gap-3 max-w-fit">
             <NextLink className="flex justify-start items-center gap-1" href="/">
               <Logo />
-              <p className="font-bold text-inherit">Repositorio Universitario</p>
+              <p className="font-bold text-inherit hidden md:flex">Repositorio Universitario</p>
+              <p className="font-bold text-inherit flex md:hidden">RU</p>
             </NextLink>
           </NavbarBrand>
         </NavbarContent>
 
         <NavbarContent
-          className="hidden sm:flex basis-1/5 sm:basis-full"
+          className=""
           justify="end"
         >
           {/*  <NavbarItem className="hidden sm:flex gap-2">
@@ -97,6 +98,55 @@ export const Navbar = () => {
             }
 
           </NavbarItem>
+
+          <NavbarItem className="flex md:hidden">
+            {!status === 'authenticated' ?
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button
+                    className="text-sm font-normal text-default-600 bg-default-100"
+                    startContent={<FaUser />}
+                    variant="flat"
+                  >
+                    Cuenta
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu aria-label="Dynamic Actions">
+
+                  <DropdownItem
+                    color={"default"}
+                    className={""}
+                  >
+                    <Link
+                      isExternal
+                      className="w-full h-full text-sm font-normal text-default-600 "
+                      href={'/profile'}
+                    >
+                      Ver perfil
+                    </Link>
+                  </DropdownItem>
+                  <DropdownItem
+                    color={"danger"}
+                    className={"text-danger"}
+                    onClick={signOut}
+                  >
+                    Cerrar sesion
+                  </DropdownItem>
+                </DropdownMenu>
+
+              </Dropdown>
+              :
+              <Button
+                className="text-sm font-normal text-default-600 bg-default-100"
+                variant="flat"
+                onClick={onOpenChange}
+              >
+                Iniciar sesion
+              </Button>
+            }
+
+          </NavbarItem>
+
         </NavbarContent>
 
         <NavbarMenu>
@@ -172,7 +222,7 @@ const Login = ({ isOpen, onOpenChange }) => {
               />
               <NextLink className="text-blue-400" href={'#'}>Olvidaste tu contrasena?</NextLink>
               <NextLink className="flex justify-start items-center gap-1" href="/register">No tienes cuenta? <p className="text-blue-400"
-              onClick={onOpenChange}
+                onClick={onOpenChange}
               >Registrate aqui!</p></NextLink>
             </ModalBody>
 

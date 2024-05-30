@@ -49,29 +49,35 @@ export default function ProfilePage({ params }) {
     );
 
   return (
-    <div className="max-w-4xl mx-auto lg:min-w-[600px]">
+    <div className="w-full max-w-lg lg:min-w-[600px] gap-5">
       <header className="flex items-center justify-between">
         <div className="flex items-center justify-between w-full">
-          <Avatar
-            showFallback
-            src={profile.img}
-            alt="User profile"
-            className="w-28 h-28 rounded-full"
-          />
-          <div >
-            <h1 className="text-2xl font-semibold">{profile.accountname}</h1>
-            <p className="text-xl font-semibold text-start text-gray-400">@{profile.username}</p>
-          </div>
-          <div className="flex">
-            {
-              profile.myProfile ?
-                <Button onClick={onOpen}>Editar</Button>
-                :
-                profile.isFollow ?
-                  <Button color="default" onClick={handleUnfollow}>Dejar de seguir</Button>
-                  :
-                  <Button color="primary" onClick={handleFollow}>Seguir</Button>
-            }
+          <div className="flex flex-col items-center md:flex-row gap-5 w-full">
+            <div>
+              <Avatar
+                showFallback
+                src={profile.img}
+                alt="User profile"
+                className="w-28 h-28 rounded-full"
+              />
+            </div>
+            <div className="flex items-center md:flex-row gap-2 w-full justify-between">
+              <div>
+                <h1 className="text-xl md:text-2xl font-semibold">{profile.accountname}</h1>
+                <p className="text-lg md:text-xl font-semibold text-start text-gray-400">@{profile.username}</p>
+              </div>
+              <div className="flex">
+                {
+                  profile.myProfile ?
+                    <Button onClick={onOpen}>Editar</Button>
+                    :
+                    profile.isFollow ?
+                      <Button color="default" onClick={handleUnfollow}>Dejar de seguir</Button>
+                      :
+                      <Button color="primary" onClick={handleFollow}>Seguir</Button>
+                }
+              </div>
+            </div>
           </div>
         </div>
       </header>

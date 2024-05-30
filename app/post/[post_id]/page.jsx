@@ -42,13 +42,9 @@ export default function PostPage({ params }) {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-lg ">
       <Card className="mb-4 w-full">
-        <CardHeader className="justify-center">
-        </CardHeader>
-
         <CardBody className="px-3 py-0 text-small text-default-400 items-center gap-2">
-
           <div className="my-5 w-full">
             <RenderPostsList postsList={[post]} disabled={{ linkComments: true }} />
 
