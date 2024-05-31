@@ -19,7 +19,6 @@ export const authOptions = {
             },
             async authorize(credentials, req) {
                 const user = await getUser(credentials.username, credentials.password)
-                console.log("🚀 ~ authorize ~ user:", user)
                 if (user) {
                     return user
                 } else {
@@ -29,33 +28,57 @@ export const authOptions = {
         })
     ],
     callbacks: {
-        async signIn({ account, profile, credentials }) {
-            if (credentials) {
-                const user = await getUser(credentials.username, credentials.password)
+        async signIn({ user, account, profile, email, credentials }) {
+            if (account.provider === "google") {
+                const user = await getUserGoogle(profile.email)
+                if (user) return true;
+                else return false
+            } else if (account.provider === "credentials") {
+                const user = await getUser(credentials.username, credentials.password);
                 if (user) {
-                    return user
+                    return true;
                 } else {
-                    return null
+                    return false;
                 }
             }
-            return null
+            return false;
         },
         async redirect({ url, baseUrl }) {
-            if (url.startsWith("/")) return `${baseUrl}${url}`
-            else if (new URL(url).origin === baseUrl) return url
-            return baseUrl
+            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            else if (new URL(url).origin === baseUrl) return url;
+            return baseUrl;
         }
     },
     secret: process.env.NEXTAUTH_SECRET,
-    // pages: {
-    //     signIn: '/login',
-    //     error: '/login'
-    // },
+    pages: {
+        signIn: '/',
+        error: '/login?error=Credenciales invalidas'
+    },
     url: process.env.NEXTAUTH_URL,
 }
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
+
+const getUserGoogle = async (email) => {
+    try {
+        const { rows: result } = await conn.query(
+            'SELECT * FROM users WHERE email=$1',
+            [email]
+        );
+        if (result.length === 0) {
+            return null;
+        }
+
+        const user = result[0];
+
+        return user;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
 
 const getUser = async (username, password) => {
     try {

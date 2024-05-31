@@ -28,6 +28,15 @@ export async function create({ email, password, confirmPassword, accountname, us
         const hashedPassword = await bcrypt.hash(password, 10)
         const lowerEmail = email.toLowerCase()
         const lowerUsername = username.toLowerCase()
+
+        const { rows: usersByUsername } = await conn.query(`
+        select u.user_id
+        from users u
+        where u.username = $1
+        `, [lowerUsername])
+
+        if(usersByUsername[0]) return { error: 'Este nombre de usuario ya se encuentra en uso' }
+
         await conn.query(`
         insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4)
         `, [lowerEmail, hashedPassword, accountname, lowerUsername])

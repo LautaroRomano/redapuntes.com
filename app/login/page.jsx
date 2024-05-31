@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { FaCheckCircle, FaGoogle } from "react-icons/fa";
 import NextLink from "next/link";
 import { title } from "@/components/primitives";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -14,11 +15,20 @@ export default function LoginPage() {
   const [error, setError] = useState(false)
 
   const router = useRouter()
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const param1 = searchParams.get('error');
+
+    if (param1) toast.error(param1, { autoClose: false })
+
+    // Puedes usar los parámetros según sea necesario
+  }, [searchParams]);
 
   const { data: session, status } = useSession()
 
   useEffect(() => {
-    if(status==='authenticated') router.push('/')
+    if (status === 'authenticated') router.push('/')
   }, [status])
 
   const handleSubmit = async () => {
@@ -51,7 +61,6 @@ export default function LoginPage() {
     <div className="w-full">
       <h1 className={title()}>Ingresar a tu cuenta</h1>
       <Card className="mb-4 w-full my-5">
-
         <CardHeader className="justify-center">
           <div className="flex gap-5 w-full">
             <div className="flex flex-col gap-1 items-center justify-center w-full my-2">
@@ -62,7 +71,7 @@ export default function LoginPage() {
                 radius="none"
                 size="md"
                 variant={"solid"}
-                onPress={() => { }}
+                onPress={() => signIn('google')}
                 startContent={<FaGoogle />}
               >
                 Google
@@ -76,7 +85,7 @@ export default function LoginPage() {
           </div>
         </CardHeader>
 
-        <CardBody className="px-3 py-0 text-small text-default-400 items-center gap-2">
+        <CardBody className="px-3 pt-0 text-small text-default-400 items-center gap-2">
           <Input
             placeholder="Usuario o email"
             value={username}
@@ -120,6 +129,7 @@ export default function LoginPage() {
 
 
         </CardBody>
+        <CardFooter></CardFooter>
 
       </Card >
     </div>

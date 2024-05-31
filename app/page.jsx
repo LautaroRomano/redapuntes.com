@@ -47,48 +47,49 @@ export default function Home() {
 
   return (
     <section className="flex flex-col items-center  w-full">
-
       <div className="mt-0 gap-4 w-full rounded-md max-w-xl" >
-        <div className="flex mb-4 gap-4">
-          <Select
-            selectedKeys={selectView}
-            onSelectionChange={setSelectView}
-            className="max-w-xs"
-          >
-            {['Todo', 'Siguiendo'].map((option) => (
-              <SelectItem value={option} key={option}>
-                {option}
-              </SelectItem>
-            ))}
-          </Select>
-
-          <Input
-            aria-label="Search"
-            classNames={{
-              inputWrapper: "bg-default-100",
-              input: "text-sm",
-            }}
-            labelPlacement="outside"
-            placeholder="Buscar..."
-            startContent={
-              <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-            }
-            type="search"
-            value={search}
-            onChange={({ target }) => {
-              if (target.value.length === 0) getPosts()
-              setSearch(target.value)
-            }}
-          />
-          <Button
-            isIconOnly
-            onClick={handleSearch}
-            disabled={search.length <= 1}
-            color={search.length <= 1 ? 'default' : "primary"}
-            className={search.length <= 1 ? '' : "cursor-pointer"}
-          >
-            <SearchIcon className="text-base text-white pointer-events-none flex-shrink-0" />
-          </Button>
+        <div className="flex mb-4 flex-col sm:flex-row justify-between gap-4">
+          <div className="flex w-full sm:w-40">
+            <Select
+              selectedKeys={selectView}
+              onSelectionChange={setSelectView}
+            >
+              {['Todo', 'Siguiendo'].map((option) => (
+                <SelectItem value={option} key={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+          <div className="flex w-full sm:w-80 gap-4">
+            <Input
+              aria-label="Search"
+              classNames={{
+                inputWrapper: "bg-default-100",
+                input: "text-sm",
+              }}
+              labelPlacement="outside"
+              placeholder="Buscar..."
+              startContent={
+                <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+              }
+              type="search"
+              value={search}
+              onChange={({ target }) => {
+                if (target.value.length === 0) getPosts()
+                setSearch(target.value)
+              }}
+            />
+            <Button
+              isIconOnly
+              onClick={handleSearch}
+              disabled={search.length <= 1}
+              color={search.length <= 1 ? 'default' : "primary"}
+              className={search.length <= 1 ? '' : "cursor-pointer"}
+            >
+              <SearchIcon className="text-base text-white pointer-events-none flex-shrink-0" />
+            </Button>
+          </div>
         </div>
         <CreatePost></CreatePost>
         <RenderPostsList postsList={postsList} />

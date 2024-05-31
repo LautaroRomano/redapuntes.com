@@ -20,7 +20,7 @@ import {
   SearchIcon,
   Logo,
 } from "@/components/icons";
-import { FaCheckCircle, FaUser } from "react-icons/fa";
+import { FaCheckCircle, FaGoogle, FaUser } from "react-icons/fa";
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
 import { useState } from "react";
@@ -210,6 +210,17 @@ const Login = ({ isOpen, onOpenChange }) => {
               <h4>Iniciar sesion</h4>
             </ModalHeader>
             <ModalBody>
+              <Button
+                className={""}
+                color="primary"
+                radius="none"
+                size="md"
+                variant={"solid"}
+                onPress={() => signIn('google')}
+                startContent={<FaGoogle />}
+              >
+                Google
+              </Button>
               <Input
                 placeholder="Usuario o email"
                 value={username}

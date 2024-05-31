@@ -7,6 +7,7 @@ import { FaCheckCircle, FaGoogle } from "react-icons/fa";
 import { create } from "../actions/users";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const [success, setSuccess] = useState(false)
@@ -56,9 +57,9 @@ export default function LoginPage() {
 
   return (
     <div className="w-full">
-      <h1 className={title()}>Register</h1>
+      <h1 className={title()}>Registrarse</h1>
       <Card className="mb-4 w-full my-5">
-        <CardHeader className="justify-center">
+       {/*  <CardHeader className="justify-center">
           <div className="flex gap-5 w-full">
             <div className="flex flex-col gap-1 items-center justify-center w-full my-2">
               <h5 className="text-small tracking-tight text-default-400">Crear tu cuenta con Google</h5>
@@ -68,7 +69,7 @@ export default function LoginPage() {
                 radius="none"
                 size="md"
                 variant={"solid"}
-                onPress={() => { }}
+                onPress={() => signIn('google')}
                 startContent={<FaGoogle />}
               >
                 Google
@@ -80,9 +81,9 @@ export default function LoginPage() {
               </div>
             </div>
           </div>
-        </CardHeader>
+        </CardHeader> */}
 
-        <CardBody className="px-3 py-0 text-small text-default-400 items-center gap-2">
+        <CardBody className="px-3 py-2 text-small text-default-400 items-center gap-2">
           <p>Completa este formulario de registro</p>
 
           <Input
