@@ -114,6 +114,57 @@ export async function get(type, limit = 10, offset = 0) {
     }
 }
 
+export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
+    try {
+        const user = await getMyUser();
+
+
+        const { rows: data } = await conn.query(`
+            select distinct p.post_id, p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
+            from posts p join users u ON p.user_id = u.user_id
+            where u.user_id = $1
+            order by p.created_at desc
+            limit $2 offset $3;
+            `, [user_id, limit, offset]);
+
+
+        const response = [];
+
+        for (const dat of data) {
+            const { rows: files } = await conn.query(`
+            select pf.file_name, pf.file_path from pdf_files pf where post_id = $1
+            `, [dat.post_id]);
+
+            const { rows: likes } = await conn.query(`
+            select count(*) from post_likes pl where pl.post_id = $1
+            `, [dat.post_id]);
+
+            const { rows: comments } = await conn.query(`
+            select count(*) from "comments" c where c.post_id = $1
+            `, [dat.post_id]);
+
+            const { rows: liked } = await conn.query(`
+            select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2
+            `, [dat.post_id, user.user_id]);
+
+            const isLiked = !!liked[0];
+
+            response.push({
+                ...dat,
+                files,
+                isLiked,
+                likes: likes[0].count * 1,
+                comments: comments[0].count * 1,
+            });
+        }
+
+        return response;
+    } catch (error) {
+        console.log("🚀 ~ get ~ error:", error);
+        return { error: 'Ocurrio un error!' };
+    }
+}
+
 export async function getPostById(post_id) {
     try {
 
@@ -227,7 +278,7 @@ function transformQuery(query) {
     return query.split(' ').join(' & ');
 }
 
-export async function searchPosts(query) {
+export async function searchPosts(query, limit = 10, offset = 0) {
     const user = await getMyUser();
     try {
         const transformedQuery = transformQuery(query);
@@ -236,8 +287,10 @@ export async function searchPosts(query) {
         select p.post_id,p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
         FROM posts p
         join users u ON p.user_id = u.user_id
-        WHERE tsv @@ to_tsquery('spanish', $1);
-      `, [transformedQuery]);
+        WHERE tsv @@ to_tsquery('spanish', $1)
+        order by p.created_at desc
+        limit $2 offset $3;
+      `, [transformedQuery, limit, offset]);
 
         const response = []
 

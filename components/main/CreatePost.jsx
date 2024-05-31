@@ -24,7 +24,7 @@ export default function CreatePost() {
                         </div>
                         :
                         <div>
-                            <p>Debes iniciar sesion para publicar</p>
+                            <p>Inicia sesion para publicar algo</p>
                         </div>
                     }
                 </CardBody>

@@ -1,9 +1,12 @@
 'use client'
+import { getPostsByUserId } from "@/app/actions/posts";
 import { follow, getUserByUsername, unfollow, updateUser } from "@/app/actions/users";
 import { uploadFile } from "@/app/lib/firebase";
+import PostSkeleton from "@/components/PostSkeleton";
 import RenderPostsList from "@/components/RenderPostsList";
 import { Button } from "@nextui-org/button";
 import { Avatar, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Input, Textarea, Spinner, useDisclosure } from "@nextui-org/react";
+import _ from "lodash";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
@@ -13,6 +16,14 @@ import { toast } from "react-toastify";
 export default function ProfilePage({ params }) {
   const [profile, setProfile] = useState({})
   const [notFound, setNotFound] = useState(false)
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [postsList, setPostList] = useState([]);
+  const [endPosts, setEndPosts] = useState(false);
+
+  const LIMIT = 10;
+  const elementScroll = useRef();
+
   const router = useRouter()
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -20,7 +31,46 @@ export default function ProfilePage({ params }) {
     const res = await getUserByUsername(username)
     if (res.error) setNotFound(true)
     setProfile(res)
+    getPosts(res.user_id)
   }
+
+  const getPosts = async (user_id, newOffset = 0) => {
+    try {
+      setLoading(true);
+
+      const data = await getPostsByUserId(user_id, LIMIT, newOffset);
+      if (data.error) return toast.error(data.error);
+      if (newOffset === 0) {
+        if (data.length < 10) setEndPosts(true)
+        setPostList(data);
+      } else {
+        if (data.length < 10) setEndPosts(true)
+        setPostList((prevPosts) => [...prevPosts, ...data]);
+      }
+      setOffset(newOffset);
+      setLoading(false);
+    } catch (error) {
+      console.log("🚀 ~ getPosts ~ error:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleScroll = _.debounce(() => {
+    if (elementScroll.current) {
+      const myElement = elementScroll.current;
+      if ((myElement.scrollTop + myElement.clientHeight) >= (myElement.scrollHeight - 150) && !loading && !endPosts) {
+        getPosts(profile.user_id, offset + LIMIT);
+      }
+    }
+  }, 300);
+
+  useEffect(() => {
+    const myElement = elementScroll.current;
+    if (myElement) {
+      myElement.addEventListener('scroll', handleScroll);
+      return () => myElement.removeEventListener('scroll', handleScroll);
+    }
+  }, [offset, loading]);
 
   useEffect(() => {
     if (params.username)
@@ -85,7 +135,7 @@ export default function ProfilePage({ params }) {
       <div className="mt-4">
         <div className="flex justify-evenly">
           <div className="text-center">
-            <span className="font-semibold">{profile.posts ? profile.posts.length : 0}</span>
+            <span className="font-semibold">{postsList ? postsList.length : 0}</span>
             <p>Posts</p>
           </div>
           <div className="text-center">
@@ -103,10 +153,14 @@ export default function ProfilePage({ params }) {
         <p>{profile.about && profile.about.length > 0 ? profile.about : 'Este usuario no ingreso una descripcion.'}</p>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8" id="scroll" ref={elementScroll} style={{ maxHeight: '82vh', overflowY: 'auto' }}>
         <p className="mb-2">Posteos</p>
         {
-          profile.posts && <RenderPostsList postsList={profile.posts} />
+          postsList && <RenderPostsList postsList={postsList} />
+        }
+        {
+          !endPosts &&
+          <PostSkeleton />
         }
       </div>
       <Edit isOpen={isOpen} onOpenChange={onOpenChange} profile={profile} reload={() => getUser(params.username)} />

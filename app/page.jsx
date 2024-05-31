@@ -9,6 +9,7 @@ import { Button } from "@nextui-org/button";
 import { Select, SelectItem, Spinner } from "@nextui-org/react";
 import { toast } from "react-toastify";
 import _ from 'lodash';
+import PostSkeleton from '../components/PostSkeleton'
 
 export default function Home() {
   const [postsList, setPostList] = useState([]);
@@ -16,6 +17,8 @@ export default function Home() {
   const [search, setSearch] = useState('');
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [isSearch, setIsSearch] = useState(false);
+  const [endPosts, setEndPosts] = useState(false);
 
   const LIMIT = 10;
   const elementScroll = useRef();
@@ -23,12 +26,19 @@ export default function Home() {
   const getPosts = async (type, newOffset = 0) => {
     try {
       setLoading(true);
+      setIsSearch(false)
+      setEndPosts(false)
 
       const data = await get(type, LIMIT, newOffset);
-      if (data.error) return toast.error(data.error);
+      if (data.error) {
+        setLoading(false);
+        toast.error(data.error)
+      }
       if (newOffset === 0) {
+        if (data.length < 10) setEndPosts(true)
         setPostList(data);
       } else {
+        if (data.length < 10) setEndPosts(true)
         setPostList((prevPosts) => [...prevPosts, ...data]);
       }
       setOffset(newOffset);
@@ -50,13 +60,28 @@ export default function Home() {
     if (search.length > 0) setSearch('');
   }, [selectView]);
 
-  const handleSearch = async () => {
+  const handleSearch = async (newOffset = 0) => {
+    setLoading(true)
+    setIsSearch(true)
+    setEndPosts(false)
     try {
-      const data = await searchPosts(search);
-      if (data.error) return toast.error(data.error);
-      setPostList(data);
+      const data = await searchPosts(search, LIMIT, newOffset);
+      if (data.error) {
+        setLoading(false);
+        return toast.error(data.error);
+      }
+      if (newOffset === 0) {
+        if (data.length < 10) setEndPosts(true)
+        setPostList(data);
+      } else {
+        if (data.length < 10) setEndPosts(true)
+        setPostList((prevPosts) => [...prevPosts, ...data]);
+      }
+      setOffset(newOffset);
+      setLoading(false);
     } catch (error) {
       console.log("🚀 ~ getPosts ~ error:", error);
+      setLoading(false);
     }
   };
 
@@ -64,8 +89,12 @@ export default function Home() {
     if (elementScroll.current) {
       const myElement = elementScroll.current;
       if ((myElement.scrollTop + myElement.clientHeight) >= (myElement.scrollHeight - 150) && !loading) {
-        const selectedValue = Array.from(selectView)[0];
-        getPosts(selectedValue, offset + LIMIT);
+        if (!isSearch && !endPosts) {
+          const selectedValue = Array.from(selectView)[0];
+          getPosts(selectedValue, offset + LIMIT);
+        } else {
+          handleSearch(offset + LIMIT);
+        }
       }
     }
   }, 300);
@@ -79,7 +108,7 @@ export default function Home() {
   }, [offset, loading, selectView]);
 
   return (
-    <section className="flex flex-col items-center w-full" ref={elementScroll} style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+    <section className="flex flex-col items-center w-full" id="scroll" ref={elementScroll} style={{ maxHeight: '82vh', overflowY: 'auto' }}>
       <div className="mt-0 gap-4 w-full rounded-md max-w-xl">
         <div className="flex mb-4 flex-col sm:flex-row justify-between gap-4">
           <div className="flex w-full sm:w-40">
@@ -115,7 +144,7 @@ export default function Home() {
             />
             <Button
               isIconOnly
-              onClick={handleSearch}
+              onClick={() => handleSearch()}
               disabled={search.length <= 1}
               color={search.length <= 1 ? 'default' : "primary"}
               className={search.length <= 1 ? '' : "cursor-pointer"}
@@ -127,10 +156,8 @@ export default function Home() {
         <CreatePost />
         <RenderPostsList postsList={postsList} />
         {
-          loading &&
-          <div className="flex justify-center items-center py-4">
-            <Spinner />
-          </div>
+          !endPosts &&
+          <PostSkeleton />
         }
       </div>
     </section>

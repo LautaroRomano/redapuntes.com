@@ -35,7 +35,7 @@ export async function create({ email, password, confirmPassword, accountname, us
         where u.username = $1
         `, [lowerUsername])
 
-        if(usersByUsername[0]) return { error: 'Este nombre de usuario ya se encuentra en uso' }
+        if (usersByUsername[0]) return { error: 'Este nombre de usuario ya se encuentra en uso' }
 
         await conn.query(`
         insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4)
@@ -70,22 +70,6 @@ export async function getUserByUsername(username) {
             `, [user.user_id, profile.user_id])
 
             profile.isFollow = !!follows[0]
-
-            const posts = []
-            const { rows: postsList } = await conn.query(`
-                select p.post_id,p."content", p.created_at, u.user_id, u.username, u.accountname
-                from posts p join users u on u.user_id = p.user_id
-                where p.user_id = $1
-                order by p.created_at desc
-            `, [profile.user_id])
-
-            for (const dat of postsList) {
-                const { rows: files } = await conn.query(`
-            select pf.file_name, pf.file_path from pdf_files pf where post_id = $1
-            `, [dat.post_id])
-                posts.push({ ...dat, files })
-            }
-            profile.posts = posts
 
             return profile
         }
