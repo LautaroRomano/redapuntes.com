@@ -44,6 +44,7 @@
 		"framer-motion": "^11.1.1",
 		"fs": "^0.0.1-security",
 		"intl-messageformat": "^10.5.0",
+		"lodash": "^4.17.21",
 		"next": "14.2.3",
 		"next-auth": "^4.24.7",
 		"next-themes": "^0.2.1",
