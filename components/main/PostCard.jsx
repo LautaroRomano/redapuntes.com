@@ -7,7 +7,6 @@ import Link from "next/link";
 import { IoMdDownload } from "react-icons/io";
 
 export default function PostCard({ id, content, name, username, files = [], profile, handleLike, likes, isLiked, ...props }) {
-    console.log("🚀 ~ PostCard ~ files:", files)
     const [expandedImage, setExpandedImage] = useState(null);
 
     const handleImageClick = (file) => {
