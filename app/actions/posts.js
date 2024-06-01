@@ -38,8 +38,8 @@ export async function create(content, files) {
 
         for (const file of files) {
             await conn.query(`
-            insert into pdf_files(post_id,file_name,file_path) values($1,$2,$3)
-            `, [insertedPostId, file.file_name, file.file_path])
+            insert into pdf_files(post_id,file_name,file_path,file_type) values($1,$2,$3,$4)
+            `, [insertedPostId, file.file_name, file.file_path, file.file_type])
         }
 
         return { ok: true }
@@ -81,7 +81,7 @@ export async function get(type, limit = 10, offset = 0) {
 
         for (const dat of data) {
             const { rows: files } = await conn.query(`
-            select pf.file_name, pf.file_path from pdf_files pf where post_id = $1
+            select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1
             `, [dat.post_id]);
 
             const { rows: likes } = await conn.query(`
@@ -132,7 +132,7 @@ export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
 
         for (const dat of data) {
             const { rows: files } = await conn.query(`
-            select pf.file_name, pf.file_path from pdf_files pf where post_id = $1
+            select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1
             `, [dat.post_id]);
 
             const { rows: likes } = await conn.query(`
@@ -178,7 +178,7 @@ export async function getPostById(post_id) {
         `, [post_id])
 
         const { rows: files } = await conn.query(`
-            select pf.file_name, pf.file_path from pdf_files pf where post_id = $1
+            select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1
             `, [data[0].post_id])
 
         const { rows: likes } = await conn.query(`
@@ -297,7 +297,7 @@ export async function searchPosts(query, limit = 10, offset = 0) {
         for (const dat of res) {
 
             const { rows: files } = await conn.query(`
-          select pf.file_name, pf.file_path from pdf_files pf where post_id = $1
+          select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1
           `, [dat.post_id])
 
             const { rows: likes } = await conn.query(`

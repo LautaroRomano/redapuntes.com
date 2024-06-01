@@ -37,6 +37,7 @@ CREATE TABLE pdf_files (
     post_id INT REFERENCES posts(post_id) ON DELETE CASCADE,
     file_name VARCHAR(255) NOT NULL,
     file_path VARCHAR(255) NOT NULL,
+    file_type VARCHAR(255) NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

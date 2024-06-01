@@ -108,7 +108,7 @@ export default function Home() {
   }, [offset, loading, selectView]);
 
   return (
-    <section className="flex flex-col items-center w-full" id="scroll" ref={elementScroll} style={{ maxHeight: '82vh', overflowY: 'auto' }}>
+    <section className="flex flex-col items-center w-full" id="scroll" ref={elementScroll} style={{ overflowY: 'auto', maxHeight:'90vh' }}>
       <div className="mt-0 gap-4 w-full rounded-md max-w-xl">
         <div className="flex mb-4 flex-col sm:flex-row justify-between gap-4">
           <div className="flex w-full sm:w-40">
