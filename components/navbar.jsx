@@ -18,6 +18,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Image,
   Modal,
   ModalBody,
   ModalContent,
@@ -27,7 +28,6 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 
-import { Logo } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 
 export const Navbar = () => {
@@ -40,14 +40,15 @@ export const Navbar = () => {
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
           <NavbarBrand as="li" className="gap-3 max-w-fit">
             <NextLink
-              className="flex justify-start items-center gap-1"
+              className="flexjustify-start items-center gap-1"
               href="/"
             >
-              <Logo />
-              <p className="font-bold text-inherit hidden md:flex">
-                Repositorio Universitario
-              </p>
-              <p className="font-bold text-inherit flex md:hidden">RU</p>
+              <div className="font-bold hidden md:flex">
+                <Image src="/logo-lg.png" className="cover max-h-6 rounded-none" isBlurred />
+              </div>
+              <div className="font-bold flex md:hidden">
+                <Image src="/RA.png" className="cover max-h-5 rounded-none" isBlurred />
+              </div>
             </NextLink>
           </NavbarBrand>
         </NavbarContent>

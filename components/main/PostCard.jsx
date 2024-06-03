@@ -66,7 +66,7 @@ export default function PostCard({
         </CardHeader>
 
         <CardBody className="px-3 py-0 text-small text-default-400">
-          <p>{content}</p>
+          <div>{content}</div>
           {files.length > 0 && (
             <div className="flex mt-4 overflow-auto">
               {files
@@ -110,9 +110,9 @@ export default function PostCard({
                         target="_blank"
                         variant="flat"
                       >
-                        <p className="text-lg">
+                        <div className="text-lg">
                           <IoMdDownload />
-                        </p>
+                        </div>
                       </Button>
                     </li>
                   ))}
@@ -124,7 +124,7 @@ export default function PostCard({
         <CardFooter className="gap-3 justify-between mt-3">
           <div className="flex gap-3">
             <div className="flex gap-1 items-center justify-center">
-              <p className=" text-default-400 text-small">
+              <div className=" text-default-400 text-small">
                 {
                   <Button
                     aria-label="Like"
@@ -133,17 +133,17 @@ export default function PostCard({
                     variant={isLiked ? "solid" : "ghost"}
                     onClick={() => handleLike(id)}
                   >
-                    <p className="text-lg">
+                    <div className="text-lg">
                       {isLiked ? <AiOutlineLike /> : <AiFillLike />}
-                    </p>
+                    </div>
                     {likes}
                   </Button>
                 }
-              </p>
+              </div>
             </div>
             {(!props.disabled || !props.disabled.linkComments) && (
               <div className="flex gap-1 items-center justify-center">
-                <p className=" text-default-400 text-small">
+                <div className=" text-default-400 text-small">
                   {
                     <Button
                       aria-label="Like"
@@ -153,22 +153,22 @@ export default function PostCard({
                       size="sm"
                       variant="ghost"
                     >
-                      <p className="text-lg">
+                      <div className="text-lg">
                         <FaRegComment />
-                      </p>
+                      </div>
                     </Button>
                   }
-                </p>
+                </div>
               </div>
             )}
           </div>
           {(!props.disabled || !props.disabled.linkComments) && (
             <div className="flex gap-1  items-center justify-center">
-              <p className="text-default-400 text-small">
+              <div className="text-default-400 text-small">
                 <NextLink href={`/post/${id}`}>
                   {props.comments} comentarios
                 </NextLink>
-              </p>
+              </div>
             </div>
           )}
         </CardFooter>
