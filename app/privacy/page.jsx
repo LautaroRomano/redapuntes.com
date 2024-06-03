@@ -2,9 +2,9 @@ import React from 'react';
 
 const Privacy = () => {
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 overflow-y-scroll max-h-[80vh]">
       <h1 className="text-2xl font-bold mb-4">Política de Privacidad</h1>
-      <p>Última actualización: [Fecha]</p>
+      <p>Última actualización: 03/06/2024</p>
       <p>
         Esta Política de Privacidad describe nuestras políticas y procedimientos sobre la
         recopilación, uso y divulgación de su información cuando utiliza el servicio y le
@@ -54,7 +54,7 @@ const Privacy = () => {
       </p>
 
       <p className="mt-4">
-        Si tiene alguna pregunta sobre esta Política de Privacidad, puede contactarnos por correo electrónico a [tu-email@example.com].
+        Si tiene alguna pregunta sobre esta Política de Privacidad, puede contactarnos por correo electrónico a info.repositorio.universitario@gmail.com.
       </p>
     </div>
   );
