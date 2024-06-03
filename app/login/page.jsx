@@ -9,7 +9,7 @@ import {
   Link,
   Spinner,
 } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { FaCheckCircle, FaGoogle } from "react-icons/fa";
 import NextLink from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -18,7 +18,7 @@ import { toast } from "react-toastify";
 
 import { title } from "@/components/primitives";
 
-export default function LoginPage() {
+function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [success, setSucces] = useState(false);
@@ -147,4 +147,10 @@ export default function LoginPage() {
       </Card>
     </div>
   );
+}
+
+export default function Home() {
+  <Suspense>
+    <LoginPage />
+  </Suspense>
 }
