@@ -1,8 +1,8 @@
+// app/api/auth/[...nextauth].js
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-
 import conn from "@/app/lib/db";
 
 const getUserGoogle = async (email) => {
@@ -17,11 +17,9 @@ const getUserGoogle = async (email) => {
     }
 
     const user = result[0];
-
     return user;
   } catch (error) {
     console.log(error);
-
     return null;
   }
 };
@@ -47,12 +45,11 @@ const getUser = async (username, password) => {
     }
   } catch (error) {
     console.log(error);
-
     return null;
   }
 };
 
-export const authOptions = {
+const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -81,20 +78,16 @@ export const authOptions = {
     async signIn({ account, profile, credentials }) {
       if (account.provider === "google") {
         const user = await getUserGoogle(profile.email);
-
         return !!user;
       } else if (account.provider === "credentials") {
         const user = await getUser(credentials.email, credentials.password);
-
         return !!user;
       }
-
       return false;
     },
     async redirect({ url, baseUrl }) {
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       else if (new URL(url).origin === baseUrl) return url;
-
       return baseUrl;
     },
   },

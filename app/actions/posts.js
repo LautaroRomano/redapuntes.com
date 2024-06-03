@@ -25,7 +25,7 @@ export async function create(content, files) {
 
     if (user.error) return { error: "Debe iniciar sesion!" };
 
-    const { rows: result } = await conn.query(
+    await conn.query(
       "SELECT * FROM users WHERE email=$1",
       [user.email],
     );
