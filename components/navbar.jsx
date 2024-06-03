@@ -1,9 +1,8 @@
-'use client'
+"use client";
 import {
   Navbar as NextUINavbar,
   NavbarContent,
   NavbarMenu,
-  NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
   NavbarMenuItem,
@@ -11,48 +10,54 @@ import {
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
-import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
-
-import { siteConfig } from "@/config/site";
-import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  SearchIcon,
-  Logo,
-} from "@/components/icons";
 import { FaCheckCircle, FaGoogle, FaUser } from "react-icons/fa";
-import { signIn, signOut, useSession } from 'next-auth/react';
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { signIn, signOut, useSession } from "next-auth/react";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
+} from "@nextui-org/react";
 import { useState } from "react";
 
-export const Navbar = () => {
+import { Logo } from "@/components/icons";
+import { siteConfig } from "@/config/site";
 
-  const { data: session, status } = useSession();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+export const Navbar = () => {
+  const { status } = useSession();
+  const { isOpen, onOpenChange } = useDisclosure();
 
   return (
     <>
       <NextUINavbar maxWidth="xl" position="sticky">
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
           <NavbarBrand as="li" className="gap-3 max-w-fit">
-            <NextLink className="flex justify-start items-center gap-1" href="/">
+            <NextLink
+              className="flex justify-start items-center gap-1"
+              href="/"
+            >
               <Logo />
-              <p className="font-bold text-inherit hidden md:flex">Repositorio Universitario</p>
+              <p className="font-bold text-inherit hidden md:flex">
+                Repositorio Universitario
+              </p>
               <p className="font-bold text-inherit flex md:hidden">RU</p>
             </NextLink>
           </NavbarBrand>
         </NavbarContent>
 
-        <NavbarContent
-          className=""
-          justify="end"
-        >
+        <NavbarContent className="" justify="end">
           {/*  <NavbarItem className="hidden sm:flex gap-2">
             <ThemeSwitch />
           </NavbarItem> */}
           <NavbarItem className="hidden md:flex">
-
-            {status === 'authenticated' ?
+            {status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
                   <Button
@@ -64,30 +69,25 @@ export const Navbar = () => {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Dynamic Actions">
-
-                  <DropdownItem
-                    color={"default"}
-                    className={""}
-                  >
+                  <DropdownItem className={""} color={"default"}>
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 "
-                      href={'/profile'}
+                      href={"/profile"}
                     >
                       Ver perfil
                     </Link>
                   </DropdownItem>
                   <DropdownItem
-                    color={"danger"}
                     className={"text-danger"}
+                    color={"danger"}
                     onClick={signOut}
                   >
                     Cerrar sesion
                   </DropdownItem>
                 </DropdownMenu>
-
               </Dropdown>
-              :
+            ) : (
               <Button
                 className="text-sm font-normal text-default-600 bg-default-100"
                 variant="flat"
@@ -95,12 +95,11 @@ export const Navbar = () => {
               >
                 Iniciar sesion
               </Button>
-            }
-
+            )}
           </NavbarItem>
 
           <NavbarItem className="flex md:hidden">
-            {!status === 'authenticated' ?
+            {!status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
                   <Button
@@ -112,30 +111,25 @@ export const Navbar = () => {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Dynamic Actions">
-
-                  <DropdownItem
-                    color={"default"}
-                    className={""}
-                  >
+                  <DropdownItem className={""} color={"default"}>
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 "
-                      href={'/profile'}
+                      href={"/profile"}
                     >
                       Ver perfil
                     </Link>
                   </DropdownItem>
                   <DropdownItem
-                    color={"danger"}
                     className={"text-danger"}
+                    color={"danger"}
                     onClick={signOut}
                   >
                     Cerrar sesion
                   </DropdownItem>
                 </DropdownMenu>
-
               </Dropdown>
-              :
+            ) : (
               <Button
                 className="text-sm font-normal text-default-600 bg-default-100"
                 variant="flat"
@@ -143,10 +137,8 @@ export const Navbar = () => {
               >
                 Iniciar sesion
               </Button>
-            }
-
+            )}
           </NavbarItem>
-
         </NavbarContent>
 
         <NavbarMenu>
@@ -171,22 +163,21 @@ export const Navbar = () => {
           </div>
         </NavbarMenu>
       </NextUINavbar>
-      <Login isOpen={isOpen} onOpenChange={onOpenChange}></Login>
+      <Login isOpen={isOpen} onOpenChange={onOpenChange} />
     </>
   );
 };
 
-
 const Login = ({ isOpen, onOpenChange }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [success, setSucces] = useState(false)
-  const [error, setError] = useState(false)
+  const [success, setSucces] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleSubmit = () => {
     try {
-      signIn('credentials', { username, password })
-      setSucces(true)
+      signIn("credentials", { username, password });
+      setSucces(true);
 
       setTimeout(() => {
         setUsername("");
@@ -194,17 +185,15 @@ const Login = ({ isOpen, onOpenChange }) => {
         setSucces(false);
         onOpenChange();
       }, 1000);
-
     } catch (error) {
-      setError(true)
+      setError(true);
     }
-
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
+    <Modal isOpen={isOpen} size="xl" onOpenChange={onOpenChange}>
       <ModalContent>
-        {(onClose) => (
+        {() => (
           <>
             <ModalHeader>
               <h4>Iniciar sesion</h4>
@@ -215,9 +204,9 @@ const Login = ({ isOpen, onOpenChange }) => {
                 color="primary"
                 radius="none"
                 size="md"
-                variant={"solid"}
-                onPress={() => signIn('google')}
                 startContent={<FaGoogle />}
+                variant={"solid"}
+                onPress={() => signIn("google")}
               >
                 Google
               </Button>
@@ -231,25 +220,33 @@ const Login = ({ isOpen, onOpenChange }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <NextLink className="text-blue-400" href={'#'}>Olvidaste tu contrasena?</NextLink>
-              <NextLink className="flex justify-start items-center gap-1" href="/register">No tienes cuenta? <p className="text-blue-400"
-                onClick={onOpenChange}
-              >Registrate aqui!</p></NextLink>
+              <NextLink className="text-blue-400" href={"#"}>
+                Olvidaste tu contrasena?
+              </NextLink>
+              <NextLink
+                className="flex justify-start items-center gap-1"
+                href="/register"
+              >
+                No tienes cuenta?{" "}
+                <Button className="text-blue-400" onClick={onOpenChange}>
+                  Registrate aqui!
+                </Button>
+              </NextLink>
             </ModalBody>
 
             <ModalFooter>
               <Button auto flat color="error" onPress={onOpenChange}>
                 Cancelar
               </Button>
-              {success ?
+              {success ? (
                 <Button color="success" startContent={<FaCheckCircle />}>
                   Listo
                 </Button>
-                :
+              ) : (
                 <Button auto onPress={handleSubmit}>
                   Ingresar
                 </Button>
-              }
+              )}
             </ModalFooter>
           </>
         )}

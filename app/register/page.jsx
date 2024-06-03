@@ -1,33 +1,34 @@
-'use client';
-import { title } from "@/components/primitives";
-import { Button, Card, CardBody, CardFooter, CardHeader, Input } from "@nextui-org/react";
-import Link from "next/link";
+"use client";
+import { Button, Card, CardBody, Input } from "@nextui-org/react";
 import { useState } from "react";
-import { FaCheckCircle, FaGoogle } from "react-icons/fa";
-import { create } from "../actions/users";
+import { FaCheckCircle } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { signIn } from "next-auth/react";
+
+import { create } from "../actions/users";
+
+import { title } from "@/components/primitives";
 
 export default function LoginPage() {
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState(false)
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
   const [data, setData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    accountname: '',
-    username: ''
+    email: "",
+    password: "",
+    confirmPassword: "",
+    accountname: "",
+    username: "",
   });
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     let newValue = value;
-    if (name === 'email' || name === 'username') {
-      newValue = value.replace(/\s+/g, '').toLowerCase()
+
+    if (name === "email" || name === "username") {
+      newValue = value.replace(/\s+/g, "").toLowerCase();
     }
 
     setData((prevData) => ({
@@ -36,22 +37,21 @@ export default function LoginPage() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async () => {
     try {
-      const res = await create(data)
-      if (res.error) return toast.error(res.error)
+      const res = await create(data);
+
+      if (res.error) return toast.error(res.error);
       if (res.ok) {
-        setSuccess(true)
-        setError(false)
+        setSuccess(true);
+        setError(false);
         setTimeout(() => {
-          router.push('/login')
+          router.push("/login");
         }, 1000);
       }
-      if (res.error)
-        setError(res.error)
-
+      if (res.error) setError(res.error);
     } catch (error) {
-      console.error('Error de red:', error);
+      console.error("Error de red:", error);
     }
   };
 
@@ -59,7 +59,7 @@ export default function LoginPage() {
     <div className="w-full">
       <h1 className={title()}>Registrarse</h1>
       <Card className="mb-4 w-full my-5">
-       {/*  <CardHeader className="justify-center">
+        {/*  <CardHeader className="justify-center">
           <div className="flex gap-5 w-full">
             <div className="flex flex-col gap-1 items-center justify-center w-full my-2">
               <h5 className="text-small tracking-tight text-default-400">Crear tu cuenta con Google</h5>
@@ -88,81 +88,76 @@ export default function LoginPage() {
 
           <Input
             isRequired
-            type="email"
-            name="email"
+            className="max-w-xs"
             label="Email"
-            className="max-w-xs"
-            variant="faded"
+            name="email"
+            type="email"
             value={data.email}
+            variant="faded"
             onChange={handleChange}
           />
           <Input
             isRequired
-            type="password"
-            name="password"
+            className="max-w-xs"
             label="Contraseña"
-            className="max-w-xs"
-            variant="faded"
-            value={data.password}
-            onChange={handleChange}
-          />
-          <Input
-            isRequired
+            name="password"
             type="password"
-            name="confirmPassword"
+            value={data.password}
+            variant="faded"
+            onChange={handleChange}
+          />
+          <Input
+            isRequired
+            className="max-w-xs"
             label="Repite tu contraseña"
-            className="max-w-xs"
-            variant="faded"
+            name="confirmPassword"
+            type="password"
             value={data.confirmPassword}
+            variant="faded"
             onChange={handleChange}
           />
           <Input
             isRequired
-            type="text"
-            name="accountname"
+            className="max-w-xs"
             label="Nombre de cuenta"
-            className="max-w-xs"
-            variant="faded"
+            name="accountname"
+            type="text"
             value={data.accountname}
+            variant="faded"
             onChange={handleChange}
           />
           <Input
             isRequired
-            type="text"
-            name="username"
-            label="Nombre de usuario"
             className="max-w-xs"
-            variant="faded"
-            startContent={'@'}
+            label="Nombre de usuario"
+            name="username"
+            startContent={"@"}
+            type="text"
             value={data.username}
+            variant="faded"
             onChange={handleChange}
           />
-          {
-            error &&
-            <h5 className="text-red-600">Ocurrio un error: {error}</h5>
-          }
+          {error && <h5 className="text-red-600">Ocurrio un error: {error}</h5>}
 
-
-          {success ?
+          {success ? (
             <Button
+              className="w-full max-w-xs mb-5 mt-2"
               color="success"
               startContent={<FaCheckCircle />}
-              className="w-full max-w-xs mb-5 mt-2"
-              onClick={() => router.push('/login')}
+              onClick={() => router.push("/login")}
             >
               Listo
             </Button>
-            :
+          ) : (
             <Button
-              onPress={handleSubmit}
+              className="w-full max-w-xs mb-5 mt-2"
               color="primary"
               size="md"
-              className="w-full max-w-xs mb-5 mt-2"
+              onPress={handleSubmit}
             >
               Registrarse
             </Button>
-          }
-
+          )}
         </CardBody>
       </Card>
     </div>

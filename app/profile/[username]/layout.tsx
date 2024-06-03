@@ -5,9 +5,7 @@ export default function BlogLayout({
 }) {
   return (
     <section className="flex flex-col items-center justify-center gap-4 md:py-10">
-      <div className="flex text-center justify-center w-full">
-        {children}
-      </div>
+      <div className="flex text-center justify-center w-full">{children}</div>
     </section>
   );
 }

@@ -6,7 +6,7 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
+		"lint": "eslint . --ext .ts,.tsx,.js,.jsx -c .eslintrc.json --fix"
 	},
 	"dependencies": {
 		"@nextui-org/button": "^2.0.31",

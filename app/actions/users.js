@@ -1,139 +1,177 @@
-'use server'
-import { getServerSession } from 'next-auth'
-import conn from '../lib/db'
-import bcrypt from 'bcryptjs'
-import { authOptions } from '../api/auth/[...nextauth]/route'
+"use server";
+import { getServerSession } from "next-auth";
+import bcrypt from "bcryptjs";
+
+import conn from "../lib/db";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 const getMyUser = async () => {
-    const session = await getServerSession(authOptions)
-    if (!session || !session.user.email) return { error: 'Ocurrio un error!' }
+  const session = await getServerSession(authOptions);
 
-    const { rows: result } = await conn.query(
-        'SELECT * FROM users WHERE email=$1',
-        [session.user.email]
-    );
+  if (!session || !session.user.email) return { error: "Ocurrio un error!" };
 
-    const user = result[0]
-    return user
-}
+  const { rows: result } = await conn.query(
+    "SELECT * FROM users WHERE email=$1",
+    [session.user.email],
+  );
 
-export async function create({ email, password, confirmPassword, accountname, username }) {
-    try {
-        if (!email || !password || !confirmPassword || !accountname || !username)
-            return { error: 'Debe completar todos los campos' }
+  const user = result[0];
 
-        if (password !== confirmPassword)
-            return { error: 'Las contrasenas no coinciden' }
+  return user;
+};
 
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const lowerEmail = email.toLowerCase()
-        const lowerUsername = username.toLowerCase()
+export async function create({
+  email,
+  password,
+  confirmPassword,
+  accountname,
+  username,
+}) {
+  try {
+    if (!email || !password || !confirmPassword || !accountname || !username)
+      return { error: "Debe completar todos los campos" };
 
-        const { rows: usersByUsername } = await conn.query(`
+    if (password !== confirmPassword)
+      return { error: "Las contrasenas no coinciden" };
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const lowerEmail = email.toLowerCase();
+    const lowerUsername = username.toLowerCase();
+
+    const { rows: usersByUsername } = await conn.query(
+      `
         select u.user_id
         from users u
         where u.username = $1
-        `, [lowerUsername])
+        `,
+      [lowerUsername],
+    );
 
-        if (usersByUsername[0]) return { error: 'Este nombre de usuario ya se encuentra en uso' }
+    if (usersByUsername[0])
+      return { error: "Este nombre de usuario ya se encuentra en uso" };
 
-        await conn.query(`
+    await conn.query(
+      `
         insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4)
-        `, [lowerEmail, hashedPassword, accountname, lowerUsername])
-        return { ok: true }
+        `,
+      [lowerEmail, hashedPassword, accountname, lowerUsername],
+    );
 
-    } catch (error) {
-        console.log("🚀 ~ get ~ error:", error)
-        return { error: 'Error inesperado' }
-    }
+    return { ok: true };
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
+
+    return { error: "Error inesperado" };
+  }
 }
 
 export async function getUserByUsername(username) {
-    const user = await getMyUser();
+  const user = await getMyUser();
 
-    try {
-        const { rows: data } = await conn.query(`
+  try {
+    const { rows: data } = await conn.query(
+      `
         select u.user_id, u.username, u.accountname, u.email, u.img, u.about
         from users u
         where u.username = $1
-        `, [username])
+        `,
+      [username],
+    );
 
-        if (data[0]) {
-            const profile = { ...data[0], myProfile: false }
+    if (data[0]) {
+      const profile = { ...data[0], myProfile: false };
 
-            if (profile.email === user.email) {
-                profile.myProfile = true
-            }
+      if (profile.email === user.email) {
+        profile.myProfile = true;
+      }
 
-            const { rows: follows } = await conn.query(`
+      const { rows: follows } = await conn.query(
+        `
                 select * from follows f where f.follower_id = $1 and f.followed_id =$2
-            `, [user.user_id, profile.user_id])
+            `,
+        [user.user_id, profile.user_id],
+      );
 
-            profile.isFollow = !!follows[0]
+      profile.isFollow = !!follows[0];
 
-            return profile
-        }
-        else {
-            return { error: true }
-        }
-    } catch (error) {
-        console.log("🚀 ~ get ~ error:", error)
+      return profile;
+    } else {
+      return { error: true };
     }
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
+  }
 }
 
 export async function updateUser({ accountName, about, img }) {
-    const session = await getServerSession(authOptions)
-    try {
-        if (!accountName)
-            return { error: 'Debe Ingresar su nombre' }
+  const session = await getServerSession(authOptions);
 
-        const { rows: users } = await conn.query(`
+  try {
+    if (!accountName) return { error: "Debe Ingresar su nombre" };
+
+    const { rows: users } = await conn.query(
+      `
         select * from users 
         where email = $1
-        `, [session.user.email])
+        `,
+      [session.user.email],
+    );
 
-        await conn.query(`
+    await conn.query(
+      `
         update users set 
         accountname = $1,
         about = $2,
         img = $3
         where user_id = $4
-        `, [accountName, about, img, users[0].user_id])
+        `,
+      [accountName, about, img, users[0].user_id],
+    );
 
-        return { ok: true }
+    return { ok: true };
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
 
-    } catch (error) {
-        console.log("🚀 ~ get ~ error:", error)
-        return { error: 'Error inesperado' }
-    }
+    return { error: "Error inesperado" };
+  }
 }
 
 export async function follow(user_id) {
-    const user = await getMyUser();
-    if (user.error) return { error: 'Debe iniciar sesion!' }
-    try {
-        await conn.query(`
-        insert into follows(follower_id,followed_id) values($1,$2)
-        `, [user.user_id, user_id])
+  const user = await getMyUser();
 
-        return { ok: true }
-    } catch (error) {
-        console.log("🚀 ~ get ~ error:", error)
-        return { error: 'Error inesperado' }
-    }
+  if (user.error) return { error: "Debe iniciar sesion!" };
+  try {
+    await conn.query(
+      `
+        insert into follows(follower_id,followed_id) values($1,$2)
+        `,
+      [user.user_id, user_id],
+    );
+
+    return { ok: true };
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
+
+    return { error: "Error inesperado" };
+  }
 }
 
 export async function unfollow(user_id) {
-    const user = await getMyUser();
-    if (user.error) return { error: 'Debe iniciar sesion!' }
-    try {
-        await conn.query(`
-        delete from follows where follower_id = $1 and followed_id = $2
-        `, [user.user_id, user_id])
+  const user = await getMyUser();
 
-        return { ok: true }
-    } catch (error) {
-        console.log("🚀 ~ get ~ error:", error)
-        return { error: 'Error inesperado' }
-    }
+  if (user.error) return { error: "Debe iniciar sesion!" };
+  try {
+    await conn.query(
+      `
+        delete from follows where follower_id = $1 and followed_id = $2
+        `,
+      [user.user_id, user_id],
+    );
+
+    return { ok: true };
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
+
+    return { error: "Error inesperado" };
+  }
 }

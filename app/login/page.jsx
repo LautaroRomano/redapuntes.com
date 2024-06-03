@@ -1,61 +1,71 @@
-'use client';
-import { Button, Card, CardBody, CardFooter, CardHeader, Input, Link, Spinner } from "@nextui-org/react";
+"use client";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Input,
+  Link,
+  Spinner,
+} from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { FaCheckCircle, FaGoogle } from "react-icons/fa";
 import NextLink from "next/link";
-import { title } from "@/components/primitives";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
+import { title } from "@/components/primitives";
+
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [success, setSucces] = useState(false)
-  const [error, setError] = useState(false)
+  const [success, setSucces] = useState(false);
+  const [error, setError] = useState(false);
 
-  const router = useRouter()
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const param1 = searchParams.get('error');
+    const param1 = searchParams.get("error");
 
-    if (param1) toast.error(param1, { autoClose: false })
+    if (param1) toast.error(param1, { autoClose: false });
 
     // Puedes usar los parámetros según sea necesario
   }, [searchParams]);
 
-  const { data: session, status } = useSession()
+  const { status } = useSession();
 
   useEffect(() => {
-    if (status === 'authenticated') router.push('/')
-  }, [status])
+    if (status === "authenticated") router.push("/");
+  }, [status]);
 
   const handleSubmit = async () => {
     try {
-      await signIn('credentials', { username, password })
-      setSucces(true)
+      await signIn("credentials", { username, password });
+      setSucces(true);
     } catch (error) {
-      console.log("🚀 ~ handleSubmit ~ error:", error)
-      setError(true)
+      console.log("🚀 ~ handleSubmit ~ error:", error);
+      setError(true);
     }
   };
 
-  if (status === 'loading')
+  if (status === "loading")
     return (
       <div className="flex justify-center items-center w-full gap-4 flex-col">
         <Spinner />
-        <h1 className={''}>Cargando...</h1>
+        <h1 className={""}>Cargando...</h1>
       </div>
-    )
+    );
 
-  if (status === 'authenticated')
+  if (status === "authenticated")
     return (
       <div className="flex justify-center items-center w-full gap-4 flex-col">
         <Spinner />
-        <h1 className={''}>Usted ya inicio sesion, Redirigiendo...</h1>
+        <h1 className={""}>Usted ya inicio sesion, Redirigiendo...</h1>
       </div>
-    )
+    );
 
   return (
     <div className="w-full">
@@ -64,22 +74,24 @@ export default function LoginPage() {
         <CardHeader className="justify-center">
           <div className="flex gap-5 w-full">
             <div className="flex flex-col gap-1 items-center justify-center w-full my-2">
-              <h5 className="text-small tracking-tight text-default-400">Ingresa con Google</h5>
+              <h5 className="text-small tracking-tight text-default-400">
+                Ingresa con Google
+              </h5>
               <Button
                 className={""}
                 color="primary"
                 radius="none"
                 size="md"
-                variant={"solid"}
-                onPress={() => signIn('google')}
                 startContent={<FaGoogle />}
+                variant={"solid"}
+                onPress={() => signIn("google")}
               >
                 Google
               </Button>
               <div className="flex w-full items-center gap-2">
-                <div className="bg-gray-600 h-[1px] w-full"></div>
+                <div className="bg-gray-600 h-[1px] w-full" />
                 <h5>O</h5>
-                <div className="bg-gray-600 h-[1px] w-full"></div>
+                <div className="bg-gray-600 h-[1px] w-full" />
               </div>
             </div>
           </div>
@@ -88,8 +100,8 @@ export default function LoginPage() {
         <CardBody className="px-3 pt-0 text-small text-default-400 items-center gap-2">
           <Input
             placeholder="Usuario o email"
+            startContent={"@"}
             value={username}
-            startContent={'@'}
             onChange={(e) => setUsername(e.target.value)}
           />
           <Input
@@ -98,40 +110,41 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          {
-            error &&
-            <h5 className="text-red-600">Ocurrio un error: {error}</h5>
-          }
+          {error && <h5 className="text-red-600">Ocurrio un error: {error}</h5>}
 
-          {success ?
+          {success ? (
             <Button
               as={Link}
-              href="/"
-              color="success"
-              startContent={<FaCheckCircle />}
               className="w-full max-w-xs mb-5 mt-2"
+              color="success"
+              href="/"
+              startContent={<FaCheckCircle />}
             >
               Listo
             </Button>
-            :
+          ) : (
             <Button
-              onPress={handleSubmit}
+              className="w-full max-w-xs mb-5 mt-2"
               color="primary"
               size="md"
-              className="w-full max-w-xs mb-5 mt-2"
+              onPress={handleSubmit}
             >
               Iniciar sesion
             </Button>
-          }
+          )}
 
-          <NextLink className="text-blue-400" href={'#'}>Olvidaste tu contrasena?</NextLink>
-          <NextLink className="flex justify-start items-center gap-1" href="/register">No tienes cuenta? <p className="text-blue-400">Registrate aqui!</p></NextLink>
-
-
+          <NextLink className="text-blue-400" href={"#"}>
+            Olvidaste tu contrasena?
+          </NextLink>
+          <NextLink
+            className="flex justify-start items-center gap-1"
+            href="/register"
+          >
+            No tienes cuenta? <p className="text-blue-400">Registrate aqui!</p>
+          </NextLink>
         </CardBody>
-        <CardFooter></CardFooter>
-
-      </Card >
+        <CardFooter />
+      </Card>
     </div>
   );
 }

@@ -1,20 +1,23 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { get, searchPosts } from "./actions/posts";
-import CreatePost from '../components/main/CreatePost';
-import RenderPostsList from '../components/RenderPostsList';
 import { Input } from "@nextui-org/input";
-import { SearchIcon } from "@/components/icons";
 import { Button } from "@nextui-org/button";
-import { Select, SelectItem, Spinner } from "@nextui-org/react";
+import { Select, SelectItem } from "@nextui-org/react";
 import { toast } from "react-toastify";
-import _ from 'lodash';
-import PostSkeleton from '../components/PostSkeleton'
+import _ from "lodash";
+
+import RenderPostsList from "../components/RenderPostsList";
+import CreatePost from "../components/main/CreatePost";
+import PostSkeleton from "../components/PostSkeleton";
+
+import { get, searchPosts } from "./actions/posts";
+
+import { SearchIcon } from "@/components/icons";
 
 export default function Home() {
   const [postsList, setPostList] = useState([]);
-  const [selectView, setSelectView] = useState(new Set(['Todo']));
-  const [search, setSearch] = useState('');
+  const [selectView, setSelectView] = useState(new Set(["Todo"]));
+  const [search, setSearch] = useState("");
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
@@ -26,19 +29,20 @@ export default function Home() {
   const getPosts = async (type, newOffset = 0) => {
     try {
       setLoading(true);
-      setIsSearch(false)
-      setEndPosts(false)
+      setIsSearch(false);
+      setEndPosts(false);
 
       const data = await get(type, LIMIT, newOffset);
+
       if (data.error) {
         setLoading(false);
-        toast.error(data.error)
+        toast.error(data.error);
       }
       if (newOffset === 0) {
-        if (data.length < 10) setEndPosts(true)
+        if (data.length < 10) setEndPosts(true);
         setPostList(data);
       } else {
-        if (data.length < 10) setEndPosts(true)
+        if (data.length < 10) setEndPosts(true);
         setPostList((prevPosts) => [...prevPosts, ...data]);
       }
       setOffset(newOffset);
@@ -51,30 +55,34 @@ export default function Home() {
 
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
+
     getPosts(selectedValue);
   }, []);
 
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
+
     getPosts(selectedValue);
-    if (search.length > 0) setSearch('');
+    if (search.length > 0) setSearch("");
   }, [selectView]);
 
   const handleSearch = async (newOffset = 0) => {
-    setLoading(true)
-    setIsSearch(true)
-    setEndPosts(false)
+    setLoading(true);
+    setIsSearch(true);
+    setEndPosts(false);
     try {
       const data = await searchPosts(search, LIMIT, newOffset);
+
       if (data.error) {
         setLoading(false);
+
         return toast.error(data.error);
       }
       if (newOffset === 0) {
-        if (data.length < 10) setEndPosts(true)
+        if (data.length < 10) setEndPosts(true);
         setPostList(data);
       } else {
-        if (data.length < 10) setEndPosts(true)
+        if (data.length < 10) setEndPosts(true);
         setPostList((prevPosts) => [...prevPosts, ...data]);
       }
       setOffset(newOffset);
@@ -88,9 +96,15 @@ export default function Home() {
   const handleScroll = _.debounce(() => {
     if (elementScroll.current) {
       const myElement = elementScroll.current;
-      if ((myElement.scrollTop + myElement.clientHeight) >= (myElement.scrollHeight - 150) && !loading) {
+
+      if (
+        myElement.scrollTop + myElement.clientHeight >=
+          myElement.scrollHeight - 150 &&
+        !loading
+      ) {
         if (!isSearch && !endPosts) {
           const selectedValue = Array.from(selectView)[0];
+
           getPosts(selectedValue, offset + LIMIT);
         } else if (!endPosts) {
           handleSearch(offset + LIMIT);
@@ -101,23 +115,27 @@ export default function Home() {
 
   useEffect(() => {
     const myElement = elementScroll.current;
+
     if (myElement) {
-      myElement.addEventListener('scroll', handleScroll);
-      return () => myElement.removeEventListener('scroll', handleScroll);
+      myElement.addEventListener("scroll", handleScroll);
+
+      return () => myElement.removeEventListener("scroll", handleScroll);
     }
   }, [offset, loading, selectView]);
 
   return (
-    <section className="flex flex-col items-center w-full" id="scroll" ref={elementScroll} style={{ overflowY: 'auto', maxHeight: '90vh' }}>
+    <section
+      ref={elementScroll}
+      className="flex flex-col items-center w-full"
+      id="scroll"
+      style={{ overflowY: "auto", maxHeight: "90vh" }}
+    >
       <div className="mt-0 gap-4 w-full rounded-md max-w-xl">
         <div className="flex mb-4 flex-col sm:flex-row justify-between gap-4">
           <div className="flex w-full sm:w-40">
-            <Select
-              selectedKeys={selectView}
-              onSelectionChange={setSelectView}
-            >
-              {['Todo', 'Siguiendo'].map((option) => (
-                <SelectItem value={option} key={option}>
+            <Select selectedKeys={selectView} onSelectionChange={setSelectView}>
+              {["Todo", "Siguiendo"].map((option) => (
+                <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
               ))}
@@ -144,10 +162,10 @@ export default function Home() {
             />
             <Button
               isIconOnly
-              onClick={() => handleSearch()}
+              className={search.length <= 1 ? "" : "cursor-pointer"}
+              color={search.length <= 1 ? "default" : "primary"}
               disabled={search.length <= 1}
-              color={search.length <= 1 ? 'default' : "primary"}
-              className={search.length <= 1 ? '' : "cursor-pointer"}
+              onClick={() => handleSearch()}
             >
               <SearchIcon className="text-base text-white pointer-events-none flex-shrink-0" />
             </Button>
@@ -155,10 +173,7 @@ export default function Home() {
         </div>
         <CreatePost />
         <RenderPostsList postsList={postsList} />
-        {
-          !endPosts &&
-          <PostSkeleton />
-        }
+        {!endPosts && <PostSkeleton />}
       </div>
     </section>
   );
