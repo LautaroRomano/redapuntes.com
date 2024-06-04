@@ -58,22 +58,42 @@ const NewPost = ({ isOpen, onOpenChange }) => {
   const handleFileChange = async (event) => {
     setLoading(true);
     const selectedFiles = Array.from(event.target.files);
+    const filesList = [];
 
+    if ((files.length + selectedFiles.length) > 5) {
+      setLoading(false);
+      return setError("Puedes subir un maximo de 5 archivos");
+    }
+
+    for (const file of selectedFiles) {
+      if ((file.size / 1000) < 25000)
+        filesList.push({
+          ...file,
+          file_name: file.name,
+          file_type: file.type,
+        });
+      else setError("Tamaño maximo 25MB");
+    }
+    setFiles((prevFiles) => [...prevFiles, ...filesList]);
+    setLoading(false);
+
+    //setError("Ocurrio un error inesperado!");
+  };
+
+  const handleFilesUpdate = async (event) => {
     try {
-      const files = [];
+      const filesList = [];
 
-      for (const file of selectedFiles) {
+      for (const file of files) {
         const url = await uploadFile(file);
 
         if (url.error) return toast.error(res.error);
-        files.push({
-          file_name: file.name,
+        filesList.push({
+          ...file,
           file_path: url,
-          file_type: file.type,
         });
       }
-      setFiles((prevFiles) => [...prevFiles, ...files]);
-      setLoading(false);
+      return filesList
     } catch (error) {
       setLoading(false);
       console.error(error);
@@ -88,6 +108,9 @@ const NewPost = ({ isOpen, onOpenChange }) => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
+      const files = await handleFilesUpdate()
+      console.log("🚀 ~ handleSubmit ~ files:", files)
+      
       const res = await create(content, files);
 
       if (res.error) {
@@ -146,7 +169,7 @@ const NewPost = ({ isOpen, onOpenChange }) => {
                       variant="ghost"
                       onClick={() => {
                         setFiles((prev) =>
-                          prev.filter((f) => f.file_path === file.file_path),
+                          prev.filter((f) => f.file_name === file.file_name),
                         );
                       }}
                     >
