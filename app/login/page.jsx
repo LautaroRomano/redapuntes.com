@@ -42,6 +42,7 @@ function LoginPage() {
   }, [status]);
 
   const handleSubmit = async () => {
+    if (username.length === 0 || password.length === 0) return
     try {
       await signIn("credentials", { username, password });
       setSucces(true);
@@ -128,6 +129,7 @@ function LoginPage() {
               color="primary"
               size="md"
               onPress={handleSubmit}
+              disabled={username.length === 0 || password.length === 0}
             >
               Iniciar sesion
             </Button>
@@ -150,7 +152,9 @@ function LoginPage() {
 }
 
 export default function Home() {
-  <Suspense>
-    <LoginPage />
-  </Suspense>
+  return (
+    <Suspense>
+      <LoginPage />
+    </Suspense>
+  )
 }

@@ -176,6 +176,7 @@ const Login = ({ isOpen, onOpenChange }) => {
   const [error, setError] = useState(false);
 
   const handleSubmit = () => {
+    if (username.length === 0 || password.length === 0) return
     try {
       signIn("credentials", { username, password });
       setSucces(true);
@@ -215,6 +216,7 @@ const Login = ({ isOpen, onOpenChange }) => {
                 placeholder="Usuario o email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                startContent={"@"}
               />
               <Input
                 placeholder="Contrasena"
@@ -244,7 +246,7 @@ const Login = ({ isOpen, onOpenChange }) => {
                   Listo
                 </Button>
               ) : (
-                <Button auto onPress={handleSubmit}>
+                <Button auto onPress={handleSubmit} disabled={username.length === 0 || password.length === 0}>
                   Ingresar
                 </Button>
               )}
