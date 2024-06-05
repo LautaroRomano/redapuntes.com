@@ -69,8 +69,7 @@ const authOptions = {
             return user;
           }
         }
-
-        return null;
+        throw new Error('Invalid credentials');
       },
     }),
   ],
@@ -84,12 +83,7 @@ const authOptions = {
         return !!user;
       }
       return false;
-    },
-    async redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
-    },
+    }
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
