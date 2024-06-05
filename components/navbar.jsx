@@ -44,10 +44,10 @@ export const Navbar = () => {
               href="/"
             >
               <div className="font-bold hidden md:flex">
-                <Image src="/logo-lg.png" className="cover max-h-6 rounded-none" isBlurred />
+                <Image src="/logo-lg.webp" className="cover max-h-6 rounded-none" isBlurred />
               </div>
               <div className="font-bold flex md:hidden">
-                <Image src="/RA.png" className="cover max-h-5 rounded-none" isBlurred />
+                <Image src="/RA.webp" className="cover max-h-5 rounded-none" isBlurred />
               </div>
             </NextLink>
           </NavbarBrand>

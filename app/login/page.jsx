@@ -147,6 +147,7 @@ function LoginPage() {
         </CardBody>
         <CardFooter />
       </Card>
+      <p>Si nesecitas recuperar tu contraseña, contactate con <span>info.redapuntes@gmail.com</span></p>
     </div>
   );
 }

@@ -63,7 +63,7 @@ const authOptions = {
       },
       authorize: async (credentials) => {
         if (credentials) {
-          const user = await getUser(credentials.email, credentials.password);
+          const user = await getUser(credentials.username, credentials.password);
 
           if (user) {
             return user;
@@ -79,7 +79,7 @@ const authOptions = {
         const user = await getUserGoogle(profile.email);
         return !!user;
       } else if (account.provider === "credentials") {
-        const user = await getUser(credentials.email, credentials.password);
+        const user = await getUser(credentials.username, credentials.password);
         return !!user;
       }
       return false;

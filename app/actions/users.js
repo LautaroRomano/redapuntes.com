@@ -46,9 +46,20 @@ export async function create({
         `,
       [lowerUsername],
     );
+    const { rows: usersByEmail } = await conn.query(
+      `
+        select u.user_id
+        from users u
+        where u.email = $1
+        `,
+      [lowerEmail],
+    );
 
     if (usersByUsername[0])
       return { error: "Este nombre de usuario ya se encuentra en uso" };
+
+    if (usersByEmail[0])
+      return { error: "Este email ya se encuentra en uso" };
 
     await conn.query(
       `
