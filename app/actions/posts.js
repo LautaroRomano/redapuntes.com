@@ -45,9 +45,7 @@ export async function create(content, files) {
 
     for (const file of files) {
       await conn.query(
-        `
-            insert into pdf_files(post_id,file_name,file_path,file_type) values($1,$2,$3,$4)
-            `,
+        `insert into pdf_files(post_id,file_name,file_path,file_type) values($1,$2,$3,$4)`,
         [insertedPostId, file.file_name, file.file_path, file.file_type],
       );
     }
