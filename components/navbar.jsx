@@ -292,7 +292,7 @@ function InfoPopover() {
               target="_blank"
               href="/privacy"
             >
-              <p className="me-2">Politicas de privacidad</p>
+              <p className="me-2">Políticas de privacidad</p>
               <FaExternalLinkAlt />
             </Link>
           </div>
@@ -303,7 +303,7 @@ function InfoPopover() {
               target="_blank"
               href="/terms"
             >
-              <p className="me-2">Terminos y condiciones</p>
+              <p className="me-2">Términos y condiciones</p>
               <FaExternalLinkAlt />
             </Link>
           </div>

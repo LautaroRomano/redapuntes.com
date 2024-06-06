@@ -1,5 +1,5 @@
-"use client";
-import { Button, Card, CardBody, Input } from "@nextui-org/react";
+'use client'
+import { Button, Card, CardBody, Input, Checkbox, Link } from "@nextui-org/react";
 import { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ export default function LoginPage() {
     accountname: "",
     username: "",
   });
+  const [termsAccepted, setTermsAccepted] = useState(false); // Estado para el checkbox
 
   const router = useRouter();
 
@@ -59,30 +60,6 @@ export default function LoginPage() {
     <div className="w-full">
       <h1 className={title()}>Registrarse</h1>
       <Card className="mb-4 w-full my-5">
-        {/*  <CardHeader className="justify-center">
-          <div className="flex gap-5 w-full">
-            <div className="flex flex-col gap-1 items-center justify-center w-full my-2">
-              <h5 className="text-small tracking-tight text-default-400">Crear tu cuenta con Google</h5>
-              <Button
-                className={""}
-                color="primary"
-                radius="none"
-                size="md"
-                variant={"solid"}
-                onPress={() => signIn('google')}
-                startContent={<FaGoogle />}
-              >
-                Google
-              </Button>
-              <div className="flex w-full items-center gap-2">
-                <div className="bg-gray-600 h-[1px] w-full"></div>
-                <h5>O</h5>
-                <div className="bg-gray-600 h-[1px] w-full"></div>
-              </div>
-            </div>
-          </div>
-        </CardHeader> */}
-
         <CardBody className="px-3 py-2 text-small text-default-400 items-center gap-2">
           <p>Completa este formulario de registro</p>
 
@@ -137,6 +114,32 @@ export default function LoginPage() {
             variant="faded"
             onChange={handleChange}
           />
+
+          <Checkbox
+            className="max-w-xs text-sm"
+            isSelected={termsAccepted}
+            onChange={() => setTermsAccepted(!termsAccepted)}
+          >
+            Acepto los
+            <Link
+              color={'primary'}
+              target="_blank"
+              href="/privacy"
+              className="mx-1"
+            >
+              términos y condiciones
+            </Link>
+            <br />y las
+            <Link
+              color={'primary'}
+              target="_blank"
+              href="/privacy"
+              className="mx-1"
+            >
+              políticas de privacidad
+            </Link>
+          </Checkbox>
+
           {error && <h5 className="text-red-600">Ocurrio un error: {error}</h5>}
 
           {success ? (
@@ -154,6 +157,7 @@ export default function LoginPage() {
               color="primary"
               size="md"
               onPress={handleSubmit}
+              isDisabled={!termsAccepted} // Deshabilitar el botón si no se aceptan los términos
             >
               Registrarse
             </Button>
