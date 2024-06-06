@@ -11,7 +11,7 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
 import NextLink from "next/link";
-import { FaCheckCircle, FaGoogle, FaUser } from "react-icons/fa";
+import { FaCheckCircle, FaExternalLinkAlt, FaGoogle, FaUser } from "react-icons/fa";
 import { signIn, signOut, useSession } from "next-auth/react";
 import {
   Dropdown,
@@ -26,13 +26,27 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 
 import { siteConfig } from "@/config/site";
+import { getMyUser } from "@/app/actions/users";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+
 
 export const Navbar = () => {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const { isOpen, onOpenChange } = useDisclosure();
+  const [user, setUser] = useState(null)
+
+  const getUser = async () => {
+    const user = await getMyUser()
+    if (user && !user.error) setUser(user)
+  }
+
+  useEffect(() => {
+    if (status === 'authenticated') getUser()
+  }, [status])
 
   return (
     <>
@@ -57,7 +71,8 @@ export const Navbar = () => {
           {/*  <NavbarItem className="hidden sm:flex gap-2">
             <ThemeSwitch />
           </NavbarItem> */}
-          <NavbarItem className="hidden md:flex">
+          <NavbarItem className="hidden md:flex gap-2">
+            <InfoPopover />
             {status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
@@ -74,7 +89,7 @@ export const Navbar = () => {
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 "
-                      href={"/profile"}
+                      href={user ? `/profile/${user.username}` : '/profile'}
                     >
                       Ver perfil
                     </Link>
@@ -99,7 +114,8 @@ export const Navbar = () => {
             )}
           </NavbarItem>
 
-          <NavbarItem className="flex md:hidden">
+          <NavbarItem className="flex md:hidden gap-2">
+            <InfoPopover />
             {!status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
@@ -116,7 +132,7 @@ export const Navbar = () => {
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 "
-                      href={"/profile"}
+                      href={user ? `/profile/${user.username}` : '/profile'}
                     >
                       Ver perfil
                     </Link>
@@ -257,3 +273,43 @@ const Login = ({ isOpen, onOpenChange }) => {
     </Modal>
   );
 };
+
+
+function InfoPopover() {
+  return (
+    <Popover placement="bottom" showArrow={true}>
+      <PopoverTrigger>
+        <Button isIconOnly className="text-lg">
+          <IoMdInformationCircleOutline />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <div className="px-1 py-2">
+          <div className="text-small m-2">
+            <Link
+              color={'foreground'}
+              size="sm"
+              target="_blank"
+              href="/privacy"
+            >
+              <p className="me-2">Politicas de privacidad</p>
+              <FaExternalLinkAlt />
+            </Link>
+          </div>
+          <div className="text-small m-2">
+            <Link
+              color={'foreground'}
+              size="sm"
+              target="_blank"
+              href="/terms"
+            >
+              <p className="me-2">Terminos y condiciones</p>
+              <FaExternalLinkAlt />
+            </Link>
+          </div>
+
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}

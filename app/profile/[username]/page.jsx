@@ -79,7 +79,7 @@ export default function ProfilePage({ params }) {
 
       if (
         myElement.scrollTop + myElement.clientHeight >=
-          myElement.scrollHeight - 150 &&
+        myElement.scrollHeight - 150 &&
         !loading &&
         !endPosts
       ) {
@@ -131,7 +131,11 @@ export default function ProfilePage({ params }) {
     );
 
   return (
-    <div className="w-full max-w-lg lg:min-w-[600px] gap-5">
+    <div className="w-full max-w-lg h-full lg:min-w-[600px] gap-5 px-3"
+      ref={elementScroll}
+      id="scroll"
+      style={{ overflowY: "auto", maxHeight: "90vh" }}
+    >
       <header className="flex items-center justify-between">
         <div className="flex items-center justify-between w-full">
           <div className="flex flex-col items-center md:flex-row gap-5 w-full">
@@ -197,12 +201,7 @@ export default function ProfilePage({ params }) {
         </p>
       </div>
 
-      <div
-        ref={elementScroll}
-        className="mt-8"
-        id="scroll"
-        style={{ maxHeight: "82vh", overflowY: "auto" }}
-      >
+      <div className="mb-20">
         <p className="mb-2">Posteos</p>
         {postsList && <RenderPostsList postsList={postsList} />}
         {!endPosts && <PostSkeleton />}

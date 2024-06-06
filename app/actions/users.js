@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import conn from "../lib/db";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
-const getMyUser = async () => {
+export const getMyUser = async () => {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user.email) return { error: "Ocurrio un error!" };
