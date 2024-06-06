@@ -51,53 +51,41 @@ const NewPost = ({ isOpen, onOpenChange }) => {
   const [content, setContent] = useState("");
   const [files, setFiles] = useState([]);
   const [success, setSucces] = useState(false);
-  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFileChange = async (event) => {
     setLoading(true);
     const selectedFiles = Array.from(event.target.files);
-    const filesList = [];
 
     if ((files.length + selectedFiles.length) > 5) {
       setLoading(false);
-      return setError("Puedes subir un maximo de 5 archivos");
+      return toast.error("Puedes subir un maximo de 5 archivos");
     }
 
-    for (const file of selectedFiles) {
-      if ((file.size / 1000) < 25000)
-        filesList.push({
-          ...file,
-          file_name: file.name,
-          file_type: file.type,
-        });
-      else setError("Tamaño maximo 25MB");
-    }
-    setFiles((prevFiles) => [...prevFiles, ...filesList]);
-    setLoading(false);
-
-    //setError("Ocurrio un error inesperado!");
-  };
-
-  const handleFilesUpdate = async (event) => {
     try {
-      const filesList = [];
+      const files = [];
 
-      for (const file of files) {
-        const url = await uploadFile(file);
+      for (const file of selectedFiles) {
+        if ((file.size / 1000) < 25000) {
 
-        if (url.error) return toast.error(res.error);
-        filesList.push({
-          ...file,
-          file_path: url,
-        });
+          const url = await uploadFile(file);
+
+          if (url.error) return toast.error(res.error);
+          files.push({
+            file_name: file.name,
+            file_path: url,
+            file_type: file.type,
+          });
+        }
+        else toast.error('Tamaño maximo 25MB');
       }
-      return filesList
+      setFiles((prevFiles) => [...prevFiles, ...files]);
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       console.error(error);
-      setError("Ocurrio un error inesperado!");
+      toast.error("Ocurrio un error inesperado!");
     }
   };
 
@@ -108,13 +96,10 @@ const NewPost = ({ isOpen, onOpenChange }) => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const files = await handleFilesUpdate()
-      console.log("🚀 ~ handleSubmit ~ files:", files)
-      
       const res = await create(content, files);
 
       if (res.error) {
-        setError(res.error);
+        toast.error(res.error);
 
         return toast.error(res.error);
       }
@@ -125,13 +110,12 @@ const NewPost = ({ isOpen, onOpenChange }) => {
         setContent("");
         setFiles([]);
         setSucces(false);
-        setError(false);
         onOpenChange();
       }, 1000);
     } catch (error) {
       console.log(error);
       setLoading(false);
-      setError("Ocurrio un error inesperado!");
+      toast.error("Ocurrio un error inesperado!");
     }
   };
 
@@ -169,7 +153,7 @@ const NewPost = ({ isOpen, onOpenChange }) => {
                       variant="ghost"
                       onClick={() => {
                         setFiles((prev) =>
-                          prev.filter((f) => f.file_name === file.file_name),
+                          prev.filter((f) => f.file_path === file.file_path),
                         );
                       }}
                     >
@@ -194,7 +178,6 @@ const NewPost = ({ isOpen, onOpenChange }) => {
                   onChange={handleFileChange}
                 />
               </div>
-              {error && <h5 className="text-red-400">{error}</h5>}
             </ModalBody>
 
             <ModalFooter>
