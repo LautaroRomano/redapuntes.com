@@ -21,6 +21,8 @@ import { toast } from "react-toastify";
 import { uploadFile } from "@/app/lib/firebase";
 import { create } from "@/app/actions/posts";
 
+import { v4 } from "uuid";
+
 export default function CreatePost() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { status } = useSession();
@@ -73,6 +75,7 @@ const NewPost = ({ isOpen, onOpenChange }) => {
 
           if (url.error) return toast.error(res.error);
           files.push({
+            file_id: v4(),
             file_name: file.name,
             file_path: url,
             file_type: file.type,
@@ -153,7 +156,7 @@ const NewPost = ({ isOpen, onOpenChange }) => {
                       variant="ghost"
                       onClick={() => {
                         setFiles((prev) =>
-                          prev.filter((f) => f.file_path === file.file_path),
+                          prev.filter((f) => f.file_id !== file.file_id),
                         );
                       }}
                     >
