@@ -26,13 +26,24 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { siteConfig } from "@/config/site";
+import { getMyUser } from "@/app/actions/users";
 
 export const Navbar = () => {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const { isOpen, onOpenChange } = useDisclosure();
+  const [user, setUser] = useState(null)
+
+  const getUser = async () => {
+    const user = await getMyUser()
+    if (user && !user.error) setUser(user)
+  }
+
+  useEffect(() => {
+    if (status === 'authenticated') getUser()
+  }, [status])
 
   return (
     <>
@@ -74,7 +85,7 @@ export const Navbar = () => {
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 "
-                      href={"/profile"}
+                      href={`/profile/${user.username}`}
                     >
                       Ver perfil
                     </Link>
@@ -116,7 +127,7 @@ export const Navbar = () => {
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 "
-                      href={"/profile"}
+                      href={`/profile/${user.username}`}
                     >
                       Ver perfil
                     </Link>
