@@ -26,7 +26,7 @@ export default function RenderPostsList({ postsList, disabled }) {
   };
 
   return (
-    <>
+    <div>
       {posts.map((post) => {
         return (
           <PostCard
@@ -45,6 +45,6 @@ export default function RenderPostsList({ postsList, disabled }) {
           />
         );
       })}
-    </>
+    </div>
   );
 }

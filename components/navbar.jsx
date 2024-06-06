@@ -85,7 +85,7 @@ export const Navbar = () => {
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 "
-                      href={`/profile/${user.username}`}
+                      href={user ? `/profile/${user.username}` : '/profile'}
                     >
                       Ver perfil
                     </Link>
@@ -127,7 +127,7 @@ export const Navbar = () => {
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 "
-                      href={`/profile/${user.username}`}
+                      href={user ? `/profile/${user.username}` : '/profile'}
                     >
                       Ver perfil
                     </Link>
