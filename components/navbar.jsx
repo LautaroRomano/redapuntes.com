@@ -239,9 +239,9 @@ const Login = ({ isOpen, onOpenChange }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <NextLink className="text-blue-400" href={"#"}>
+             {/*  <NextLink className="text-blue-400" href={"#"}>
                 Olvidaste tu contrasena?
-              </NextLink>
+              </NextLink> */}
               <NextLink
                 className="flex justify-start items-center gap-1"
                 href="/register"

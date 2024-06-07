@@ -183,11 +183,11 @@ export default function ProfilePage({ params }) {
             <p>Posts</p>
           </div>
           <div className="text-center">
-            <span className="font-semibold">456k</span>
+            <span className="font-semibold">{profile.follows || 0}</span>
             <p>Seguidores</p>
           </div>
           <div className="text-center">
-            <span className="font-semibold">789</span>
+            <span className="font-semibold">{profile.followed || 0}</span>
             <p>Siguiendo</p>
           </div>
         </div>
