@@ -96,14 +96,23 @@ export async function getUserByUsername(username) {
         profile.myProfile = true;
       }
 
-      const { rows: follows } = await conn.query(
-        `
-                select * from follows f where f.follower_id = $1 and f.followed_id =$2
-            `,
+      const { rows: follow } = await conn.query(
+        `select * from follows f where f.follower_id = $1 and f.followed_id =$2`,
         [user.user_id, profile.user_id],
       );
+      profile.isFollow = !!follow[0];
 
-      profile.isFollow = !!follows[0];
+      const { rows: follows } = await conn.query(
+        `select COUNT(*) as count from follows f where f.followed_id =$1`,
+        [profile.user_id],
+      );
+      profile.follows = follows[0]?.count || 0;
+
+      const { rows: followed } = await conn.query(
+        `select COUNT(*) as count from follows f where f.follower_id = $1`,
+        [profile.user_id],
+      );
+      profile.followed = followed[0]?.count || 0;
 
       return profile;
     } else {
