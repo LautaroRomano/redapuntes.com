@@ -10,6 +10,7 @@ import {
   Modal,
   ModalContent,
   ModalFooter,
+  Chip,
 } from "@nextui-org/react";
 import NextLink from "next/link";
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
@@ -86,7 +87,7 @@ export default function PostCard({
                 ))}
             </div>
           )}
-          {files.length > 0 && (
+          {files.filter((file) => !file.file_type.includes("image")).length > 0 && (
             <div className="mt-4">
               <h5 className="text-small font-semibold text-default-600">
                 Archivos adjuntos:
@@ -119,6 +120,25 @@ export default function PostCard({
               </ul>
             </div>
           )}
+          <div className="my-2"></div>
+          <div className="flex gap-1">
+            {
+              props.university &&
+              <Chip size="sm" color="primary" variant="dot">{props.university.name}</Chip>
+            }
+            {
+              props.career &&
+              <Chip size="sm" color="primary" variant="dot">{props.career.name}</Chip>
+            }
+          </div>
+          <div className="flex gap-1 mt-2">
+            {
+              props.tags &&
+              props.tags.map((t, i) => (
+                <Chip size="sm" color="default" variant="bordered">{t}</Chip>
+              ))
+            }
+          </div>
         </CardBody>
 
         <CardFooter className="gap-3 justify-between mt-3">
@@ -156,6 +176,7 @@ export default function PostCard({
                       <div className="text-lg">
                         <FaRegComment />
                       </div>
+                      {props.comments}
                     </Button>
                   }
                 </div>

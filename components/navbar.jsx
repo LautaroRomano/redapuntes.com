@@ -116,7 +116,7 @@ export const Navbar = () => {
 
           <NavbarItem className="flex md:hidden gap-2">
             <InfoPopover />
-            {!status === "authenticated" ? (
+            {status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
                   <Button
@@ -239,7 +239,7 @@ const Login = ({ isOpen, onOpenChange }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-             {/*  <NextLink className="text-blue-400" href={"#"}>
+              {/*  <NextLink className="text-blue-400" href={"#"}>
                 Olvidaste tu contrasena?
               </NextLink> */}
               <NextLink

@@ -13,6 +13,9 @@ CREATE TABLE posts (
     post_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
     content TEXT NOT NULL,
+    tags TEXT[] null,
+    university_id INT REFERENCES universities(university_id),
+    career_id INT REFERENCES careers(career_id),
     tsv tsvector,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -51,6 +54,27 @@ CREATE TABLE follows (
     UNIQUE (follower_id, followed_id)
 );
 
+CREATE TABLE contents (
+    content_id SERIAL PRIMARY KEY,
+    key varchar(80),
+    label varchar(80),
+    UNIQUE (key)
+);
+
+CREATE TABLE universities (
+    university_id SERIAL PRIMARY KEY,
+    name varchar(250),
+    UNIQUE (name)
+);
+
+CREATE TABLE careers (
+    career_id SERIAL PRIMARY KEY,
+    university_id INTEGER NOT NULL,
+    name varchar(250),
+    FOREIGN KEY (university_id) REFERENCES universities(university_id) ON DELETE CASCADE,
+    UNIQUE (name)
+);
+
 CREATE INDEX idx_posts_user_id ON posts(user_id);
 CREATE INDEX idx_pdf_files_post_id ON pdf_files(post_id);
 CREATE INDEX idx_post_likes_post_id ON post_likes(post_id);
@@ -70,4 +94,29 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON posts
 FOR EACH ROW EXECUTE FUNCTION update_tsvector_column();
 
+INSERT INTO contents (key,label) VALUES
+('Anuncio','Anuncio'),
+('Pregunta','Pregunta'),
+('Teoria','Teoria'),
+('Trabajos practicos','Trabajos practicos'),
+('Parciales','Parciales'),
+('Finales','Finales');
 
+INSERT INTO universities (name) VALUES
+('Universidad Tecnologica Nacional'),
+('Universidad Nacional Tucuman');
+
+INSERT INTO careers (university_id, name) VALUES
+(1, 'Ing. Sistemas de Informacion'),
+(1, 'Ing. Civil'),
+(1, 'Ing. Electrica'),
+(1, 'Ing. Electronica'),
+(1, 'Ing. Mecanica');
+
+INSERT INTO careers (university_id, name) VALUES
+(2, 'Abogacia'),
+(2, 'Administracion'),
+(2, 'Contador Publico'),
+(2, 'Licenciatura en Economia'),
+(2, 'Medicina'),
+(2, 'Psicologia');

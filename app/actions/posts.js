@@ -19,7 +19,7 @@ const getMyUser = async () => {
   return user;
 };
 
-export async function create(content, files) {
+export async function create(content, files, selected) {
   try {
     const user = await getMyUser();
 
@@ -34,11 +34,11 @@ export async function create(content, files) {
 
     const { rows: posts } = await conn.query(
       `
-            INSERT INTO posts(user_id, content) 
-            VALUES ($1, $2) 
+            INSERT INTO posts(user_id, content,tags,university_id,career_id) 
+            VALUES ($1, $2, $3, $4 ,$5) 
             RETURNING post_id
         `,
-      [user.user_id, content],
+      [user.user_id, content, selected.content || null, selected.university, selected.carrer],
     );
 
     const insertedPostId = posts[0].post_id;
@@ -67,7 +67,7 @@ export async function get(type, limit = 10, offset = 0) {
     if (type === "Siguiendo") {
       const { rows: posts } = await conn.query(
         `
-            select distinct p.post_id, p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
+            select distinct p.*, u.user_id, u.username, u.accountname, u.img
             from posts p 
             join users u ON p.user_id = u.user_id
             where u.user_id in (
@@ -83,7 +83,7 @@ export async function get(type, limit = 10, offset = 0) {
     } else {
       const { rows: posts } = await conn.query(
         `
-            select distinct p.post_id, p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
+            select distinct p.*, u.user_id, u.username, u.accountname, u.img
             from posts p join users u ON p.user_id = u.user_id
             order by p.created_at desc
             limit $1 offset $2;
@@ -98,31 +98,32 @@ export async function get(type, limit = 10, offset = 0) {
 
     for (const dat of data) {
       const { rows: files } = await conn.query(
-        `
-            select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1
-            `,
+        `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
         [dat.post_id],
       );
 
       const { rows: likes } = await conn.query(
-        `
-            select count(*) from post_likes pl where pl.post_id = $1
-            `,
+        `select count(*) from post_likes pl where pl.post_id = $1`,
         [dat.post_id],
       );
 
       const { rows: comments } = await conn.query(
-        `
-            select count(*) from "comments" c where c.post_id = $1
-            `,
+        `select count(*) from "comments" c where c.post_id = $1`,
         [dat.post_id],
       );
 
       const { rows: liked } = await conn.query(
-        `
-            select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2
-            `,
+        `select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`,
         [dat.post_id, user.user_id],
+      );
+
+      const { rows: university } = await conn.query(
+        `select * from universities u where u.university_id = $1`,
+        [dat.university_id],
+      );
+      const { rows: career } = await conn.query(
+        `select * from careers u where u.career_id = $1`,
+        [dat.career_id],
       );
 
       const isLiked = !!liked[0];
@@ -133,6 +134,8 @@ export async function get(type, limit = 10, offset = 0) {
         isLiked,
         likes: likes[0].count * 1,
         comments: comments[0].count * 1,
+        university: university[0],
+        career: career[0],
       });
     }
 
@@ -150,7 +153,7 @@ export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
 
     const { rows: data } = await conn.query(
       `
-            select distinct p.post_id, p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
+            select distinct p.*, u.user_id, u.username, u.accountname, u.img
             from posts p join users u ON p.user_id = u.user_id
             where u.user_id = $1
             order by p.created_at desc
@@ -163,31 +166,32 @@ export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
 
     for (const dat of data) {
       const { rows: files } = await conn.query(
-        `
-            select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1
-            `,
+        `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
         [dat.post_id],
       );
 
       const { rows: likes } = await conn.query(
-        `
-            select count(*) from post_likes pl where pl.post_id = $1
-            `,
+        `select count(*) from post_likes pl where pl.post_id = $1`,
         [dat.post_id],
       );
 
       const { rows: comments } = await conn.query(
-        `
-            select count(*) from "comments" c where c.post_id = $1
-            `,
+        `select count(*) from "comments" c where c.post_id = $1`,
         [dat.post_id],
       );
 
       const { rows: liked } = await conn.query(
-        `
-            select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2
-            `,
+        `select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`,
         [dat.post_id, user.user_id],
+      );
+
+      const { rows: university } = await conn.query(
+        `select * from universities u where u.university_id = $1`,
+        [dat.university_id],
+      );
+      const { rows: career } = await conn.query(
+        `select * from careers u where u.career_id = $1`,
+        [dat.career_id],
       );
 
       const isLiked = !!liked[0];
@@ -198,6 +202,8 @@ export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
         isLiked,
         likes: likes[0].count * 1,
         comments: comments[0].count * 1,
+        university: university[0],
+        career: career[0],
       });
     }
 
@@ -216,7 +222,7 @@ export async function getPostById(post_id) {
 
     const { rows: data } = await conn.query(
       `
-        select p.post_id,p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
+        select p.*, u.user_id, u.username, u.accountname, u.img
         from posts p join users u ON p.user_id = u.user_id
         where p.post_id = $1
         `,
@@ -224,31 +230,32 @@ export async function getPostById(post_id) {
     );
 
     const { rows: files } = await conn.query(
-      `
-            select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1
-            `,
+      `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
       [data[0].post_id],
     );
 
     const { rows: likes } = await conn.query(
-      `
-            select count(*) from post_likes pl where pl.post_id = $1
-            `,
+      `select count(*) from post_likes pl where pl.post_id = $1`,
       [data[0].post_id],
     );
 
     const { rows: comments } = await conn.query(
-      `
-            select count(*) from "comments" c where c.post_id = $1
-            `,
+      `select count(*) from "comments" c where c.post_id = $1`,
       [data[0].post_id],
     );
 
     const { rows: liked } = await conn.query(
-      `
-            select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2
-            `,
+      `select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`,
       [data[0].post_id, user.user_id],
+    );
+
+    const { rows: university } = await conn.query(
+      `select * from universities u where u.university_id = $1`,
+      [data[0].university_id],
+    );
+    const { rows: career } = await conn.query(
+      `select * from careers u where u.career_id = $1`,
+      [data[0].career_id],
     );
 
     const isLiked = !!liked[0];
@@ -259,6 +266,8 @@ export async function getPostById(post_id) {
       isLiked,
       likes: likes[0].count * 1,
       comments: comments[0].count * 1,
+      university: university[0],
+      career: career[0],
     };
   } catch (error) {
     console.log("🚀 ~ get ~ error:", error);
@@ -366,7 +375,7 @@ export async function searchPosts(query, limit = 10, offset = 0) {
 
     const { rows: res } = await conn.query(
       `
-        select p.post_id,p."content", p.created_at, u.user_id, u.username, u.accountname, u.img
+        select p.*, u.user_id, u.username, u.accountname, u.img
         FROM posts p
         join users u ON p.user_id = u.user_id
         WHERE tsv @@ to_tsquery('spanish', $1)
@@ -380,34 +389,34 @@ export async function searchPosts(query, limit = 10, offset = 0) {
 
     for (const dat of res) {
       const { rows: files } = await conn.query(
-        `
-          select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1
-          `,
+        `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
         [dat.post_id],
       );
 
       const { rows: likes } = await conn.query(
-        `
-          select count(*) from post_likes pl where pl.post_id = $1
-          `,
+        `select count(*) from post_likes pl where pl.post_id = $1`,
         [dat.post_id],
       );
 
       const { rows: comments } = await conn.query(
-        `
-          select count(*) from "comments" c where c.post_id = $1
-          `,
+        `select count(*) from "comments" c where c.post_id = $1`,
         [dat.post_id],
       );
 
       const { rows: liked } = await conn.query(
-        `
-          select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2
-          `,
+        `select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`,
         [dat.post_id, user.user_id],
       );
 
       const isLiked = !!liked[0];
+      const { rows: university } = await conn.query(
+        `select * from universities u where u.university_id = $1`,
+        [dat.university_id],
+      );
+      const { rows: career } = await conn.query(
+        `select * from careers u where u.career_id = $1`,
+        [dat.career_id],
+      );
 
       response.push({
         ...dat,
@@ -415,6 +424,8 @@ export async function searchPosts(query, limit = 10, offset = 0) {
         isLiked,
         likes: likes[0].count * 1,
         comments: comments[0].count * 1,
+        university: university[0],
+        career: career[0],
       });
     }
 
