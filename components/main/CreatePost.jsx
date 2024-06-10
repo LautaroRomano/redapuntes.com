@@ -20,7 +20,8 @@ import { toast } from "react-toastify";
 
 import { uploadFile } from "@/app/lib/firebase";
 import { create } from "@/app/actions/posts";
-
+import SelectContenidos from './SelectContenidos'
+import SelectUniversity from './SelectUniversity'
 import { v4 } from "uuid";
 
 export default function CreatePost() {
@@ -51,6 +52,7 @@ export default function CreatePost() {
 
 const NewPost = ({ isOpen, onOpenChange }) => {
   const [content, setContent] = useState("");
+  const [selected, setSelected] = useState({});
   const [files, setFiles] = useState([]);
   const [success, setSucces] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -99,7 +101,7 @@ const NewPost = ({ isOpen, onOpenChange }) => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const res = await create(content, files);
+      const res = await create(content, files, selected);
 
       if (res.error) {
         toast.error(res.error);
@@ -131,16 +133,19 @@ const NewPost = ({ isOpen, onOpenChange }) => {
               <h4>Nueva Publicación</h4>
             </ModalHeader>
             <ModalBody>
-              <Card>
-                <CardBody className="flex items-center space-x-4">
-                  <Textarea
-                    fullWidth
-                    placeholder="¿Qué estás pensando?"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                  />
-                </CardBody>
-              </Card>
+              <SelectContenidos
+                setMyContent={(val) => setSelected(prev => ({ ...prev, content: val }))}
+              />
+              <SelectUniversity
+                setMyUniversity={(val) => setSelected(prev => ({ ...prev, university: val }))}
+                setMyCarrer={(val) => setSelected(prev => ({ ...prev, carrer: val }))}
+              />
+              <Textarea
+                fullWidth
+                placeholder="¿Qué vas a aportar hoy?"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
               <Spacer y={1} />
               <div>
                 {files.map((file, index) => (
