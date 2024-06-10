@@ -79,7 +79,7 @@ export default function ProfilePage({ params }) {
 
       if (
         myElement.scrollTop + myElement.clientHeight >=
-        myElement.scrollHeight - 150 &&
+          myElement.scrollHeight - 150 &&
         !loading &&
         !endPosts
       ) {
@@ -131,8 +131,9 @@ export default function ProfilePage({ params }) {
     );
 
   return (
-    <div className="w-full max-w-lg h-full lg:min-w-[600px] gap-5 px-3"
+    <div
       ref={elementScroll}
+      className="w-full max-w-lg h-full lg:min-w-[600px] gap-5 px-3"
       id="scroll"
       style={{ overflowY: "auto", maxHeight: "90vh" }}
     >

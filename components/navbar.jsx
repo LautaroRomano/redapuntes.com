@@ -11,7 +11,12 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
 import NextLink from "next/link";
-import { FaCheckCircle, FaExternalLinkAlt, FaGoogle, FaUser } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaExternalLinkAlt,
+  FaGoogle,
+  FaUser,
+} from "react-icons/fa";
 import { signIn, signOut, useSession } from "next-auth/react";
 import {
   Dropdown,
@@ -28,40 +33,45 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 
 import { siteConfig } from "@/config/site";
 import { getMyUser } from "@/app/actions/users";
-import { IoMdInformationCircleOutline } from "react-icons/io";
-
 
 export const Navbar = () => {
   const { data: session, status } = useSession();
   const { isOpen, onOpenChange } = useDisclosure();
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(null);
 
   const getUser = async () => {
-    const user = await getMyUser()
-    if (user && !user.error) setUser(user)
-  }
+    const user = await getMyUser();
+
+    if (user && !user.error) setUser(user);
+  };
 
   useEffect(() => {
-    if (status === 'authenticated') getUser()
-  }, [status])
+    if (status === "authenticated") getUser();
+  }, [status]);
 
   return (
     <>
       <NextUINavbar maxWidth="xl" position="sticky">
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
           <NavbarBrand as="li" className="gap-3 max-w-fit">
-            <NextLink
-              className="flexjustify-start items-center gap-1"
-              href="/"
-            >
+            <NextLink className="flexjustify-start items-center gap-1" href="/">
               <div className="font-bold hidden md:flex">
-                <Image src="/logo-lg.webp" className="cover max-h-6 rounded-none" isBlurred />
+                <Image
+                  isBlurred
+                  className="cover max-h-6 rounded-none"
+                  src="/logo-lg.webp"
+                />
               </div>
               <div className="font-bold flex md:hidden">
-                <Image src="/RA.webp" className="cover max-h-5 rounded-none" isBlurred />
+                <Image
+                  isBlurred
+                  className="cover max-h-5 rounded-none"
+                  src="/RA.webp"
+                />
               </div>
             </NextLink>
           </NavbarBrand>
@@ -89,7 +99,7 @@ export const Navbar = () => {
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 "
-                      href={user ? `/profile/${user.username}` : '/profile'}
+                      href={user ? `/profile/${user.username}` : "/profile"}
                     >
                       Ver perfil
                     </Link>
@@ -132,7 +142,7 @@ export const Navbar = () => {
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 "
-                      href={user ? `/profile/${user.username}` : '/profile'}
+                      href={user ? `/profile/${user.username}` : "/profile"}
                     >
                       Ver perfil
                     </Link>
@@ -192,7 +202,7 @@ const Login = ({ isOpen, onOpenChange }) => {
   const [error, setError] = useState(false);
 
   const handleSubmit = () => {
-    if (username.length === 0 || password.length === 0) return
+    if (username.length === 0 || password.length === 0) return;
     try {
       signIn("credentials", { username, password });
       setSucces(true);
@@ -230,9 +240,9 @@ const Login = ({ isOpen, onOpenChange }) => {
               </Button>
               <Input
                 placeholder="Usuario o email"
+                startContent={"@"}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                startContent={"@"}
               />
               <Input
                 placeholder="Contrasena"
@@ -262,7 +272,11 @@ const Login = ({ isOpen, onOpenChange }) => {
                   Listo
                 </Button>
               ) : (
-                <Button auto onPress={handleSubmit} disabled={username.length === 0 || password.length === 0}>
+                <Button
+                  auto
+                  disabled={username.length === 0 || password.length === 0}
+                  onPress={handleSubmit}
+                >
                   Ingresar
                 </Button>
               )}
@@ -273,7 +287,6 @@ const Login = ({ isOpen, onOpenChange }) => {
     </Modal>
   );
 };
-
 
 function InfoPopover() {
   return (
@@ -287,27 +300,21 @@ function InfoPopover() {
         <div className="px-1 py-2">
           <div className="text-small m-2">
             <Link
-              color={'foreground'}
+              color={"foreground"}
+              href="/privacy"
               size="sm"
               target="_blank"
-              href="/privacy"
             >
               <p className="me-2">Políticas de privacidad</p>
               <FaExternalLinkAlt />
             </Link>
           </div>
           <div className="text-small m-2">
-            <Link
-              color={'foreground'}
-              size="sm"
-              target="_blank"
-              href="/terms"
-            >
+            <Link color={"foreground"} href="/terms" size="sm" target="_blank">
               <p className="me-2">Términos y condiciones</p>
               <FaExternalLinkAlt />
             </Link>
           </div>
-
         </div>
       </PopoverContent>
     </Popover>

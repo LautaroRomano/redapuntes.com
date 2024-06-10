@@ -1,5 +1,12 @@
-'use client'
-import { Button, Card, CardBody, Input, Checkbox, Link } from "@nextui-org/react";
+"use client";
+import {
+  Button,
+  Card,
+  CardBody,
+  Input,
+  Checkbox,
+  Link,
+} from "@nextui-org/react";
 import { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -122,19 +129,19 @@ export default function LoginPage() {
           >
             Acepto los
             <Link
-              color={'primary'}
-              target="_blank"
-              href="/privacy"
               className="mx-1"
+              color={"primary"}
+              href="/privacy"
+              target="_blank"
             >
               términos y condiciones
             </Link>
             <br />y las
             <Link
-              color={'primary'}
-              target="_blank"
-              href="/privacy"
               className="mx-1"
+              color={"primary"}
+              href="/privacy"
+              target="_blank"
             >
               políticas de privacidad
             </Link>
@@ -155,9 +162,9 @@ export default function LoginPage() {
             <Button
               className="w-full max-w-xs mb-5 mt-2"
               color="primary"
+              isDisabled={!termsAccepted} // Deshabilitar el botón si no se aceptan los términos
               size="md"
               onPress={handleSubmit}
-              isDisabled={!termsAccepted} // Deshabilitar el botón si no se aceptan los términos
             >
               Registrarse
             </Button>

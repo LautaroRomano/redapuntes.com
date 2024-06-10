@@ -58,8 +58,7 @@ export async function create({
     if (usersByUsername[0])
       return { error: "Este nombre de usuario ya se encuentra en uso" };
 
-    if (usersByEmail[0])
-      return { error: "Este email ya se encuentra en uso" };
+    if (usersByEmail[0]) return { error: "Este email ya se encuentra en uso" };
 
     await conn.query(
       `
@@ -100,18 +99,21 @@ export async function getUserByUsername(username) {
         `select * from follows f where f.follower_id = $1 and f.followed_id =$2`,
         [user.user_id, profile.user_id],
       );
+
       profile.isFollow = !!follow[0];
 
       const { rows: follows } = await conn.query(
         `select COUNT(*) as count from follows f where f.followed_id =$1`,
         [profile.user_id],
       );
+
       profile.follows = follows[0]?.count || 0;
 
       const { rows: followed } = await conn.query(
         `select COUNT(*) as count from follows f where f.follower_id = $1`,
         [profile.user_id],
       );
+
       profile.followed = followed[0]?.count || 0;
 
       return profile;

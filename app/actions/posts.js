@@ -25,10 +25,7 @@ export async function create(content, files, selected) {
 
     if (user.error) return { error: "Debe iniciar sesion!" };
 
-    await conn.query(
-      "SELECT * FROM users WHERE email=$1",
-      [user.email],
-    );
+    await conn.query("SELECT * FROM users WHERE email=$1", [user.email]);
 
     if (!user) return { error: "Debe iniciar sesion para continuar!" };
 
@@ -38,7 +35,13 @@ export async function create(content, files, selected) {
             VALUES ($1, $2, $3, $4 ,$5) 
             RETURNING post_id
         `,
-      [user.user_id, content, selected.content || null, selected.university, selected.carrer],
+      [
+        user.user_id,
+        content,
+        selected.content || null,
+        selected.university,
+        selected.carrer,
+      ],
     );
 
     const insertedPostId = posts[0].post_id;
