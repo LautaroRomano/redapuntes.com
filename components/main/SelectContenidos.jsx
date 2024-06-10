@@ -2,42 +2,41 @@ import { Select, SelectItem } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { getContents } from '@/app/actions/contents'
-
+import { getContents } from "@/app/actions/contents";
 
 export default function SelectContenidos({ setMyContent }) {
-    const [values, setValues] = useState(new Set([]));
-    const [tags, setTags] = useState([]);
+  const [values, setValues] = useState(new Set([]));
+  const [tags, setTags] = useState([]);
 
-    const get = async () => {
-        const res = await getContents()
-        if (res.error) return toast.error(res.error);
-        setTags(res)
-    }
+  const get = async () => {
+    const res = await getContents();
 
-    useEffect(() => {
-        get()
-    }, [])
+    if (res.error) return toast.error(res.error);
+    setTags(res);
+  };
 
-    useEffect(() => {
-        const val = Array.from(values)
-        setMyContent(val)
-    }, [values])
+  useEffect(() => {
+    get();
+  }, []);
 
-    return (
-        <Select
-            size="sm"
-            label="Contenidos (opcional)"
-            selectionMode="multiple"
-            placeholder="Contenidos"
-            selectedKeys={values}
-            onSelectionChange={setValues}
-        >
-            {tags.map((tag) => (
-                <SelectItem key={tag.key}>
-                    {tag.label}
-                </SelectItem>
-            ))}
-        </Select>
-    );
+  useEffect(() => {
+    const val = Array.from(values);
+
+    setMyContent(val);
+  }, [values]);
+
+  return (
+    <Select
+      label="Contenidos (opcional)"
+      placeholder="Contenidos"
+      selectedKeys={values}
+      selectionMode="multiple"
+      size="sm"
+      onSelectionChange={setValues}
+    >
+      {tags.map((tag) => (
+        <SelectItem key={tag.key}>{tag.label}</SelectItem>
+      ))}
+    </Select>
+  );
 }

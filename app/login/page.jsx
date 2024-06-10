@@ -42,7 +42,7 @@ function LoginPage() {
   }, [status]);
 
   const handleSubmit = async () => {
-    if (username.length === 0 || password.length === 0) return
+    if (username.length === 0 || password.length === 0) return;
     try {
       await signIn("credentials", { username, password });
       setSucces(true);
@@ -127,9 +127,9 @@ function LoginPage() {
             <Button
               className="w-full max-w-xs mb-5 mt-2"
               color="primary"
+              disabled={username.length === 0 || password.length === 0}
               size="md"
               onPress={handleSubmit}
-              disabled={username.length === 0 || password.length === 0}
             >
               Iniciar sesion
             </Button>
@@ -147,7 +147,10 @@ function LoginPage() {
         </CardBody>
         <CardFooter />
       </Card>
-      <p>Si nesecitas recuperar tu contraseña, contactate con <span>info.redapuntes@gmail.com</span></p>
+      <p>
+        Si nesecitas recuperar tu contraseña, contactate con{" "}
+        <span>info.redapuntes@gmail.com</span>
+      </p>
     </div>
   );
 }
@@ -157,5 +160,5 @@ export default function Home() {
     <Suspense>
       <LoginPage />
     </Suspense>
-  )
+  );
 }

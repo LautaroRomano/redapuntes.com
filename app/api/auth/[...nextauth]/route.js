@@ -3,6 +3,7 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+
 import conn from "@/app/lib/db";
 
 const getUserGoogle = async (email) => {
@@ -17,9 +18,11 @@ const getUserGoogle = async (email) => {
     }
 
     const user = result[0];
+
     return user;
   } catch (error) {
     console.log(error);
+
     return null;
   }
 };
@@ -45,6 +48,7 @@ const getUser = async (username, password) => {
     }
   } catch (error) {
     console.log(error);
+
     return null;
   }
 };
@@ -63,13 +67,16 @@ const authOptions = {
       },
       authorize: async (credentials) => {
         if (credentials) {
-          const user = await getUser(credentials.username, credentials.password);
+          const user = await getUser(
+            credentials.username,
+            credentials.password,
+          );
 
           if (user) {
             return user;
           }
         }
-        throw new Error('Invalid credentials');
+        throw new Error("Invalid credentials");
       },
     }),
   ],
@@ -77,13 +84,16 @@ const authOptions = {
     async signIn({ account, profile, credentials }) {
       if (account.provider === "google") {
         const user = await getUserGoogle(profile.email);
+
         return !!user;
       } else if (account.provider === "credentials") {
         const user = await getUser(credentials.username, credentials.password);
+
         return !!user;
       }
+
       return false;
-    }
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {

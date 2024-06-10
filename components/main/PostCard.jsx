@@ -87,7 +87,8 @@ export default function PostCard({
                 ))}
             </div>
           )}
-          {files.filter((file) => !file.file_type.includes("image")).length > 0 && (
+          {files.filter((file) => !file.file_type.includes("image")).length >
+            0 && (
             <div className="mt-4">
               <h5 className="text-small font-semibold text-default-600">
                 Archivos adjuntos:
@@ -120,24 +121,26 @@ export default function PostCard({
               </ul>
             </div>
           )}
-          <div className="my-2"></div>
+          <div className="my-2" />
           <div className="flex gap-1">
-            {
-              props.university &&
-              <Chip size="sm" color="primary" variant="dot">{props.university.name}</Chip>
-            }
-            {
-              props.career &&
-              <Chip size="sm" color="primary" variant="dot">{props.career.name}</Chip>
-            }
+            {props.university && (
+              <Chip color="primary" size="sm" variant="dot">
+                {props.university.name}
+              </Chip>
+            )}
+            {props.career && (
+              <Chip color="primary" size="sm" variant="dot">
+                {props.career.name}
+              </Chip>
+            )}
           </div>
           <div className="flex gap-1 mt-2">
-            {
-              props.tags &&
+            {props.tags &&
               props.tags.map((t, i) => (
-                <Chip size="sm" color="default" variant="bordered">{t}</Chip>
-              ))
-            }
+                <Chip key={i} color="default" size="sm" variant="bordered">
+                  {t}
+                </Chip>
+              ))}
           </div>
         </CardBody>
 

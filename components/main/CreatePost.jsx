@@ -17,12 +17,13 @@ import { FaCheckCircle } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
+import { v4 } from "uuid";
+
+import SelectContenidos from "./SelectContenidos";
+import SelectUniversity from "./SelectUniversity";
 
 import { uploadFile } from "@/app/lib/firebase";
 import { create } from "@/app/actions/posts";
-import SelectContenidos from './SelectContenidos'
-import SelectUniversity from './SelectUniversity'
-import { v4 } from "uuid";
 
 export default function CreatePost() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -62,8 +63,9 @@ const NewPost = ({ isOpen, onOpenChange }) => {
     setLoading(true);
     const selectedFiles = Array.from(event.target.files);
 
-    if ((files.length + selectedFiles.length) > 5) {
+    if (files.length + selectedFiles.length > 5) {
       setLoading(false);
+
       return toast.error("Puedes subir un maximo de 5 archivos");
     }
 
@@ -71,8 +73,7 @@ const NewPost = ({ isOpen, onOpenChange }) => {
       const files = [];
 
       for (const file of selectedFiles) {
-        if ((file.size / 1000) < 25000) {
-
+        if (file.size / 1000 < 25000) {
           const url = await uploadFile(file);
 
           if (url.error) return toast.error(res.error);
@@ -82,8 +83,7 @@ const NewPost = ({ isOpen, onOpenChange }) => {
             file_path: url,
             file_type: file.type,
           });
-        }
-        else toast.error('Tamaño maximo 25MB');
+        } else toast.error("Tamaño maximo 25MB");
       }
       setFiles((prevFiles) => [...prevFiles, ...files]);
       setLoading(false);
@@ -134,11 +134,17 @@ const NewPost = ({ isOpen, onOpenChange }) => {
             </ModalHeader>
             <ModalBody>
               <SelectContenidos
-                setMyContent={(val) => setSelected(prev => ({ ...prev, content: val }))}
+                setMyContent={(val) =>
+                  setSelected((prev) => ({ ...prev, content: val }))
+                }
               />
               <SelectUniversity
-                setMyUniversity={(val) => setSelected(prev => ({ ...prev, university: val }))}
-                setMyCarrer={(val) => setSelected(prev => ({ ...prev, carrer: val }))}
+                setMyCarrer={(val) =>
+                  setSelected((prev) => ({ ...prev, carrer: val }))
+                }
+                setMyUniversity={(val) =>
+                  setSelected((prev) => ({ ...prev, university: val }))
+                }
               />
               <Textarea
                 fullWidth
