@@ -61,41 +61,67 @@ export async function create(content, files, selected) {
   }
 }
 
-export async function get(type, limit = 10, offset = 0) {
+export async function get(type, limit = 10, offset = 0, filters) {
   try {
     const user = await getMyUser();
 
-    let data = [];
+    let baseQuery = `
+      select distinct p.*, u.user_id, u.username, u.accountname, u.img
+      from posts p 
+      join users u ON p.user_id = u.user_id
+    `;
+
+    let conditions = [];
+    let queryParams = [];
 
     if (type === "Siguiendo") {
-      const { rows: posts } = await conn.query(
-        `
-            select distinct p.*, u.user_id, u.username, u.accountname, u.img
-            from posts p 
-            join users u ON p.user_id = u.user_id
-            where u.user_id in (
-                select f.followed_id from follows f where f.follower_id = $1
-            )
-            order by p.created_at desc
-            limit $2 offset $3;
-            `,
-        [user.user_id, limit, offset],
-      );
-
-      data = posts;
+      baseQuery += `
+        where u.user_id in (
+          select f.followed_id from follows f where f.follower_id = $1
+        )
+      `;
+      queryParams.push(user.user_id);
     } else {
-      const { rows: posts } = await conn.query(
-        `
-            select distinct p.*, u.user_id, u.username, u.accountname, u.img
-            from posts p join users u ON p.user_id = u.user_id
-            order by p.created_at desc
-            limit $1 offset $2;
-            `,
-        [limit, offset],
-      );
-
-      data = posts;
+      baseQuery += ` where 1=1 `;
     }
+
+    if (filters && filters.contents && filters.contents.length > 0) {
+      conditions.push(`p.tags IS NOT NULL AND array_length(p.tags, 1) > 0`);
+    }
+
+    if (filters && filters.university) {
+      conditions.push(`p.university_id = $${queryParams.length + 1}`);
+      queryParams.push(filters.university);
+    }
+
+    if (filters && filters.career) {
+      conditions.push(`p.career_id = $${queryParams.length + 1}`);
+      queryParams.push(filters.career);
+    }
+
+    if (conditions.length > 0) {
+      baseQuery += ` AND ` + conditions.join(' AND ');
+    }
+
+    baseQuery += `
+      order by p.created_at desc
+      limit $${queryParams.length + 1} offset $${queryParams.length + 2};
+    `;
+
+    queryParams.push(limit, offset);
+
+    const { rows: posts } = await conn.query(baseQuery, queryParams);
+
+    let data = posts.filter(po => {
+      let b = false
+      if (!filters || !filters.contents || !filters.contents.length > 0) return true
+      else {
+        filters.contents.forEach(content => {
+          if (po.tags.includes(content)) b = true
+        })
+        return b
+      }
+    })
 
     const response = [];
 

@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 import { getContents } from "@/app/actions/contents";
 
-export default function SelectContenidos({ setMyContent }) {
+export default function SelectContenidos({ setMyContent, contents }) {
   const [values, setValues] = useState(new Set([]));
   const [tags, setTags] = useState([]);
 
@@ -18,6 +18,9 @@ export default function SelectContenidos({ setMyContent }) {
   useEffect(() => {
     get();
   }, []);
+  useEffect(() => {
+    if (contents) setValues(new Set(contents))
+  }, [contents]);
 
   useEffect(() => {
     const val = Array.from(values);
