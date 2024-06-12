@@ -89,38 +89,38 @@ export default function PostCard({
           )}
           {files.filter((file) => !file.file_type.includes("image")).length >
             0 && (
-              <div className="mt-4">
-                <h5 className="text-small font-semibold text-default-600">
-                  Archivos adjuntos:
-                </h5>
-                <ul className="list-disc list-inside">
-                  {files
-                    .filter((file) => !file.file_type.includes("image"))
-                    .map((file, index) => (
-                      <li
-                        key={index}
-                        className="mt-2 flex items-center justify-between"
+            <div className="mt-4">
+              <h5 className="text-small font-semibold text-default-600">
+                Archivos adjuntos:
+              </h5>
+              <ul className="list-disc list-inside">
+                {files
+                  .filter((file) => !file.file_type.includes("image"))
+                  .map((file, index) => (
+                    <li
+                      key={index}
+                      className="mt-2 flex items-center justify-between"
+                    >
+                      <span>{file.file_name}</span>
+                      <Button
+                        as="a"
+                        color="primary"
+                        download={file.file_name}
+                        href={file.file_path}
+                        rel="noopener noreferrer"
+                        size="sm"
+                        target="_blank"
+                        variant="flat"
                       >
-                        <span>{file.file_name}</span>
-                        <Button
-                          as="a"
-                          color="primary"
-                          download={file.file_name}
-                          href={file.file_path}
-                          rel="noopener noreferrer"
-                          size="sm"
-                          target="_blank"
-                          variant="flat"
-                        >
-                          <div className="text-lg">
-                            <IoMdDownload />
-                          </div>
-                        </Button>
-                      </li>
-                    ))}
-                </ul>
-              </div>
-            )}
+                        <div className="text-lg">
+                          <IoMdDownload />
+                        </div>
+                      </Button>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
           <div className="my-2" />
           <div className="flex gap-1 flex-wrap w-full">
             {props.university && (

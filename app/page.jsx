@@ -62,6 +62,7 @@ export default function Home() {
   }, []);
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
+
     getPosts(selectedValue, 0, filters);
   }, [filters]);
 
@@ -105,7 +106,7 @@ export default function Home() {
 
       if (
         myElement.scrollTop + myElement.clientHeight >=
-        myElement.scrollHeight - 150 &&
+          myElement.scrollHeight - 150 &&
         !loading
       ) {
         if (!isSearch && !endPosts) {
@@ -146,7 +147,7 @@ export default function Home() {
                 </SelectItem>
               ))}
             </Select>
-            <Filters setFilters={setFilters} filters={filters} />
+            <Filters filters={filters} setFilters={setFilters} />
           </div>
           <div className="flex w-full sm:w-80 gap-1">
             <Input

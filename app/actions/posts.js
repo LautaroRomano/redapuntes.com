@@ -100,7 +100,7 @@ export async function get(type, limit = 10, offset = 0, filters) {
     }
 
     if (conditions.length > 0) {
-      baseQuery += ` AND ` + conditions.join(' AND ');
+      baseQuery += ` AND ` + conditions.join(" AND ");
     }
 
     baseQuery += `
@@ -112,16 +112,19 @@ export async function get(type, limit = 10, offset = 0, filters) {
 
     const { rows: posts } = await conn.query(baseQuery, queryParams);
 
-    let data = posts.filter(po => {
-      let b = false
-      if (!filters || !filters.contents || !filters.contents.length > 0) return true
+    let data = posts.filter((po) => {
+      let b = false;
+
+      if (!filters || !filters.contents || !filters.contents.length > 0)
+        return true;
       else {
-        filters.contents.forEach(content => {
-          if (po.tags.includes(content)) b = true
-        })
-        return b
+        filters.contents.forEach((content) => {
+          if (po.tags.includes(content)) b = true;
+        });
+
+        return b;
       }
-    })
+    });
 
     const response = [];
 
