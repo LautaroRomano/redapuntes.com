@@ -13,6 +13,7 @@ import PostSkeleton from "../components/PostSkeleton";
 import { get, searchPosts } from "./actions/posts";
 
 import { SearchIcon } from "@/components/icons";
+import Filters from "@/components/Filters";
 
 export default function Home() {
   const [postsList, setPostList] = useState([]);
@@ -22,17 +23,18 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
   const [endPosts, setEndPosts] = useState(false);
+  const [filters, setFilters] = useState({});
 
   const LIMIT = 10;
   const elementScroll = useRef();
 
-  const getPosts = async (type, newOffset = 0) => {
+  const getPosts = async (type, newOffset = 0, filters) => {
     try {
       setLoading(true);
       setIsSearch(false);
       setEndPosts(false);
 
-      const data = await get(type, LIMIT, newOffset);
+      const data = await get(type, LIMIT, newOffset, filters);
 
       if (data.error) {
         setLoading(false);
@@ -58,6 +60,10 @@ export default function Home() {
 
     getPosts(selectedValue);
   }, []);
+  useEffect(() => {
+    const selectedValue = Array.from(selectView)[0];
+    getPosts(selectedValue, 0, filters);
+  }, [filters]);
 
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
@@ -99,13 +105,13 @@ export default function Home() {
 
       if (
         myElement.scrollTop + myElement.clientHeight >=
-          myElement.scrollHeight - 150 &&
+        myElement.scrollHeight - 150 &&
         !loading
       ) {
         if (!isSearch && !endPosts) {
           const selectedValue = Array.from(selectView)[0];
 
-          getPosts(selectedValue, offset + LIMIT);
+          getPosts(selectedValue, offset + LIMIT, filters);
         } else if (!endPosts) {
           handleSearch(offset + LIMIT);
         }
@@ -132,7 +138,7 @@ export default function Home() {
     >
       <div className="mt-0 gap-4 w-full rounded-md max-w-xl">
         <div className="flex mb-4 flex-col sm:flex-row justify-between gap-4">
-          <div className="flex w-full sm:w-40">
+          <div className="flex w-full sm:w-80 gap-1">
             <Select selectedKeys={selectView} onSelectionChange={setSelectView}>
               {["Todo", "Siguiendo"].map((option) => (
                 <SelectItem key={option} value={option}>
@@ -140,8 +146,9 @@ export default function Home() {
                 </SelectItem>
               ))}
             </Select>
+            <Filters setFilters={setFilters} filters={filters} />
           </div>
-          <div className="flex w-full sm:w-80 gap-4">
+          <div className="flex w-full sm:w-80 gap-1">
             <Input
               aria-label="Search"
               classNames={{
