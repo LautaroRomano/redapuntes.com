@@ -37,11 +37,15 @@ import { IoMdInformationCircleOutline } from "react-icons/io";
 
 import { siteConfig } from "@/config/site";
 import { getMyUser } from "@/app/actions/users";
+import { ThemeSwitch } from "./theme-switch";
+import { useTheme } from "next-themes";
 
 export const Navbar = () => {
   const { data: session, status } = useSession();
   const { isOpen, onOpenChange } = useDisclosure();
   const [user, setUser] = useState(null);
+
+  const { theme } = useTheme();
 
   const getUser = async () => {
     const user = await getMyUser();
@@ -63,14 +67,14 @@ export const Navbar = () => {
                 <Image
                   isBlurred
                   className="cover max-h-6 rounded-none"
-                  src="/logo-lg.webp"
+                  src={`/logo-lg-${theme}.webp`}
                 />
               </div>
               <div className="font-bold flex md:hidden">
                 <Image
                   isBlurred
                   className="cover max-h-5 rounded-none"
-                  src="/RA.webp"
+                  src={`/logo-sm-${theme}.webp`}
                 />
               </div>
             </NextLink>
@@ -78,9 +82,9 @@ export const Navbar = () => {
         </NavbarContent>
 
         <NavbarContent className="" justify="end">
-          {/*  <NavbarItem className="hidden sm:flex gap-2">
+          <NavbarItem className="flex gap-2">
             <ThemeSwitch />
-          </NavbarItem> */}
+          </NavbarItem>
           <NavbarItem className="hidden md:flex gap-2">
             <InfoPopover />
             {status === "authenticated" ? (

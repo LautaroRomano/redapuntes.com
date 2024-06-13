@@ -14,6 +14,7 @@ import { get, searchPosts } from "./actions/posts";
 
 import { SearchIcon } from "@/components/icons";
 import Filters from "@/components/Filters";
+import { useTheme } from "next-themes";
 
 export default function Home() {
   const [postsList, setPostList] = useState([]);
@@ -24,6 +25,9 @@ export default function Home() {
   const [isSearch, setIsSearch] = useState(false);
   const [endPosts, setEndPosts] = useState(false);
   const [filters, setFilters] = useState({});
+
+  const { theme } = useTheme();
+  console.log("🚀 ~ Home ~ theme:", theme)
 
   const LIMIT = 10;
   const elementScroll = useRef();

@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Repositorio Universitario",
+  name: "Red apuntes",
   description:
     "El sitio donde puedes encontrar todos los recursos que nesecitas para tu vida universitaria.",
   navMenuItems: [
