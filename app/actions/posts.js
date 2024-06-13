@@ -399,27 +399,66 @@ function transformQuery(query) {
   return query.split(" ").join(" & ");
 }
 
-export async function searchPosts(query, limit = 10, offset = 0) {
-  const user = await getMyUser();
-
+export async function searchPosts(query, limit = 10, offset = 0, filters) {
   try {
+    const user = await getMyUser();
+    let baseQuery = `
+      select distinct p.*, u.user_id, u.username, u.accountname, u.img
+      from posts p 
+      join users u ON p.user_id = u.user_id
+      WHERE tsv @@ to_tsquery('spanish', $1)
+    `;
+
     const transformedQuery = transformQuery(query);
 
-    const { rows: res } = await conn.query(
-      `
-        select p.*, u.user_id, u.username, u.accountname, u.img
-        FROM posts p
-        join users u ON p.user_id = u.user_id
-        WHERE tsv @@ to_tsquery('spanish', $1)
-        order by p.created_at desc
-        limit $2 offset $3;
-      `,
-      [transformedQuery, limit, offset],
-    );
+    let conditions = [];
+    let queryParams = [transformedQuery];
+
+
+    if (filters && filters.contents && filters.contents.length > 0) {
+      conditions.push(`p.tags IS NOT NULL AND array_length(p.tags, 1) > 0`);
+    }
+
+    if (filters && filters.university) {
+      conditions.push(`p.university_id = $${queryParams.length + 1}`);
+      queryParams.push(filters.university);
+    }
+
+    if (filters && filters.career) {
+      conditions.push(`p.career_id = $${queryParams.length + 1}`);
+      queryParams.push(filters.career);
+    }
+
+    if (conditions.length > 0) {
+      baseQuery += ` AND ` + conditions.join(" AND ");
+    }
+
+    baseQuery += `
+      order by p.created_at desc
+      limit $${queryParams.length + 1} offset $${queryParams.length + 2};
+    `;
+
+    queryParams.push(limit, offset);
+
+    const { rows: posts } = await conn.query(baseQuery, queryParams);
+
+    let data = posts.filter((po) => {
+      let b = false;
+
+      if (!filters || !filters.contents || !filters.contents.length > 0)
+        return true;
+      else {
+        filters.contents.forEach((content) => {
+          if (po.tags.includes(content)) b = true;
+        });
+
+        return b;
+      }
+    });
 
     const response = [];
 
-    for (const dat of res) {
+    for (const dat of data) {
       const { rows: files } = await conn.query(
         `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
         [dat.post_id],

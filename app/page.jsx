@@ -78,7 +78,7 @@ export default function Home() {
     setIsSearch(true);
     setEndPosts(false);
     try {
-      const data = await searchPosts(search, LIMIT, newOffset);
+      const data = await searchPosts(search, LIMIT, newOffset, filters);
 
       if (data.error) {
         setLoading(false);
@@ -106,7 +106,7 @@ export default function Home() {
 
       if (
         myElement.scrollTop + myElement.clientHeight >=
-          myElement.scrollHeight - 150 &&
+        myElement.scrollHeight - 150 &&
         !loading
       ) {
         if (!isSearch && !endPosts) {
@@ -164,7 +164,7 @@ export default function Home() {
               type="search"
               value={search}
               onChange={({ target }) => {
-                if (target.value.length === 0) getPosts();
+                if (target.value.length === 0) getPosts(null, 0, filters);
                 setSearch(target.value);
               }}
             />
