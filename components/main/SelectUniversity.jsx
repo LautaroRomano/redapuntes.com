@@ -4,7 +4,11 @@ import { toast } from "react-toastify";
 
 import { getUniversities, getCarrer } from "@/app/actions/universities";
 
-export default function SelectUniversity({ setMyUniversity, setMyCarrer, universitySelected }) {
+export default function SelectUniversity({
+  setMyUniversity,
+  setMyCarrer,
+  universitySelected,
+}) {
   const [university, setUniversity] = useState(new Set([]));
   const [tagsUni, setTagsUni] = useState([]);
   const [tagsCar, setTagsCar] = useState([]);
@@ -28,7 +32,7 @@ export default function SelectUniversity({ setMyUniversity, setMyCarrer, univers
   }, []);
 
   useEffect(() => {
-    if (universitySelected) setUniversity(new Set([universitySelected]))
+    if (universitySelected) setUniversity(new Set([universitySelected]));
   }, [universitySelected]);
 
   useEffect(() => {

@@ -34,6 +34,9 @@ import {
 import { useEffect, useState } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import { useTheme } from "next-themes";
+
+import { ThemeSwitch } from "./theme-switch";
 
 import { siteConfig } from "@/config/site";
 import { getMyUser } from "@/app/actions/users";
@@ -42,6 +45,8 @@ export const Navbar = () => {
   const { data: session, status } = useSession();
   const { isOpen, onOpenChange } = useDisclosure();
   const [user, setUser] = useState(null);
+
+  const { theme } = useTheme();
 
   const getUser = async () => {
     const user = await getMyUser();
@@ -63,14 +68,14 @@ export const Navbar = () => {
                 <Image
                   isBlurred
                   className="cover max-h-6 rounded-none"
-                  src="/logo-lg.webp"
+                  src={`/logo-lg-${theme}.webp`}
                 />
               </div>
               <div className="font-bold flex md:hidden">
                 <Image
                   isBlurred
                   className="cover max-h-5 rounded-none"
-                  src="/RA.webp"
+                  src={`/logo-sm-${theme}.webp`}
                 />
               </div>
             </NextLink>
@@ -78,16 +83,16 @@ export const Navbar = () => {
         </NavbarContent>
 
         <NavbarContent className="" justify="end">
-          {/*  <NavbarItem className="hidden sm:flex gap-2">
+          <NavbarItem className="flex gap-2">
             <ThemeSwitch />
-          </NavbarItem> */}
+          </NavbarItem>
           <NavbarItem className="hidden md:flex gap-2">
             <InfoPopover />
             {status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
                   <Button
-                    className="text-sm font-normal text-default-600 bg-default-100"
+                    className="text-sm font-normal text-default-600"
                     startContent={<FaUser />}
                     variant="flat"
                   >
@@ -115,7 +120,7 @@ export const Navbar = () => {
               </Dropdown>
             ) : (
               <Button
-                className="text-sm font-normal text-default-600 bg-default-100"
+                className="text-sm font-normal text-default-600"
                 variant="flat"
                 onClick={onOpenChange}
               >
@@ -130,7 +135,7 @@ export const Navbar = () => {
               <Dropdown>
                 <DropdownTrigger>
                   <Button
-                    className="text-sm font-normal text-default-600 bg-default-100"
+                    className="text-sm font-normal text-default-600 "
                     startContent={<FaUser />}
                     variant="flat"
                   >
@@ -158,7 +163,7 @@ export const Navbar = () => {
               </Dropdown>
             ) : (
               <Button
-                className="text-sm font-normal text-default-600 bg-default-100"
+                className="text-sm font-normal text-default-600"
                 variant="flat"
                 onClick={onOpenChange}
               >
@@ -292,7 +297,11 @@ function InfoPopover() {
   return (
     <Popover placement="bottom" showArrow={true}>
       <PopoverTrigger>
-        <Button isIconOnly className="text-lg">
+        <Button
+          isIconOnly
+          className="text-lg font-normal text-default-600"
+          variant="flat"
+        >
           <IoMdInformationCircleOutline />
         </Button>
       </PopoverTrigger>

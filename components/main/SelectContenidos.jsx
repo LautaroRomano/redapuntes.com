@@ -19,7 +19,7 @@ export default function SelectContenidos({ setMyContent, contents }) {
     get();
   }, []);
   useEffect(() => {
-    if (contents) setValues(new Set(contents))
+    if (contents) setValues(new Set(contents));
   }, [contents]);
 
   useEffect(() => {
