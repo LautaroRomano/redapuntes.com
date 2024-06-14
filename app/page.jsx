@@ -138,7 +138,7 @@ export default function Home() {
       style={{ overflowY: "auto", maxHeight: "90vh" }}
     >
       <div className="mt-0 gap-4 w-full rounded-md max-w-xl">
-        <div className="flex mb-4 flex-col sm:flex-row justify-between gap-4">
+        <div className="flex mb-4 flex-col sm:flex-row justify-between gap-4 px-2 sm:px-0">
           <div className="flex w-full sm:w-80 gap-1">
             <Select selectedKeys={selectView} onSelectionChange={setSelectView}>
               {["Todo", "Siguiendo"].map((option) => (
