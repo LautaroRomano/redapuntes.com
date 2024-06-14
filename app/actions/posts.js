@@ -414,7 +414,6 @@ export async function searchPosts(query, limit = 10, offset = 0, filters) {
     let conditions = [];
     let queryParams = [transformedQuery];
 
-
     if (filters && filters.contents && filters.contents.length > 0) {
       conditions.push(`p.tags IS NOT NULL AND array_length(p.tags, 1) > 0`);
     }

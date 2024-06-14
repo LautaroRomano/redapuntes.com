@@ -18,6 +18,8 @@ import { useSession } from "next-auth/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
 import { v4 } from "uuid";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 
 import SelectContenidos from "./SelectContenidos";
 import SelectUniversity from "./SelectUniversity";
@@ -29,18 +31,23 @@ export default function CreatePost() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { status } = useSession();
 
+  const { theme } = useTheme();
+  const router = useRouter();
+
   return (
     <>
-      <Card className="mb-4">
+      <Card
+        className={`mb-4 ${theme === "light" && "shadow-none border-1 border-gray-400"}`}
+      >
         <CardBody className="px-3 py-4 text-small text-default-400">
           {status === "authenticated" ? (
             <Button onClick={onOpen}>
               <p>Iniciar una publicacion</p>
             </Button>
           ) : (
-            <div>
+            <Button onClick={() => router.push("/login")}>
               <p>Inicia sesion para publicar algo</p>
-            </div>
+            </Button>
           )}
         </CardBody>
       </Card>

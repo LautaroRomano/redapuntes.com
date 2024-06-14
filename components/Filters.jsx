@@ -26,9 +26,19 @@ export default function Filters({ setFilters, filters }) {
 
   return (
     <>
-      <Button isIconOnly onPress={onOpen} color={((filters.contents && filters.contents.length > 0) || filters.university || filters.career) ? "primary" : 'default'}>
+      <Button
+        isIconOnly
+        color={
+          (filters.contents && filters.contents.length > 0) ||
+          filters.university ||
+          filters.career
+            ? "primary"
+            : "default"
+        }
+        onPress={onOpen}
+      >
         <IoFilter />
-      </Button >
+      </Button>
       <Modal
         isDismissable={false}
         isOpen={isOpen}

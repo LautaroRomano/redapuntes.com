@@ -17,6 +17,7 @@ import { AiOutlineLike, AiFillLike } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
 import Link from "next/link";
 import { IoMdDownload } from "react-icons/io";
+import { useTheme } from "next-themes";
 
 export default function PostCard({
   id,
@@ -32,6 +33,8 @@ export default function PostCard({
 }) {
   const [expandedImage, setExpandedImage] = useState(null);
 
+  const { theme } = useTheme();
+
   const handleImageClick = (file) => {
     setExpandedImage(file);
   };
@@ -42,7 +45,9 @@ export default function PostCard({
 
   return (
     <>
-      <Card className="mb-4">
+      <Card
+        className={`mb-4  ${theme === "light" && "shadow-none border-1 border-gray-400"}`}
+      >
         <CardHeader className="justify-between">
           <div className="flex gap-5">
             <Link href={`/profile/${username}`}>
@@ -51,22 +56,22 @@ export default function PostCard({
             <div className="flex flex-col gap-1 items-start justify-center">
               <Link href={`/profile/${username}`}>
                 {name && (
-                  <h4 className="text-small font-semibold leading-none text-default-600">
+                  <h4 className="text-small font-semibold leading-none text-default-800">
                     {name}
                   </h4>
                 )}
-                <h5 className="text-small tracking-tight text-default-400 mt-1">
+                <h5 className="text-small tracking-tight text-default-600 mt-1">
                   @{username}
                 </h5>
               </Link>
             </div>
-            <div className="text-small tracking-tight text-default-400">
+            <div className="text-small tracking-tight text-default-500">
               <p>Hace {tiempoTranscurrido(props.created_at)}</p>
             </div>
           </div>
         </CardHeader>
 
-        <CardBody className="px-3 py-0 text-small text-default-400">
+        <CardBody className="px-3 py-0 text-small text-default-800">
           <div>{content}</div>
           {files.length > 0 && (
             <div className="flex mt-4 overflow-auto">
@@ -122,7 +127,7 @@ export default function PostCard({
             </div>
           )}
           <div className="my-2" />
-          <div className="flex gap-1 flex-wrap w-full">
+          <div className="flex gap-1 flex-wrap w-full text-default-800">
             {props.university && (
               <Chip color="primary" size="sm" variant="dot">
                 {props.university.name}
@@ -188,7 +193,7 @@ export default function PostCard({
           </div>
           {(!props.disabled || !props.disabled.linkComments) && (
             <div className="flex gap-1  items-center justify-center">
-              <div className="text-default-400 text-small">
+              <div className="text-default-800 text-small">
                 <NextLink href={`/post/${id}`}>
                   {props.comments} comentarios
                 </NextLink>

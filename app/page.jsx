@@ -14,7 +14,6 @@ import { get, searchPosts } from "./actions/posts";
 
 import { SearchIcon } from "@/components/icons";
 import Filters from "@/components/Filters";
-import { useTheme } from "next-themes";
 
 export default function Home() {
   const [postsList, setPostList] = useState([]);
@@ -25,9 +24,6 @@ export default function Home() {
   const [isSearch, setIsSearch] = useState(false);
   const [endPosts, setEndPosts] = useState(false);
   const [filters, setFilters] = useState({});
-
-  const { theme } = useTheme();
-  console.log("🚀 ~ Home ~ theme:", theme)
 
   const LIMIT = 10;
   const elementScroll = useRef();
@@ -110,7 +106,7 @@ export default function Home() {
 
       if (
         myElement.scrollTop + myElement.clientHeight >=
-        myElement.scrollHeight - 150 &&
+          myElement.scrollHeight - 150 &&
         !loading
       ) {
         if (!isSearch && !endPosts) {
@@ -179,7 +175,7 @@ export default function Home() {
               disabled={search.length <= 1}
               onClick={() => handleSearch()}
             >
-              <SearchIcon className="text-base text-white pointer-events-none flex-shrink-0" />
+              <SearchIcon className="text-base pointer-events-none flex-shrink-0" />
             </Button>
           </div>
         </div>

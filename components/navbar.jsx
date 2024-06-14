@@ -34,11 +34,12 @@ import {
 import { useEffect, useState } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import { useTheme } from "next-themes";
+
+import { ThemeSwitch } from "./theme-switch";
 
 import { siteConfig } from "@/config/site";
 import { getMyUser } from "@/app/actions/users";
-import { ThemeSwitch } from "./theme-switch";
-import { useTheme } from "next-themes";
 
 export const Navbar = () => {
   const { data: session, status } = useSession();
@@ -91,7 +92,7 @@ export const Navbar = () => {
               <Dropdown>
                 <DropdownTrigger>
                   <Button
-                    className="text-sm font-normal text-default-600 bg-default-100"
+                    className="text-sm font-normal text-default-600"
                     startContent={<FaUser />}
                     variant="flat"
                   >
@@ -119,7 +120,7 @@ export const Navbar = () => {
               </Dropdown>
             ) : (
               <Button
-                className="text-sm font-normal text-default-600 bg-default-100"
+                className="text-sm font-normal text-default-600"
                 variant="flat"
                 onClick={onOpenChange}
               >
@@ -134,7 +135,7 @@ export const Navbar = () => {
               <Dropdown>
                 <DropdownTrigger>
                   <Button
-                    className="text-sm font-normal text-default-600 bg-default-100"
+                    className="text-sm font-normal text-default-600 "
                     startContent={<FaUser />}
                     variant="flat"
                   >
@@ -162,7 +163,7 @@ export const Navbar = () => {
               </Dropdown>
             ) : (
               <Button
-                className="text-sm font-normal text-default-600 bg-default-100"
+                className="text-sm font-normal text-default-600"
                 variant="flat"
                 onClick={onOpenChange}
               >
@@ -296,7 +297,11 @@ function InfoPopover() {
   return (
     <Popover placement="bottom" showArrow={true}>
       <PopoverTrigger>
-        <Button isIconOnly className="text-lg">
+        <Button
+          isIconOnly
+          className="text-lg font-normal text-default-600"
+          variant="flat"
+        >
           <IoMdInformationCircleOutline />
         </Button>
       </PopoverTrigger>
