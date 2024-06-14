@@ -63,7 +63,7 @@ const Terms = () => {
 
       <p className="mt-4">
         Si tiene alguna pregunta sobre estos Términos, puede contactarnos por
-        correo electrónico a info.repositorio.universitario@gmail.com.
+        correo electrónico a redapuntes.info@gmail.com
       </p>
     </div>
   );
