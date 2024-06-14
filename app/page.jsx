@@ -57,9 +57,23 @@ export default function Home() {
 
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
-
     getPosts(selectedValue);
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      e.prompt();
+      // Manejar la respuesta del usuario al prompt
+      e.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        } else {
+          console.log('User dismissed the A2HS prompt');
+        }
+      });
+    });
+
   }, []);
+
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
 
@@ -106,7 +120,7 @@ export default function Home() {
 
       if (
         myElement.scrollTop + myElement.clientHeight >=
-          myElement.scrollHeight - 150 &&
+        myElement.scrollHeight - 150 &&
         !loading
       ) {
         if (!isSearch && !endPosts) {

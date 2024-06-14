@@ -18,6 +18,7 @@ import { FaRegComment } from "react-icons/fa";
 import Link from "next/link";
 import { IoMdDownload } from "react-icons/io";
 import { tiempoTranscurrido } from '@/app/lib/calcularTiempo'
+import { useTheme } from "next-themes";
 
 export default function PostCard({
   id,
