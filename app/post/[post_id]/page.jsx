@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { getComments, getPostById, setComment } from "../../actions/posts";
+import { tiempoTranscurrido } from '@/app/lib/calcularTiempo'
 
 import RenderPostsList from "@/components/RenderPostsList";
+import PostSkeleton from "@/components/PostSkeleton";
 
 export default function PostPage({ params }) {
-  const [post, setPost] = useState("");
+  const [post, setPost] = useState();
   const [comments, setComments] = useState([]);
   const [myComment, setMyComment] = useState("");
 
@@ -45,10 +47,14 @@ export default function PostPage({ params }) {
       <Card className="mb-4 w-full">
         <CardBody className="px-3 py-0 text-small text-default-400 items-center gap-2">
           <div className="my-5 w-full">
-            <RenderPostsList
-              disabled={{ linkComments: true }}
-              postsList={[post]}
-            />
+            {
+              post ?
+                <RenderPostsList
+                  disabled={{ linkComments: true }}
+                  postsList={[post]}
+                />
+                : <PostSkeleton />
+            }
 
             <div className="w-full flex gap-2 items-center">
               <Textarea
@@ -56,10 +62,11 @@ export default function PostPage({ params }) {
                 placeholder="Escribe tu comentario"
                 value={myComment}
                 onChange={({ target }) => setMyComment(target.value)}
+                disabled={!post}
               />
               <Button
                 color={myComment.length < 1 ? "default" : "primary"}
-                disabled={myComment.length < 1}
+                disabled={!post || myComment.length < 1}
                 onClick={setNewComment}
               >
                 Comentar
@@ -100,30 +107,4 @@ export default function PostPage({ params }) {
       </Card>
     </div>
   );
-
-  function tiempoTranscurrido(fecha) {
-    const fechaActual = new Date();
-    const fechaDadaUTC = new Date(fecha);
-
-    // Convertir fecha UTC a la zona horaria local
-    const offset = fechaDadaUTC.getTimezoneOffset();
-    const fechaDada = new Date(fechaDadaUTC.getTime() - offset * 60 * 1000);
-
-    const diferencia = fechaActual - fechaDada;
-
-    const segundos = Math.floor(diferencia / 1000);
-    const minutos = Math.floor(segundos / 60);
-    const horas = Math.floor(minutos / 60);
-    const dias = Math.floor(horas / 24);
-
-    if (segundos < 60) {
-      return `${segundos} segundos`;
-    } else if (minutos < 60) {
-      return `${minutos} minutos`;
-    } else if (horas < 24) {
-      return `${horas} horas`;
-    } else {
-      return `${dias} días`;
-    }
-  }
 }

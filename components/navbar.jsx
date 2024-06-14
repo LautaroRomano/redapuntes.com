@@ -45,8 +45,15 @@ export const Navbar = () => {
   const { data: session, status } = useSession();
   const { isOpen, onOpenChange } = useDisclosure();
   const [user, setUser] = useState(null);
+  const [myTheme, setMyTheme] = useState(null);
 
   const { theme } = useTheme();
+
+  useEffect(() => {
+    if (theme)
+      setMyTheme(theme)
+  }, [theme])
+
 
   const getUser = async () => {
     const user = await getMyUser();
@@ -60,7 +67,7 @@ export const Navbar = () => {
 
   return (
     <>
-      <NextUINavbar maxWidth="xl" position="sticky">
+      <NextUINavbar maxWidth="xl" position="sticky" className="">
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
           <NavbarBrand as="li" className="gap-3 max-w-fit">
             <NextLink className="flexjustify-start items-center gap-1" href="/">
@@ -68,14 +75,14 @@ export const Navbar = () => {
                 <Image
                   isBlurred
                   className="cover max-h-6 rounded-none"
-                  src={`/logo-lg-${theme}.webp`}
+                  src={myTheme ? `/logo-lg-${myTheme}.webp` : '/logo-lg-default.webp'}
                 />
               </div>
               <div className="font-bold flex md:hidden">
                 <Image
                   isBlurred
                   className="cover max-h-5 rounded-none"
-                  src={`/logo-sm-${theme}.webp`}
+                  src={myTheme ? `/logo-sm-${myTheme}.webp` : '/logo-sm-default.webp'}
                 />
               </div>
             </NextLink>

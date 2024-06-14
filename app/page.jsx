@@ -57,9 +57,23 @@ export default function Home() {
 
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
-
     getPosts(selectedValue);
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      e.prompt();
+      // Manejar la respuesta del usuario al prompt
+      e.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        } else {
+          console.log('User dismissed the A2HS prompt');
+        }
+      });
+    });
+
   }, []);
+
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
 
@@ -106,7 +120,7 @@ export default function Home() {
 
       if (
         myElement.scrollTop + myElement.clientHeight >=
-          myElement.scrollHeight - 150 &&
+        myElement.scrollHeight - 150 &&
         !loading
       ) {
         if (!isSearch && !endPosts) {
@@ -138,7 +152,7 @@ export default function Home() {
       style={{ overflowY: "auto", maxHeight: "90vh" }}
     >
       <div className="mt-0 gap-4 w-full rounded-md max-w-xl">
-        <div className="flex mb-4 flex-col sm:flex-row justify-between gap-4">
+        <div className="flex mb-4 flex-col sm:flex-row justify-between gap-4 px-2 sm:px-0">
           <div className="flex w-full sm:w-80 gap-1">
             <Select selectedKeys={selectView} onSelectionChange={setSelectView}>
               {["Todo", "Siguiendo"].map((option) => (
