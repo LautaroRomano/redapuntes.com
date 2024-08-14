@@ -59,18 +59,31 @@ export default function Home() {
     const selectedValue = Array.from(selectView)[0];
     getPosts(selectedValue);
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      e.prompt();
-      // Manejar la respuesta del usuario al prompt
-      e.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the A2HS prompt');
-        } else {
-          console.log('User dismissed the A2HS prompt');
-        }
+    const showInstallPrompt = () => {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        e.prompt();
+
+        // Manejar la respuesta del usuario al prompt
+        e.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the A2HS prompt');
+          } else {
+            console.log('User dismissed the A2HS prompt');
+          }
+        });
       });
-    });
+    };
+
+    // Obtener la última fecha en que se mostró el prompt
+    const lastPromptDate = localStorage.getItem('lastInstallPromptDate');
+    const today = new Date().toISOString().split('T')[0];
+
+    // Si no se ha mostrado el prompt hoy, mostrarlo y actualizar la fecha en localStorage
+    if (lastPromptDate !== today) {
+      showInstallPrompt();
+      localStorage.setItem('lastInstallPromptDate', today);
+    }
 
   }, []);
 

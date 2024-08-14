@@ -85,16 +85,16 @@ export async function get(type, limit = 10, offset = 0, filters) {
       baseQuery += ` where 1=1 `;
     }
 
-    if (filters && filters.contents && filters.contents.length > 0) {
+    if (filters?.contents?.length > 0) {
       conditions.push(`p.tags IS NOT NULL AND array_length(p.tags, 1) > 0`);
     }
 
-    if (filters && filters.university) {
+    if (filters?.university) {
       conditions.push(`p.university_id = $${queryParams.length + 1}`);
       queryParams.push(filters.university);
     }
 
-    if (filters && filters.career) {
+    if (filters?.career) {
       conditions.push(`p.career_id = $${queryParams.length + 1}`);
       queryParams.push(filters.career);
     }
@@ -112,72 +112,45 @@ export async function get(type, limit = 10, offset = 0, filters) {
 
     const { rows: posts } = await conn.query(baseQuery, queryParams);
 
+    // Filtrar los posts de acuerdo a los contenidos si es necesario
     let data = posts.filter((po) => {
-      let b = false;
-
-      if (!filters || !filters.contents || !filters.contents.length > 0)
-        return true;
-      else {
-        filters.contents.forEach((content) => {
-          if (po.tags.includes(content)) b = true;
-        });
-
-        return b;
-      }
+      if (!filters?.contents?.length) return true;
+      return filters.contents.some((content) => po.tags.includes(content));
     });
 
-    const response = [];
+    // Ejecutar todas las consultas en paralelo
+    const promises = data.map(async (dat) => {
+      const [files, likes, comments, liked, university, career] = await Promise.all([
+        conn.query(`select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`, [dat.post_id]),
+        conn.query(`select count(*) from post_likes pl where pl.post_id = $1`, [dat.post_id]),
+        conn.query(`select count(*) from "comments" c where c.post_id = $1`, [dat.post_id]),
+        conn.query(`select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`, [dat.post_id, user.user_id]),
+        conn.query(`select * from universities u where u.university_id = $1`, [dat.university_id]),
+        conn.query(`select * from careers u where u.career_id = $1`, [dat.career_id])
+      ]);
 
-    for (const dat of data) {
-      const { rows: files } = await conn.query(
-        `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
-        [dat.post_id],
-      );
+      const isLiked = !!liked.rows[0];
 
-      const { rows: likes } = await conn.query(
-        `select count(*) from post_likes pl where pl.post_id = $1`,
-        [dat.post_id],
-      );
-
-      const { rows: comments } = await conn.query(
-        `select count(*) from "comments" c where c.post_id = $1`,
-        [dat.post_id],
-      );
-
-      const { rows: liked } = await conn.query(
-        `select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`,
-        [dat.post_id, user.user_id],
-      );
-
-      const { rows: university } = await conn.query(
-        `select * from universities u where u.university_id = $1`,
-        [dat.university_id],
-      );
-      const { rows: career } = await conn.query(
-        `select * from careers u where u.career_id = $1`,
-        [dat.career_id],
-      );
-
-      const isLiked = !!liked[0];
-
-      response.push({
+      return {
         ...dat,
-        files,
+        files: files.rows,
         isLiked,
-        likes: likes[0].count * 1,
-        comments: comments[0].count * 1,
-        university: university[0],
-        career: career[0],
-      });
-    }
+        likes: likes.rows[0].count * 1,
+        comments: comments.rows[0].count * 1,
+        university: university.rows[0],
+        career: career.rows[0],
+      };
+    });
+
+    const response = await Promise.all(promises);
 
     return response;
   } catch (error) {
     console.log("🚀 ~ get ~ error:", error);
-
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrió un error!" };
   }
 }
+
 
 export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
   try {
@@ -185,128 +158,92 @@ export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
 
     const { rows: data } = await conn.query(
       `
-            select distinct p.*, u.user_id, u.username, u.accountname, u.img
-            from posts p join users u ON p.user_id = u.user_id
-            where u.user_id = $1
-            order by p.created_at desc
-            limit $2 offset $3;
-            `,
+      select distinct p.*, u.user_id, u.username, u.accountname, u.img
+      from posts p
+      join users u ON p.user_id = u.user_id
+      where u.user_id = $1
+      order by p.created_at desc
+      limit $2 offset $3;
+      `,
       [user_id, limit, offset],
     );
 
-    const response = [];
+    // Ejecutar todas las consultas en paralelo
+    const promises = data.map(async (dat) => {
+      const [files, likes, comments, liked, university, career] = await Promise.all([
+        conn.query(`select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`, [dat.post_id]),
+        conn.query(`select count(*) from post_likes pl where pl.post_id = $1`, [dat.post_id]),
+        conn.query(`select count(*) from "comments" c where c.post_id = $1`, [dat.post_id]),
+        conn.query(`select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`, [dat.post_id, user.user_id]),
+        conn.query(`select * from universities u where u.university_id = $1`, [dat.university_id]),
+        conn.query(`select * from careers u where u.career_id = $1`, [dat.career_id])
+      ]);
 
-    for (const dat of data) {
-      const { rows: files } = await conn.query(
-        `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
-        [dat.post_id],
-      );
+      const isLiked = !!liked.rows[0];
 
-      const { rows: likes } = await conn.query(
-        `select count(*) from post_likes pl where pl.post_id = $1`,
-        [dat.post_id],
-      );
-
-      const { rows: comments } = await conn.query(
-        `select count(*) from "comments" c where c.post_id = $1`,
-        [dat.post_id],
-      );
-
-      const { rows: liked } = await conn.query(
-        `select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`,
-        [dat.post_id, user.user_id],
-      );
-
-      const { rows: university } = await conn.query(
-        `select * from universities u where u.university_id = $1`,
-        [dat.university_id],
-      );
-      const { rows: career } = await conn.query(
-        `select * from careers u where u.career_id = $1`,
-        [dat.career_id],
-      );
-
-      const isLiked = !!liked[0];
-
-      response.push({
+      return {
         ...dat,
-        files,
+        files: files.rows,
         isLiked,
-        likes: likes[0].count * 1,
-        comments: comments[0].count * 1,
-        university: university[0],
-        career: career[0],
-      });
-    }
+        likes: likes.rows[0].count * 1,
+        comments: comments.rows[0].count * 1,
+        university: university.rows[0],
+        career: career.rows[0],
+      };
+    });
+
+    const response = await Promise.all(promises);
 
     return response;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
-    return { error: "Ocurrio un error!" };
+    console.log("🚀 ~ getPostsByUserId ~ error:", error);
+    return { error: "Ocurrió un error!" };
   }
 }
 
 export async function getPostById(post_id) {
   try {
     const user = await getMyUser();
-    // if (user.error) return { error: 'Debe iniciar sesion!' }
 
     const { rows: data } = await conn.query(
       `
-        select p.*, u.user_id, u.username, u.accountname, u.img
-        from posts p join users u ON p.user_id = u.user_id
-        where p.post_id = $1
-        `,
+      select p.*, u.user_id, u.username, u.accountname, u.img
+      from posts p
+      join users u ON p.user_id = u.user_id
+      where p.post_id = $1
+      `,
       [post_id],
     );
 
-    const { rows: files } = await conn.query(
-      `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
-      [data[0].post_id],
-    );
+    if (data.length === 0) return { error: "Post no encontrado!" };
 
-    const { rows: likes } = await conn.query(
-      `select count(*) from post_likes pl where pl.post_id = $1`,
-      [data[0].post_id],
-    );
+    // Ejecutar todas las consultas en paralelo
+    const [files, likes, comments, liked, university, career] = await Promise.all([
+      conn.query(`select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`, [data[0].post_id]),
+      conn.query(`select count(*) from post_likes pl where pl.post_id = $1`, [data[0].post_id]),
+      conn.query(`select count(*) from "comments" c where c.post_id = $1`, [data[0].post_id]),
+      conn.query(`select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`, [data[0].post_id, user.user_id]),
+      conn.query(`select * from universities u where u.university_id = $1`, [data[0].university_id]),
+      conn.query(`select * from careers u where u.career_id = $1`, [data[0].career_id])
+    ]);
 
-    const { rows: comments } = await conn.query(
-      `select count(*) from "comments" c where c.post_id = $1`,
-      [data[0].post_id],
-    );
-
-    const { rows: liked } = await conn.query(
-      `select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`,
-      [data[0].post_id, user.user_id],
-    );
-
-    const { rows: university } = await conn.query(
-      `select * from universities u where u.university_id = $1`,
-      [data[0].university_id],
-    );
-    const { rows: career } = await conn.query(
-      `select * from careers u where u.career_id = $1`,
-      [data[0].career_id],
-    );
-
-    const isLiked = !!liked[0];
+    const isLiked = !!liked.rows[0];
 
     return {
       ...data[0],
-      files,
+      files: files.rows,
       isLiked,
-      likes: likes[0].count * 1,
-      comments: comments[0].count * 1,
-      university: university[0],
-      career: career[0],
+      likes: likes.rows[0].count * 1,
+      comments: comments.rows[0].count * 1,
+      university: university.rows[0],
+      career: career.rows[0],
     };
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
-    return { error: "Ocurrio un error!" };
+    console.log("🚀 ~ getPostById ~ error:", error);
+    return { error: "Ocurrió un error!" };
   }
 }
+
 
 export async function setLike(post_id) {
   try {
