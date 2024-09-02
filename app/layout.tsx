@@ -8,7 +8,7 @@ import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 
-const APP_DEFAULT_TITLE = "Red apuntes";
+const APP_DEFAULT_TITLE = "Red apuntes | Apuntes universitarios gratis";
 const APP_TITLE_TEMPLATE = "%s - Red apuntes";
 
 export const metadata: Metadata = {

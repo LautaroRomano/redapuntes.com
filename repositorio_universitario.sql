@@ -120,3 +120,13 @@ INSERT INTO careers (university_id, name) VALUES
 (2, 'Licenciatura en Economia'),
 (2, 'Medicina'),
 (2, 'Psicologia');
+
+--Aqui comienza la actualizacion de la IA
+
+CREATE TABLE files_ia (
+    file_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    text TEXT,
+    name varchar(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
