@@ -5,8 +5,8 @@ import { PdfReader } from "pdfreader";
 
 export async function GET() {
     const session = await getServerSession(authOptions);
-    if (!session) return res.status(403).json({ mensaje: 'Usuario no autenticado' });
-
+    if (!session) return Response.json({ mensaje: 'Usuario no autenticado' },{status:403});
+    
     const { rows: inmobiliarias } = await conn.query('SELECT * FROM inmobiliarias');
     return Response.json({ inmobiliarias });
 }
@@ -14,10 +14,10 @@ export async function GET() {
 export async function POST(request) {
     try {
         const session = await getServerSession(authOptions);
+        if (!session) return Response.json({ mensaje: 'Usuario no autenticado' },{status:403});
+
         const { rows: users } = await conn.query('select * from users where email = $1', [session.user.email]);
         const user = users[0]
-
-        if (!session) return Response.json({ mensaje: 'Usuario no autenticado' }, { status: 403 });
 
         const formData = await request.formData();
         const file = formData.get('file')
