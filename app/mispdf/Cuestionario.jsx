@@ -1,17 +1,20 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from "@nextui-org/button";
+import { generateCuestionario } from '../actions/pdf';
 
 const Cuestionario = ({ file, fin }) => {
-  const [step, setStep] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [step, setStep] = useState(null)
   const [finish, setFinish] = useState(false)
   const [viewResult, setViewResult] = useState(false)
   const [successCount, setSuccessCount] = useState(0)
   const [isSuccess, setIsSuccess] = useState(false)
   const [questions, setQuestions] = useState([])
+  console.log("🚀 ~ Cuestionario ~ questions:", questions)
   const [showQuestion, setShowQuestion] = useState(false);
   const [showAnswers, setShowAnswers] = useState([]);
-  const [showFinishElement, setShowFinishElement] = useState([false,false,false,false,false,false]);
+  const [showFinishElement, setShowFinishElement] = useState([false, false, false, false, false, false]);
 
   useEffect(() => {
     if (!questions[step]) return;
@@ -29,7 +32,7 @@ const Cuestionario = ({ file, fin }) => {
       setTimeout(() => setShowAnswers(prev => [...prev, index]), 600 + index * 300);
     });
   }, [step]);
- 
+
   useEffect(() => {
     if (!finish) return;
 
@@ -54,8 +57,12 @@ const Cuestionario = ({ file, fin }) => {
   };
 
   const getCuestionario = async (text) => {
+    if (loading) return;
+    setLoading(true)
     const res = await generateCuestionario(text);
     setQuestions(res);
+    //setLoading(false)
+    setStep(0)
   };
 
   const finishim = () => {
@@ -65,7 +72,7 @@ const Cuestionario = ({ file, fin }) => {
     setSuccessCount(0);
     setIsSuccess(false);
     setQuestions([]);
-    setShowFinishElement([false,false,false,false,false,false])
+    setShowFinishElement([false, false, false, false, false, false])
     fin();
   };
 
@@ -110,42 +117,42 @@ const Cuestionario = ({ file, fin }) => {
   return (
     <div className="flex flex-col">
       {questions[step] && (
-          <div className='my-5 flex flex-col items-center'>
-            <div className={`mb-5 transition-opacity duration-300 ${showQuestion ? 'flex opacity-100' : 'hidden opacity-100'}`}>
-              <h1>Pregunta {step + 1}/{questions.length}</h1>
-            </div>
-            <p className={`mb-2 transition-opacity duration-300 ${showQuestion ? 'flex opacity-100' : 'hidden opacity-100'}`}>
-              {questions[step].question}
-            </p>
-            <div className='flex flex-col gap-5 w-full'>
-              {questions[step].answers.map((a, index) => (
-                <Button
-                  key={index}
-                  disabled={viewResult}
-                  className={`w-full transition-opacity duration-300 ${showAnswers.includes(index) ? 'flex opacity-100 pointer-events-auto' : 'hidden opacity-100 pointer-events-none'} ${viewResult ? 
-                    (a.isTrue ? 'bg-green-500' : 'bg-red-500') : 'primary'}`}
-                  onClick={() => handleSelectAnswer(a.isTrue)}
-                >
-                  {a.text}
-                </Button>
-              ))}
-            </div>
-            <div className={`${viewResult ? 'flex' : 'hidden'} w-full flex items-center flex-col mt-5 gap-2`}>
-              <h5>{isSuccess ? '¡Lo hiciste bien!' : '¡Lo harás mejor la próxima vez!'}</h5>
-              <Button
-                color='primary'
-                onClick={() => {
-                  setShowQuestion(false);
-                  setShowAnswers([]);
-                  setViewResult(false);
-                  if ((step + 1) === questions.length) setFinish(true);
-                  else setStep(prev => prev + 1);
-                }}
-              >
-                Continuar
-              </Button>
-            </div>
+        <div className='my-5 flex flex-col items-center'>
+          <div className={`mb-5 transition-opacity duration-300 ${showQuestion ? 'flex opacity-100' : 'hidden opacity-100'}`}>
+            <h1>Pregunta {step + 1}/{questions.length}</h1>
           </div>
+          <p className={`mb-2 transition-opacity duration-300 ${showQuestion ? 'flex opacity-100' : 'hidden opacity-100'}`}>
+            {questions[step].question}
+          </p>
+          <div className='flex flex-col gap-5 w-full'>
+            {questions[step].answers.map((a, index) => (
+              <Button
+                key={index}
+                disabled={viewResult}
+                className={`w-full transition-opacity duration-300 ${showAnswers.includes(index) ? 'flex opacity-100 pointer-events-auto' : 'hidden opacity-100 pointer-events-none'} ${viewResult ?
+                  (a.isTrue ? 'bg-green-500' : 'bg-red-500') : 'primary'}`}
+                onClick={() => handleSelectAnswer(a.isTrue)}
+              >
+                {a.text}
+              </Button>
+            ))}
+          </div>
+          <div className={`${viewResult ? 'flex' : 'hidden'} w-full flex items-center flex-col mt-5 gap-2`}>
+            <h5>{isSuccess ? '¡Lo hiciste bien!' : '¡Lo harás mejor la próxima vez!'}</h5>
+            <Button
+              color='primary'
+              onClick={() => {
+                setShowQuestion(false);
+                setShowAnswers([]);
+                setViewResult(false);
+                if ((step + 1) === questions.length) setFinish(true);
+                else setStep(prev => prev + 1);
+              }}
+            >
+              Continuar
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );

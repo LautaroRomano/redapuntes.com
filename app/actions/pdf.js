@@ -31,7 +31,7 @@ export async function getMyPDF() {
     if (!user) return { error: "Debe iniciar sesion para continuar!" };
 
     const { rows: data } = await conn.query(
-      `select * from files_ia fi where fi.user_id =$1;`,
+      `select * from files_ia fi where fi.user_id =$1 order by created_at desc`,
       [user.user_id]
     );
 
@@ -53,7 +53,7 @@ export async function generateCuestionario(text) {
         {
           role: "system",
           content: `
-          Dado un texto largo, genera 15 preguntas de opción múltiple que ayuden a un estudiante a repasar los conceptos clave antes de un examen. 
+          Dado un texto largo, genera 8 y solo 8 preguntas de opción múltiple que ayuden a un estudiante a repasar los conceptos clave antes de un examen. 
           Cada pregunta debe estar en el formato JSON detallado a continuación. Las preguntas deben ser de nivel avanzado y directamente relacionadas 
           con el contenido del texto. Cada pregunta debe tener cuatro respuestas posibles, de las cuales solo una es correcta. Además, proporciona una 
           breve justificación para cada respuesta correcta, basada en el texto proporcionado.
@@ -89,7 +89,6 @@ export async function generateCuestionario(text) {
       ],
     });
     const resText = (await openAiRes).choices[0].message.content;
-    console.log(resText);
 
     return JSON.parse(resText);
   } catch (error) {
