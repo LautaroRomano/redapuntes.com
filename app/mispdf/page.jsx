@@ -85,6 +85,12 @@ const PdfHome = () => {
     );
   }
 
+  if (selectTool?.tool === "FLASHCARDS") {
+    return (
+      <FlashCards file={selectTool.file} fin={() => setSelectTool(null)} />
+    );
+  }
+
   if (selectTool?.tool === "MINDMAP") {
     return <MindMap file={selectTool.file} fin={() => setSelectTool(null)} />;
   }

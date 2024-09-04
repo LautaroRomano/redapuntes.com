@@ -19,11 +19,11 @@ export default function ModalTools({ children, pdf, setSelectTool }) {
                                 <Button startContent={<SiGoogleforms />} onPress={() => setSelectTool({ file: pdf, tool: 'CUESTIONARIO' })}>
                                     Generar un Cuestionario
                                 </Button>
+                                <Button startContent={<CgCardClubs />} onPress={() => setSelectTool({ file: pdf, tool: 'FLASHCARDS' })}>
+                                    Generar flashcards
+                                </Button>
                                 <Button startContent={<FaRobot />} onPress={() => setSelectTool({ file: pdf, tool: 'MINDMAP' })}>
                                     Generar un Mapa mental
-                                </Button>
-                                <Button startContent={<CgCardClubs />} onPress={() => setSelectTool({ file: pdf, tool: 'IDEOGRAM' })}>
-                                    Generar flashcards
                                 </Button>
                             </ModalBody>
                             <ModalFooter>

@@ -4,6 +4,7 @@ import { Button } from "@nextui-org/button";
 import { generateCuestionario } from '../actions/pdf';
 import Star from '@/components/loaders/Star';
 import { reject } from 'lodash';
+import { toast } from 'react-toastify';
 
 const Cuestionario = ({ file, fin }) => {
   const [loading, setLoading] = useState(false)
@@ -251,7 +252,12 @@ const Cuestionario = ({ file, fin }) => {
       ])    
       }, 1000);
     })
-    
+    if (res.error) {
+      toast.error(res.error);
+      setLoading(false);
+      finishim()
+      return;
+    }
     setQuestions(res);
     setLoading(false)
     setStep(0);
