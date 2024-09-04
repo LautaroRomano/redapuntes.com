@@ -11,7 +11,6 @@ const Cuestionario = ({ file, fin }) => {
   const [successCount, setSuccessCount] = useState(0)
   const [isSuccess, setIsSuccess] = useState(false)
   const [questions, setQuestions] = useState([])
-  console.log("🚀 ~ Cuestionario ~ questions:", questions)
   const [showQuestion, setShowQuestion] = useState(false);
   const [showAnswers, setShowAnswers] = useState([]);
   const [showFinishElement, setShowFinishElement] = useState([false, false, false, false, false, false]);

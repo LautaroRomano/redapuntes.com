@@ -7,6 +7,7 @@ import { FaFilePdf } from "react-icons/fa6";
 import { Spinner } from "@nextui-org/react";
 import ModalTools from "./ModalTools";
 import Cuestionario from "./Cuestionario";
+import MindMap from "./MindMap";
 
 const PdfHome = () => {
   const [files, setFiles] = useState([]);
@@ -57,9 +58,15 @@ const PdfHome = () => {
     getFiles();
   }, []);
 
-  if (selectTool) {
+  if (selectTool?.tool === 'CUESTIONARIO') {
     return (
       <Cuestionario file={selectTool.file} fin={() => setSelectTool(null)} />
+    );
+  }
+  
+  if (selectTool?.tool === 'MINDMAP') {
+    return (
+      <MindMap file={selectTool.file} fin={() => setSelectTool(null)} />
     );
   }
 

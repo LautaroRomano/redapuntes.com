@@ -17,13 +17,13 @@ export default function ModalTools({ children, pdf, setSelectTool }) {
                             <ModalHeader className="flex flex-col gap-1">Como quieres estudiar el dia de hoy?</ModalHeader>
                             <ModalBody>
                                 <Button startContent={<SiGoogleforms />} onPress={() => setSelectTool({ file: pdf, tool: 'CUESTIONARIO' })}>
-                                    Cuestionario
+                                    Generar un Cuestionario
                                 </Button>
-                                <Button startContent={<FaRobot />} onPress={() => setSelectTool({ file: pdf, tool: 'QUESTIONS' })}>
-                                    Realizar preguntas
+                                <Button startContent={<FaRobot />} onPress={() => setSelectTool({ file: pdf, tool: 'MINDMAP' })}>
+                                    Generar un Mapa mental
                                 </Button>
                                 <Button startContent={<CgCardClubs />} onPress={() => setSelectTool({ file: pdf, tool: 'IDEOGRAM' })}>
-                                    Ideogram
+                                    Generar flashcards
                                 </Button>
                             </ModalBody>
                             <ModalFooter>

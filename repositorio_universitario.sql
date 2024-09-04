@@ -130,3 +130,32 @@ CREATE TABLE files_ia (
     name varchar(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE cuestionarios (
+    cuestionario_id SERIAL PRIMARY KEY,
+    file_id INT REFERENCES files_ia(file_id) ON DELETE CASCADE,
+    data JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE mind_maps (
+    mind_id SERIAL PRIMARY KEY,
+    file_id INT REFERENCES files_ia(file_id) ON DELETE CASCADE,
+    edges JSONB,
+    nodes JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE flashCars (
+    flash_card_id SERIAL PRIMARY KEY,
+    file_id INT REFERENCES files_ia(file_id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE cards (
+    card_id SERIAL PRIMARY KEY,
+    flash_card_id INT REFERENCES flashCars(flash_card_id) ON DELETE CASCADE,
+    front text,
+    back text,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
