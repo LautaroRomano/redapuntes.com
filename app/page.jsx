@@ -23,7 +23,7 @@ import { get, searchPosts } from "./actions/posts";
 
 import { SearchIcon } from "@/components/icons";
 import Filters from "@/components/Filters";
-import Start from "../components/loaders/Star";
+import Star from "../components/loaders/Star";
 import { PiStarFourFill } from "react-icons/pi";
 
 export default function Home() {
@@ -45,7 +45,6 @@ export default function Home() {
     const hasVisited = localStorage.getItem("hasVisited");
     if (!hasVisited) {
       onOpen();
-      localStorage.setItem("hasVisited", "true");
     }
   }, []);
 
@@ -179,10 +178,22 @@ export default function Home() {
                   auto
                   flat
                   color="primary"
-                  onClick={onClose}
+                  onClick={()=>{
+                    onClose();
+                    localStorage.setItem("hasVisited", "true");
+                  }}
                   startContent={<PiStarFourFill />}
                 >
-                  ¡Comienza ahora!
+                  ¡Comenzar ahora!
+                </Button>
+                <Button
+                  auto
+                  flat
+                  color="primary"
+                  variant="bordered"
+                  onClick={onClose}
+                >
+                  Recordar mas tarde
                 </Button>
               </ModalFooter>
             </>

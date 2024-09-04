@@ -103,6 +103,50 @@ export async function generateCuestionario(text) {
   }
 }
 
+export async function generateCards(text) {
+  try {
+    const user = await getMyUser();
+
+    const openAiRes = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-16k",
+      messages: [
+        {
+          role: "system",
+          content: `
+          Eres una IA especializada en crear tarjetas para ayudar a los estudiantes a repasar antes de un examen. Dado un texto largo, tu tarea es generar exactamente 8 tarjetas con un frente y un dorso que cubran los conceptos clave presentados en el texto. 
+
+          Instrucciones específicas:
+          1. **Relación directa con el texto**: Cada tarjeta debe estar claramente relacionada con un concepto importante o sección del texto.
+          2. **Nivel avanzado**: Las tarjetas deben ser desafiantes, requiriendo una comprensión profunda del material.
+          3. **Variedad en la cobertura**: Asegúrate de que las tarjetas aborden diferentes partes y aspectos del texto para garantizar una revisión completa.
+          5. **Frente de la tarjeta**: El frente de la tarjeta proporciona una pregunta relacionada con el contexto del texto.
+          5. **Dorso de la tarjeta**: El dorso de la tarjeta proporciona una respuesta en forma de justificación explicando la respuesta de la pregunta en el contexto del texto.
+
+          Formato de salida esperado:
+          [
+            {
+                "front": "Pregunta 1",
+                "back": "Respuesta con una breve justificación basada en el texto"
+            },
+            ...
+          ]
+          `,
+        },
+        {
+          role: "user",
+          content: `texto: ${text}.`,
+        },
+      ],
+    });
+    const resText = (await openAiRes).choices[0].message.content;
+
+    return JSON.parse(resText);
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
+    return { error: "Ocurrio un error!" };
+  }
+}
+
 
 export async function generateMindMap(text) {
   try {

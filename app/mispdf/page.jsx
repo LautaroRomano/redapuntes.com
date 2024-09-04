@@ -19,6 +19,7 @@ import Cuestionario from "./Cuestionario";
 import MindMap from "./MindMap";
 import { PiStarFourFill } from "react-icons/pi";
 import Star from "@/components/loaders/Star";
+import FlashCards from "./FlashCards";
 
 const PdfHome = () => {
   const [files, setFiles] = useState([]);
