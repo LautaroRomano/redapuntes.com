@@ -35,6 +35,7 @@ import { useEffect, useState } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { useTheme } from "next-themes";
+import { PiStarFourFill } from "react-icons/pi";
 
 import { ThemeSwitch } from "./theme-switch";
 
@@ -50,10 +51,8 @@ export const Navbar = () => {
   const { theme } = useTheme();
 
   useEffect(() => {
-    if (theme)
-      setMyTheme(theme)
-  }, [theme])
-
+    if (theme) setMyTheme(theme);
+  }, [theme]);
 
   const getUser = async () => {
     const user = await getMyUser();
@@ -75,14 +74,22 @@ export const Navbar = () => {
                 <Image
                   isBlurred
                   className="cover max-h-6 rounded-none"
-                  src={myTheme ? `/logo-lg-${myTheme}.webp` : '/logo-lg-default.webp'}
+                  src={
+                    myTheme
+                      ? `/logo-lg-${myTheme}.webp`
+                      : "/logo-lg-default.webp"
+                  }
                 />
               </div>
               <div className="font-bold flex md:hidden">
                 <Image
                   isBlurred
                   className="cover max-h-5 rounded-none"
-                  src={myTheme ? `/logo-sm-${myTheme}.webp` : '/logo-sm-default.webp'}
+                  src={
+                    myTheme
+                      ? `/logo-sm-${myTheme}.webp`
+                      : "/logo-sm-default.webp"
+                  }
                 />
               </div>
             </NextLink>
@@ -93,8 +100,24 @@ export const Navbar = () => {
           <NavbarItem className="flex gap-2">
             <ThemeSwitch />
           </NavbarItem>
+          <NavbarItem className="flex gap-2">
+            <Button
+              as={"a"}
+              href="/mispdf"
+              isIconOnly
+              className="text-2xl font-normal text-default-600 rounded-full bg-transparent"
+              variant="flat"
+            >
+              <p className="text-primary-500 animated-star">
+                <PiStarFourFill />
+              </p>
+              <p className="font-bold text-sm">5</p>
+            </Button>
+          </NavbarItem>
           <NavbarItem className="hidden md:flex gap-2">
             <InfoPopover />
+          </NavbarItem>
+          <NavbarItem className="hidden md:flex gap-2">
             {status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
@@ -137,7 +160,6 @@ export const Navbar = () => {
           </NavbarItem>
 
           <NavbarItem className="flex md:hidden gap-2">
-            <InfoPopover />
             {status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
