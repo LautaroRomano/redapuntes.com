@@ -17,7 +17,12 @@ export const getMyUser = async () => {
 
   const user = result[0];
 
-  return user;
+  const { rows: stars } = await conn.query(
+    "SELECT * FROM stars WHERE used=$1 and user_id=$2",
+    [false,user.user_id],
+  );
+
+  return {...user,stars};
 };
 
 export async function create({

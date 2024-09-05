@@ -111,7 +111,10 @@ export const Navbar = () => {
               <p className="text-primary-500 animated-star">
                 <PiStarFourFill />
               </p>
-              <p className="font-bold text-sm">5</p>
+              {
+                user?.stars &&
+                <p className="font-bold text-sm">{user.stars.length}</p>
+              }
             </Button>
           </NavbarItem>
           <NavbarItem className="hidden md:flex gap-2">
