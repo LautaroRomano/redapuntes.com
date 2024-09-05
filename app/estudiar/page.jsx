@@ -6,6 +6,8 @@ import { getMyPDF, getSaved } from "../actions/pdf";
 import { FaFilePdf } from "react-icons/fa6";
 import {
   Button,
+  Card,
+  CardBody,
   Divider,
   Modal,
   ModalBody,
@@ -25,6 +27,7 @@ import { IoMdAdd } from "react-icons/io";
 import { SiGoogleforms } from "react-icons/si";
 import { TiFlowSwitch } from "react-icons/ti";
 import { CgCardClubs } from "react-icons/cg";
+import MissionCard from './MissionCard'
 
 const PdfHome = () => {
   const [files, setFiles] = useState([]);
@@ -192,6 +195,17 @@ const PdfHome = () => {
       </Modal>
 
       <div className="flex flex-col w-full gap-4">
+        <h1 className="text-2xl font-bold">Consigue estrellas</h1>
+        <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+          <MissionCard
+            missionText="Subir 2 apuntes a la red"
+            uploaded={1}
+            total={2}
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col w-full gap-4">
         <h1 className="text-2xl font-bold">Tus archivos</h1>
         <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
           <div className="flex border border-dashed p-2 flex-col items-center justify-evenly w-36 h-32 hover:border-blue-600 hover:text-blue-600 cursor-pointer">
@@ -299,7 +313,7 @@ const PdfHome = () => {
                   onClick={() => setSelectTool({ saved: fil, tool: "MINDMAP" })}
                 >
                   <p className="text-4xl">
-                  <TiFlowSwitch />
+                    <TiFlowSwitch />
                   </p>
                   <div className="overflow-hidden">
                     <p className="text-sm text-ellipsis w-full">
