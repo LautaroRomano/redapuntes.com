@@ -43,6 +43,55 @@ export async function getMyPDF() {
   }
 }
 
+export async function getSaved(files) {
+  try {
+    let dataCuestionarios = [];
+    let dataFlashCards = [];
+    let dataMindMaps = [];
+    for (const file of files) {
+      const { rows: cuestionarios } = await conn.query(
+        `select * from cuestionarios c where file_id =$1;`,
+        [file.file_id]
+      );
+      dataCuestionarios = dataCuestionarios.concat(
+        cuestionarios.map((d) => ({ ...d, file_name: file.name }))
+      );
+
+      const { rows: mindMaps } = await conn.query(
+        `select * from mind_maps mm where file_id = $1;`,
+        [file.file_id]
+      );
+      dataMindMaps = dataMindMaps.concat(
+        mindMaps.map((d) => ({ ...d, file_name: file.name }))
+      );
+
+      const { rows: fcList } = await conn.query(
+        `select * from flashcars f where file_id = $1;`,
+        [file.file_id]
+      );
+      const flashCards = [];
+      for (const fc of fcList) {
+        const { rows: cards } = await conn.query(
+          `select * from cards c where flash_card_id = $1`,
+          [fc.flash_card_id]
+        );
+        flashCards.push({ ...fc, cards, file_name: file.name });
+      }
+      dataFlashCards = dataFlashCards.concat(flashCards);
+    }
+
+    return {
+      cuestionarios: dataCuestionarios,
+      mindMaps: dataMindMaps,
+      flashCards: dataFlashCards,
+    };
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
+
+    return { error: "Ocurrio un error!" };
+  }
+}
+
 export async function generateCuestionario(text) {
   try {
     const user = await getMyUser();
@@ -203,12 +252,12 @@ export async function saveCuestionario({ file_id, data }) {
     const user = await getMyUser();
     if (!user) return { error: "Debe iniciar sesion para continuar!" };
 
-    const newData = data.map(d => ({
+    const newData = data.map((d) => ({
       question: d.question,
       answers: d.answers,
-      justification: d.justification
-    }))
-    
+      justification: d.justification,
+    }));
+
     await conn.query(
       `insert into cuestionarios(file_id,"data") values($1,$2)`,
       [file_id, JSON.stringify(newData)]
@@ -248,14 +297,13 @@ export async function saveCards({ file_id, cards }) {
       [file_id]
     );
 
-    const flashCardId = flashCards[0].flash_card_id
+    const flashCardId = flashCards[0].flash_card_id;
 
     for (const card of cards) {
       await conn.query(
         `insert into cards(flash_card_id,front,back) values($1,$2,$3)`,
         [flashCardId, card.front, card.back]
       );
-
     }
 
     return true;
@@ -264,4 +312,3 @@ export async function saveCards({ file_id, cards }) {
     return { error: "Ocurrio un error!" };
   }
 }
-

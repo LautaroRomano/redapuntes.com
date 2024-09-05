@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import { SiGoogleforms } from "react-icons/si";
-import { FaRobot } from "react-icons/fa";
+import { TiFlowSwitch } from "react-icons/ti";
 import { CgCardClubs } from "react-icons/cg";
 
 export default function ModalTools({ children, pdf, setSelectTool }) {
@@ -22,7 +22,7 @@ export default function ModalTools({ children, pdf, setSelectTool }) {
                                 <Button startContent={<CgCardClubs />} onPress={() => setSelectTool({ file: pdf, tool: 'FLASHCARDS' })}>
                                     Generar flashcards
                                 </Button>
-                                <Button startContent={<FaRobot />} onPress={() => setSelectTool({ file: pdf, tool: 'MINDMAP' })}>
+                                <Button startContent={<TiFlowSwitch />} onPress={() => setSelectTool({ file: pdf, tool: 'MINDMAP' })}>
                                     Generar un Mapa mental
                                 </Button>
                             </ModalBody>

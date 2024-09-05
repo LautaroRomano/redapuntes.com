@@ -103,7 +103,7 @@ export const Navbar = () => {
           <NavbarItem className="flex gap-2">
             <Button
               as={"a"}
-              href="/mispdf"
+              href="/estudiar"
               isIconOnly
               className="text-2xl font-normal text-default-600 rounded-full bg-transparent"
               variant="flat"

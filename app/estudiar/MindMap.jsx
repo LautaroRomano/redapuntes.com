@@ -6,8 +6,9 @@ import Star from "@/components/loaders/Star";
 import { Button } from "@nextui-org/button";
 import { toast } from "react-toastify";
 import { Spinner } from "@nextui-org/react";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
-function Flow({ file, fin }) {
+function Flow({ file, fin, saved }) {
   const [loading, setLoading] = useState(false);
   const [generated, setGenerated] = useState(0);
   const [edges, setEdges] = useState([]);
@@ -141,7 +142,7 @@ function Flow({ file, fin }) {
     if (res.error) {
       toast.error(res.error);
       setLoading(false);
-      finishim()
+      finishim();
       return;
     }
     setEdges(res.edges);
@@ -149,6 +150,13 @@ function Flow({ file, fin }) {
     setGenerated((prev) => prev + 1);
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (saved) {
+      setEdges(saved.edges);
+      setNodes(saved.nodes);
+    }
+  }, [saved]);
 
   const finishim = () => {
     setNodes([]);
@@ -161,19 +169,28 @@ function Flow({ file, fin }) {
   }, [file]);
 
   const save = async () => {
-    setSaving(true)
-    const res = await saveMindMap({ file_id: file.file_id,  edges, nodes })
+    setSaving(true);
+    const res = await saveMindMap({ file_id: file.file_id, edges, nodes });
     if (res.error) {
-      toast.error(res.error)
-      setSaving(false)
-      return
+      toast.error(res.error);
+      setSaving(false);
+      return;
     }
-    setSaving(false)
-    toast.success('Guardado con exito!')
-  }
+    setSaving(false);
+    toast.success("Guardado con exito!");
+  };
 
   return (
     <div className="w-screen" style={{ height: "calc(100vh - 140px)" }}>
+      <div className="flex w-full mb-2 text-secondary">
+        <Button
+          size="sm"
+          startContent={<IoMdArrowRoundBack size={18} />}
+          onPress={fin}
+        >
+          Volver
+        </Button>
+      </div>
       {loading ? (
         <div className="flex items-center justify-center h-96 ">
           <div>
@@ -191,30 +208,32 @@ function Flow({ file, fin }) {
             <Background />
             <Controls />
           </ReactFlow>
-          <div className="flex gap-2 text-sm items-center">
-            <h1 className="text-default-900" >Te sirve?</h1>
-            <Button
-              disabled={saving}
-              size="sm" 
-              color="primary"
-              onClick={save}
-            >
-              {saving ? <Spinner /> : 'Guardar Mapa'}
-            </Button>
-            {generated <= 3 && (
-              <>
-                <h1 className="text-default-900">Si no</h1>
-                <Button
-                  size="sm"
-                  color="primary"
-                  variant="bordered"
-                  onPress={() => getMap(file.text)}
-                >
-                  Generar otro
-                </Button>
-              </>
-            )}
-          </div>
+          {!saved && (
+            <div className="flex gap-2 text-sm items-center">
+              <h1 className="text-default-900">Te sirve?</h1>
+              <Button
+                disabled={saving}
+                size="sm"
+                color="primary"
+                onClick={save}
+              >
+                {saving ? <Spinner /> : "Guardar Mapa"}
+              </Button>
+              {generated <= 3 && (
+                <>
+                  <h1 className="text-default-900">Si no</h1>
+                  <Button
+                    size="sm"
+                    color="primary"
+                    variant="bordered"
+                    onPress={() => getMap(file.text)}
+                  >
+                    Generar otro
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

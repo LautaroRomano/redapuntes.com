@@ -174,7 +174,7 @@ export default function Home() {
               <ModalFooter>
                 <Button
                   as={"a"}
-                  href="/mispdf"
+                  href="/estudiar"
                   auto
                   flat
                   color="primary"
