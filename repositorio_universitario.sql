@@ -134,7 +134,7 @@ CREATE TABLE files_ia (
 CREATE TABLE cuestionarios (
     cuestionario_id SERIAL PRIMARY KEY,
     file_id INT REFERENCES files_ia(file_id) ON DELETE CASCADE,
-    data JSONB,
+    data text,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

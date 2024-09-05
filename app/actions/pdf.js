@@ -147,7 +147,6 @@ export async function generateCards(text) {
   }
 }
 
-
 export async function generateMindMap(text) {
   try {
     const user = await getMyUser();
@@ -193,6 +192,73 @@ export async function generateMindMap(text) {
     const resText = (await openAiRes).choices[0].message.content;
 
     return JSON.parse(resText);
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
+    return { error: "Ocurrio un error!" };
+  }
+}
+
+export async function saveCuestionario({ file_id, data }) {
+  try {
+    const user = await getMyUser();
+    if (!user) return { error: "Debe iniciar sesion para continuar!" };
+
+    const newData = data.map(d => ({
+      question: d.question,
+      answers: d.answers,
+      justification: d.justification
+    }))
+    
+    await conn.query(
+      `insert into cuestionarios(file_id,"data") values($1,$2)`,
+      [file_id, JSON.stringify(newData)]
+    );
+
+    return true;
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
+    return { error: "Ocurrio un error!" };
+  }
+}
+
+export async function saveMindMap({ file_id, edges, nodes }) {
+  try {
+    const user = await getMyUser();
+    if (!user) return { error: "Debe iniciar sesion para continuar!" };
+
+    await conn.query(
+      `insert into mind_maps(file_id,edges,nodes) values($1,$2,$3);`,
+      [file_id, JSON.stringify(edges), JSON.stringify(nodes)]
+    );
+
+    return true;
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
+    return { error: "Ocurrio un error!" };
+  }
+}
+
+export async function saveCards({ file_id, cards }) {
+  try {
+    const user = await getMyUser();
+    if (!user) return { error: "Debe iniciar sesion para continuar!" };
+
+    const { rows: flashCards } = await conn.query(
+      `insert into flashcars(file_id) values($1) RETURNING flash_card_id`,
+      [file_id]
+    );
+
+    const flashCardId = flashCards[0].flash_card_id
+
+    for (const card of cards) {
+      await conn.query(
+        `insert into cards(flash_card_id,front,back) values($1,$2,$3)`,
+        [flashCardId, card.front, card.back]
+      );
+
+    }
+
+    return true;
   } catch (error) {
     console.log("🚀 ~ get ~ error:", error);
     return { error: "Ocurrio un error!" };

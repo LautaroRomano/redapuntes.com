@@ -1,16 +1,18 @@
 import { ReactFlow, Controls, Background } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { generateMindMap } from "../actions/pdf";
+import { generateMindMap, saveMindMap } from "../actions/pdf";
 import { useEffect, useState } from "react";
 import Star from "@/components/loaders/Star";
 import { Button } from "@nextui-org/button";
 import { toast } from "react-toastify";
+import { Spinner } from "@nextui-org/react";
 
 function Flow({ file, fin }) {
   const [loading, setLoading] = useState(false);
   const [generated, setGenerated] = useState(0);
   const [edges, setEdges] = useState([]);
   const [nodes, setNodes] = useState([]);
+  const [saving, setSaving] = useState(false);
 
   const getMap = async (text) => {
     if (loading) return;
@@ -158,8 +160,20 @@ function Flow({ file, fin }) {
     if (file && file.text) getMap(file.text);
   }, [file]);
 
+  const save = async () => {
+    setSaving(true)
+    const res = await saveMindMap({ file_id: file.file_id,  edges, nodes })
+    if (res.error) {
+      toast.error(res.error)
+      setSaving(false)
+      return
+    }
+    setSaving(false)
+    toast.success('Guardado con exito!')
+  }
+
   return (
-    <div className="w-screen" style={{ height: "calc(100vh - 80px)" }}>
+    <div className="w-screen" style={{ height: "calc(100vh - 140px)" }}>
       {loading ? (
         <div className="flex items-center justify-center h-96 ">
           <div>
@@ -172,19 +186,24 @@ function Flow({ file, fin }) {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col w-full h-full gap-5 px-2 text-black">
+        <div className="flex flex-col w-full h-full gap-1 px-2 text-black">
           <ReactFlow nodes={nodes} edges={edges}>
             <Background />
             <Controls />
           </ReactFlow>
-          <div className="flex flex-col gap-1 text-sm">
-            <h1>Te sirve?</h1>
-            <Button size="sm" color="primary">
-              Guardar mapa
+          <div className="flex gap-2 text-sm items-center">
+            <h1 className="text-default-900" >Te sirve?</h1>
+            <Button
+              disabled={saving}
+              size="sm" 
+              color="primary"
+              onClick={save}
+            >
+              {saving ? <Spinner /> : 'Guardar Mapa'}
             </Button>
             {generated <= 3 && (
               <>
-                <h1>Si no</h1>
+                <h1 className="text-default-900">Si no</h1>
                 <Button
                   size="sm"
                   color="primary"
