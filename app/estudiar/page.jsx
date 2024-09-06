@@ -169,6 +169,12 @@ const PdfHome = () => {
     );
   }
 
+  if(!user) return(
+    <div className="flex flex-col w-full h-full items-center justify-center">
+      <h1>Inicia sesion para continuar</h1>
+    </div>
+  )
+
   return (
     <div className="flex flex-col w-full">
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

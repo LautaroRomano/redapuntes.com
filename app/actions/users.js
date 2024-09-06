@@ -74,11 +74,31 @@ export async function create({
 
     if (usersByEmail[0]) return { error: "Este email ya se encuentra en uso" };
 
-    await conn.query(
-      `
-        insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4)
-        `,
+    const { rows: newUser } = await conn.query(
+      `insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4) RETURNING user_id`,
       [lowerEmail, hashedPassword, accountname, lowerUsername]
+    );
+    const insertedUserId = newUser[0].user_id;
+
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text,completed) values($1,'FREE',1,1,'01-01-2050','Una gatis para que empieces a estudiar!',true);`,
+      [insertedUserId]
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text,completed) values($1,'FREE',1,1,'01-01-2050','Una gatis para que empieces a estudiar!',true);`,
+      [insertedUserId]
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text,completed) values($1,'FREE',1,1,'01-01-2050','Una gatis para que empieces a estudiar!',true);`,
+      [insertedUserId]
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_PUBLICATION',0,1,'01-01-2050','Sube un apunte a la red');`,
+      [insertedUserId]
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_PUBLICATION',0,5,'01-01-2050','Sube cinco apuntes a la red');`,
+      [insertedUserId]
     );
 
     return { ok: true };
