@@ -7,7 +7,9 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
 import { SessionProvider } from "next-auth/react";
 import { ToastContainer } from "react-toastify";
+import { Provider } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
+import { store } from "@/state";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -19,6 +21,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
 
   return (
     <SessionProvider>
+      <Provider store={store}>
       <NextUIProvider navigate={router.push}>
         <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
       </NextUIProvider>
@@ -34,6 +37,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
         rtl={false}
         theme="dark"
       />
+      </Provider>
     </SessionProvider>
   );
 }

@@ -6,15 +6,12 @@ import { getMyPDF, getSaved } from "../actions/pdf";
 import { FaFilePdf } from "react-icons/fa6";
 import {
   Button,
-  Card,
-  CardBody,
   Divider,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Spinner,
   Tab,
   Tabs,
   useDisclosure,
@@ -29,7 +26,10 @@ import { IoMdAdd } from "react-icons/io";
 import { SiGoogleforms } from "react-icons/si";
 import { TiFlowSwitch } from "react-icons/ti";
 import { CgCardClubs } from "react-icons/cg";
-import MissionCard from './MissionCard'
+import MissionCard from "./MissionCard";
+import { useSelector } from "react-redux";
+import { store, setUserLogged } from "@/state/index";
+import { getMyUser } from "../actions/users";
 
 const PdfHome = () => {
   const [files, setFiles] = useState([]);
@@ -41,6 +41,7 @@ const PdfHome = () => {
     mindMaps: [],
   });
   const [selectTool, setSelectTool] = useState(null);
+  const user = useSelector((state) => state.userLogged);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -98,6 +99,15 @@ const PdfHome = () => {
       console.log(error);
     }
   };
+
+  const getUser = async () => {
+    const user = await getMyUser();
+
+    if (user && !user.error) {
+      store.dispatch(setUserLogged(user));
+    }
+  };
+
   const getSavedGenerates = async (files) => {
     if (!files || files.length === 0) return;
     setLoadingSaved(true);
@@ -127,6 +137,7 @@ const PdfHome = () => {
         fin={() => {
           setSelectTool(null);
           getFiles();
+          getUser();
         }}
       />
     );
@@ -199,26 +210,25 @@ const PdfHome = () => {
       <div className="flex flex-col w-full gap-4">
         <h1 className="text-2xl font-bold">Consigue estrellas</h1>
         <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
-          <MissionCard
-            missionText="Subir 2 apuntes a la red"
-            uploaded={2}
-            total={2}
-          />
-          <MissionCard
-            missionText="Subir 2 apuntes a la red"
-            uploaded={1}
-            total={2}
-          />
+          {user &&
+            user.missions.map((mission) => (
+              <MissionCard
+                mission={mission}
+                uploaded={mission.amount}
+                total={mission.final_amount}
+              />
+            ))}
         </div>
       </div>
       <Divider className="my-5" />
       <div className="flex flex-col w-full gap-4">
         <div className="flex gap-1 flex-col justify-center">
           <h1 className="text-2xl font-bold">Tus PDF</h1>
-          {
-            (loading===false) &&
-            <p className="text-sm font-bold text-default-300">{files.length > 0 ? 'Selecciona' : 'Sube'} un PDF para comenzar</p>
-          }
+          {loading === false && (
+            <p className="text-sm font-bold text-default-300">
+              {files.length > 0 ? "Selecciona" : "Sube"} un PDF para comenzar
+            </p>
+          )}
         </div>
         <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
           <div className="flex border border-dashed p-2 flex-col items-center justify-evenly w-36 h-32 hover:border-blue-600 hover:text-blue-600 cursor-pointer">
@@ -320,7 +330,9 @@ const PdfHome = () => {
                   {saved.mindMaps.map((fil) => (
                     <div
                       className="flex border p-2 flex-col items-center justify-evenly w-36 h-32 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
-                      onClick={() => setSelectTool({ saved: fil, tool: "MINDMAP" })}
+                      onClick={() =>
+                        setSelectTool({ saved: fil, tool: "MINDMAP" })
+                      }
                     >
                       <p className="text-4xl">
                         <TiFlowSwitch />
@@ -338,7 +350,6 @@ const PdfHome = () => {
           )}
         </Tabs>
       </div>
-
     </div>
   );
 };

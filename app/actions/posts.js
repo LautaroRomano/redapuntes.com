@@ -1,23 +1,6 @@
 "use server";
-import { getServerSession } from "next-auth";
-
 import conn from "../lib/db";
-import { authOptions } from "../api/auth/[...nextauth]/route";
-
-const getMyUser = async () => {
-  const session = await getServerSession(authOptions);
-
-  if (!session || !session.user.email) return { error: "Ocurrio un error!" };
-
-  const { rows: result } = await conn.query(
-    "SELECT * FROM users WHERE email=$1",
-    [session.user.email],
-  );
-
-  const user = result[0];
-
-  return user;
-};
+import { getMyUser } from "./users";
 
 export async function create(content, files, selected) {
   try {

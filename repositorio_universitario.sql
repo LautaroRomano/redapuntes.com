@@ -167,3 +167,18 @@ CREATE TABLE stars (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP 
 );
+
+CREATE TABLE missions (
+    mission_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    type varchar(150),
+    amount int,
+    final_amount int,
+    completed boolean DEFAULT false,
+    reclaimed boolean DEFAULT false,
+    expiration date,
+    mission_text varchar(250);
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP 
+);
+

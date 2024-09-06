@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/button";
 import { generateCards, saveCards } from "../actions/pdf";
 import Star from "@/components/loaders/Star";
@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import {
   Card,
   CardBody,
-  CardHeader,
   Divider,
   Spinner,
 } from "@nextui-org/react";
@@ -65,51 +64,8 @@ const FlashCards = ({ file, fin, saved }) => {
   const getCuestionario = async (text) => {
     if (loading) return;
     setLoading(true);
-    //const res = await generateCards(text);
-    const res = await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve([
-          {
-            front:
-              "¿Cuál es el método utilizado para resolver EDO por aproximación?",
-            back: "El método utilizado es el Método de Euler, que consiste en trazar una recta tangente en el punto inicial y usarla para predecir el valor de la función en el siguiente punto.",
-          },
-          {
-            front:
-              "¿Cuál es la fórmula para calcular el valor aproximado de la función en el siguiente punto utilizando el Método de Euler?",
-            back: "La fórmula es y_i+1 = y_i + f(x_i, y_i) * h, donde y_i es el valor de la función en el punto anterior, f(x_i, y_i) es la derivada en ese punto y h es el tamaño del paso.",
-          },
-          {
-            front: "¿Cuál es el principal error asociado al Método de Euler?",
-            back: "El principal error es el error de truncamiento, que se produce al truncar la Serie de Taylor en el segundo término. Este error se disminuye al reducir el tamaño del paso h.",
-          },
-          {
-            front:
-              "¿Cuál es el método que mejora la aproximación a la pendiente en el Método de Euler?",
-            back: "El Método de Heun mejora la aproximación a la pendiente al calcular dos derivadas en el punto inicial y final, y luego promediarlas para obtener una aproximación más precisa.",
-          },
-          {
-            front:
-              "¿Cuál es la fórmula utilizada en el Método de Heun para predecir el valor de y en el punto siguiente?",
-            back: "La fórmula es y_i+1 = y_i + f(x_i, y_i) * h + f(x_i+1, y_i+10 * h) * h / 2, donde y_i es el valor de la función en el punto anterior, f(x_i, y_i) es la derivada en ese punto, f(x_i+1, y_i+1) es la derivada en el punto siguiente y h es el tamaño del paso.",
-          },
-          {
-            front:
-              "¿Cuál es el método que utiliza el cálculo de la derivada en el punto medio del intervalo para mejorar la aproximación en el Método de Euler?",
-            back: "El Método del Polígono Mejorado, también conocido como Euler Modificado, utiliza el cálculo de la derivada en el punto medio del intervalo para predecir el valor de y en ese punto, y luego utiliza ese valor para calcular la pendiente y actualizar el valor de y en el punto siguiente.",
-          },
-          {
-            front: "¿Cuáles son los métodos de Runge Kutta más utilizados?",
-            back: "Los métodos de Runge Kutta de tercer y cuarto orden son los más utilizados debido a su exactitud y capacidad para evitar el cálculo de derivadas superiores.",
-          },
-          {
-            front:
-              "¿Cuál es el error de truncamiento del Método de Runge Kutta de Tercer Orden?",
-            back: "El error de truncamiento del Método de Runge Kutta de Tercer Orden es del O(h^4), lo que significa que disminuye más rápidamente que el Método de Euler a medida que se reduce el tamaño del paso h.",
-          },
-        ]);
-      }, 1000);
-    });
+    const res = await generateCards(text);
+
     if (res.error) {
       toast.error(res.error);
       setLoading(false);

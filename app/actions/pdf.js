@@ -1,29 +1,26 @@
 "use server";
-import { getServerSession } from "next-auth";
 import conn from "../lib/db";
-import { authOptions } from "../api/auth/[...nextauth]/route";
 
 import OpenAI from "openai";
+import { getMyUser } from "./users";
 
 const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_API_KEY,
 });
 
-const getMyUser = async () => {
-  const session = await getServerSession(authOptions);
+export async function getStar(user) {
+  try {
+    const { rows: data } = await conn.query(
+      `select * from stars s where s.used = false and s.user_id = $1`,
+      [user.user_id]
+    );
 
-  if (!session || !session?.user?.email)
-    return { error: "Debe iniciar sesion para continuar!" };
-
-  const { rows: result } = await conn.query(
-    "SELECT * FROM users WHERE email=$1",
-    [session.user.email]
-  );
-
-  const user = result[0];
-
-  return user;
-};
+    return data[0];
+  } catch (error) {
+    console.log("🚀 ~ get ~ error:", error);
+    return { error: "Ocurrio un error!" };
+  }
+}
 
 export async function getMyPDF() {
   try {
@@ -93,8 +90,17 @@ export async function getSaved(files) {
 }
 
 export async function generateCuestionario(text) {
+  const user = await getMyUser();
+  if (!user) return { error: "Debe iniciar sesion para continuar!" };
+
+  const star = await getStar(user);
+  if (!star) return { error: "Consigue estrellas para continuar!" };
+
   try {
-    const user = await getMyUser();
+    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+      true,
+      star.star_id,
+    ]);
 
     const openAiRes = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-16k",
@@ -102,14 +108,13 @@ export async function generateCuestionario(text) {
         {
           role: "system",
           content: `
-          Eres una IA especializada en crear cuestionarios para ayudar a los estudiantes a repasar antes de un examen. Dado un texto largo, tu tarea es generar exactamente 8 preguntas de opción múltiple que cubran los conceptos clave presentados en el texto. 
+          Eres un profesor universitario especializado en crear cuestionarios para ayudar a los estudiantes a repasar antes de un examen. Dado un texto largo, tu tarea es generar exactamente 8 preguntas de opción múltiple que cubran los conceptos clave presentados en el texto. 
 
           Instrucciones específicas:
           1. **Relación directa con el texto**: Cada pregunta debe estar claramente relacionada con un concepto importante o sección del texto.
-          2. **Nivel avanzado**: Las preguntas deben ser desafiantes, requiriendo una comprensión profunda del material.
+          2. **Nivel intermedio**: Las preguntas deben ser desafiantes, requiriendo una comprensión del material.
           3. **Variedad en la cobertura**: Asegúrate de que las preguntas aborden diferentes partes y aspectos del texto para garantizar una revisión completa.
-          4. **Distractores plausibles**: Las respuestas incorrectas (distractores) deben ser razonables pero claramente incorrectas, basadas en una interpretación errónea o superficial del texto.
-          5. **Justificación**: Proporciona una breve justificación para cada respuesta correcta, explicando por qué es correcta en el contexto del texto.
+          4. **Justificación**: Proporciona una breve justificación para cada respuesta correcta, explicando por qué es correcta en el contexto del texto.
 
           Formato de salida esperado:
           [
@@ -144,17 +149,33 @@ export async function generateCuestionario(text) {
       ],
     });
     const resText = (await openAiRes).choices[0].message.content;
+    console.log("🚀 ~ resText:", resText);
 
     return JSON.parse(resText);
   } catch (error) {
     console.log("🚀 ~ get ~ error:", error);
+
+    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+      false,
+      star.star_id,
+    ]);
+
     return { error: "Ocurrio un error!" };
   }
 }
 
 export async function generateCards(text) {
+  const user = await getMyUser();
+  if (!user) return { error: "Debe iniciar sesion para continuar!" };
+
+  const star = await getStar(user);
+  if (!star) return { error: "Consigue estrellas para continuar!" };
+
   try {
-    const user = await getMyUser();
+    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+      true,
+      star.star_id,
+    ]);
 
     const openAiRes = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-16k",
@@ -162,7 +183,7 @@ export async function generateCards(text) {
         {
           role: "system",
           content: `
-          Eres una IA especializada en crear tarjetas para ayudar a los estudiantes a repasar antes de un examen. Dado un texto largo, tu tarea es generar exactamente 8 tarjetas con un frente y un dorso que cubran los conceptos clave presentados en el texto. 
+          Eres un profesor universitario especializado en crear tarjetas didacticas para ayudar a los estudiantes a repasar antes de un examen. Dado un texto largo, tu tarea es generar exactamente 8 tarjetas con un frente y un dorso que cubran los conceptos clave presentados en el texto. 
 
           Instrucciones específicas:
           1. **Relación directa con el texto**: Cada tarjeta debe estar claramente relacionada con un concepto importante o sección del texto.
@@ -188,17 +209,31 @@ export async function generateCards(text) {
       ],
     });
     const resText = (await openAiRes).choices[0].message.content;
+    console.log("🚀 ~ resText:", resText);
 
     return JSON.parse(resText);
   } catch (error) {
     console.log("🚀 ~ get ~ error:", error);
+    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+      false,
+      star.star_id,
+    ]);
     return { error: "Ocurrio un error!" };
   }
 }
 
 export async function generateMindMap(text) {
+  const user = await getMyUser();
+  if (!user) return { error: "Debe iniciar sesion para continuar!" };
+
+  const star = await getStar(user);
+  if (!star) return { error: "Consigue estrellas para continuar!" };
+
   try {
-    const user = await getMyUser();
+    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+      true,
+      star.star_id,
+    ]);
 
     const openAiRes = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-16k",
@@ -206,7 +241,7 @@ export async function generateMindMap(text) {
         {
           role: "system",
           content: `
-          Eres una IA experta en crear mapas mentales para ayudar a estudiantes a repasar antes de un examen. Tu tarea es identificar los conceptos clave de un texto largo y organizar estos conceptos en un mapa mental estructurado. Cada concepto clave debe convertirse en un nodo, y los nodos deben estar conectados entre sí de manera lógica según su relación en el texto.
+          Eres un profesor universitario experto en crear mapas mentales para ayudar a estudiantes a repasar antes de un examen. Tu tarea es identificar los conceptos clave de un texto largo y organizar estos conceptos en un mapa mental estructurado. Cada concepto clave debe convertirse en un nodo, y los nodos deben estar conectados entre sí de manera lógica según su relación en el texto.
 
           Instrucciones específicas:
           1. **Identifica conceptos clave y secundarios**: Los conceptos clave deben estar en la parte superior de la jerarquía del mapa mental, y los conceptos secundarios deben estar conectados a estos.
@@ -239,10 +274,15 @@ export async function generateMindMap(text) {
       ],
     });
     const resText = (await openAiRes).choices[0].message.content;
+    console.log("🚀 ~ resText:", resText);
 
     return JSON.parse(resText);
   } catch (error) {
     console.log("🚀 ~ get ~ error:", error);
+    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+      false,
+      star.star_id,
+    ]);
     return { error: "Ocurrio un error!" };
   }
 }

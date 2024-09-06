@@ -42,12 +42,14 @@ import { ThemeSwitch } from "./theme-switch";
 
 import { siteConfig } from "@/config/site";
 import { getMyUser } from "@/app/actions/users";
+import { store, setUserLogged } from "@/state/index";
+import { useSelector } from "react-redux";
 
 export const Navbar = () => {
   const { data: session, status } = useSession();
   const { isOpen, onOpenChange } = useDisclosure();
-  const [user, setUser] = useState(null);
   const [myTheme, setMyTheme] = useState(null);
+  const user = useSelector((state) => state.userLogged);
 
   const { theme } = useTheme();
 
@@ -58,11 +60,14 @@ export const Navbar = () => {
   const getUser = async () => {
     const user = await getMyUser();
 
-    if (user && !user.error) setUser(user);
+    if (user && !user.error) {
+      store.dispatch(setUserLogged(user));
+    }
   };
 
   useEffect(() => {
     if (status === "authenticated") getUser();
+    else if (status === "unauthenticated") store.dispatch(setUserLogged(null));
   }, [status]);
 
   return (
@@ -105,11 +110,14 @@ export const Navbar = () => {
             <Link
               as={"a"}
               href="/estudiar"
-              isIconOnly
               className="text-2xl font-normal text-default-600 rounded-full bg-transparent"
               variant="flat"
             >
-              <Badge content={user?.stars ? user.stars.length : 0} color="primary" placement="bottom-right">
+              <Badge
+                content={user?.stars ? user.stars.length : 0}
+                color="primary"
+                placement="bottom-right"
+              >
                 <PiStarFourFill className="text-primary-500 animated-star" />
               </Badge>
             </Link>

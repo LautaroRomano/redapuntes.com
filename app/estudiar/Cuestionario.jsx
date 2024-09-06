@@ -1,9 +1,8 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/button";
 import { generateCuestionario, saveCuestionario } from "../actions/pdf";
 import Star from "@/components/loaders/Star";
-import { reject } from "lodash";
 import { toast } from "react-toastify";
 import { Divider, Spinner } from "@nextui-org/react";
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -73,11 +72,6 @@ const Cuestionario = ({ file, fin, saved }) => {
   }, [questions]);
 
   const handleSelectAnswer = (isTrue) => {
-    /* setQuestions(prev => {
-      const newData = [...prev];
-      newData[step].result = isTrue;
-      return newData;
-    }); */
     setViewResult(true);
     if (isTrue) setSuccessCount((prev) => prev + 1);
     setIsSuccess(isTrue);
@@ -93,202 +87,7 @@ const Cuestionario = ({ file, fin, saved }) => {
   const getCuestionario = async (text) => {
     if (loading) return;
     setLoading(true);
-    //const res = await generateCuestionario(text);
-    const res = await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve([
-          {
-            question: "¿Qué es la transformada de Laplace?",
-            answers: [
-              {
-                text: "Una técnica de transformación para el análisis de sistemas de control lineal.",
-                isTrue: true,
-              },
-              {
-                text: "Una técnica de transformación para el análisis de sistemas de control no lineal.",
-                isTrue: false,
-              },
-              {
-                text: "Una técnica de transformación para el análisis de sistemas de comunicación.",
-                isTrue: false,
-              },
-              {
-                text: "Una técnica de transformación para el análisis de sistemas de retroalimentación.",
-                isTrue: false,
-              },
-            ],
-            justification:
-              "La definición del texto establece que la transformada de Laplace es una técnica de transformación para el análisis de sistemas de control lineal.",
-          },
-          {
-            question:
-              "¿Qué representa la variable compleja s en la transformada de Laplace?",
-            answers: [
-              {
-                text: "Una variable compleja definida por s = σ + jω.",
-                isTrue: true,
-              },
-              {
-                text: "Una variable real definida por s = t.",
-                isTrue: false,
-              },
-              {
-                text: "Una variable compleja definida por s = t + jω.",
-                isTrue: false,
-              },
-              {
-                text: "Una variable real definida por s = σ.",
-                isTrue: false,
-              },
-            ],
-            justification:
-              "El texto establece que la variable compleja s en la transformada de Laplace está definida por s = σ + jω.",
-          },
-          {
-            question: "¿Qué es la inversa de la transformada de Laplace?",
-            answers: [
-              {
-                text: "La transformada de Laplace de una función f(t).",
-                isTrue: false,
-              },
-              {
-                text: "La conversión de un problema del dominio de la variable compleja s al dominio del tiempo.",
-                isTrue: true,
-              },
-              {
-                text: "La transformada del dominio del tiempo al dominio de la variable compleja s.",
-                isTrue: false,
-              },
-              {
-                text: "La solución obtenida al problema transformado en términos de s.",
-                isTrue: false,
-              },
-            ],
-            justification:
-              "Según el texto, la inversa de la transformada de Laplace es la conversión de un problema del dominio de la variable compleja s al dominio del tiempo.",
-          },
-          {
-            question:
-              "¿Cuál es la propiedad de linealidad de la transformada de Laplace?",
-            answers: [
-              {
-                text: "La T.L. de la suma o diferencia de dos funciones de tiempo es la suma o diferencia de las T.L. de las funciones de tiempo.",
-                isTrue: true,
-              },
-              {
-                text: "La T.L. de la suma o diferencia de dos funciones de tiempo es el producto de las T.L. de las funciones de tiempo.",
-                isTrue: false,
-              },
-              {
-                text: "La T.L. de la suma o diferencia de dos funciones de tiempo es el cociente de las T.L. de las funciones de tiempo.",
-                isTrue: false,
-              },
-              {
-                text: "La T.L. de la suma o diferencia de dos funciones de tiempo es igual a cero.",
-                isTrue: false,
-              },
-            ],
-            justification:
-              "Según el texto, la propiedad de linealidad de la transformada de Laplace establece que la T.L. de la suma o diferencia de dos funciones de tiempo es la suma o diferencia de las T.L. de las funciones de tiempo.",
-          },
-          {
-            question:
-              "¿Qué es la propiedad de traslación compleja en la transformada de Laplace?",
-            answers: [
-              {
-                text: "La T.L. de la función e^at está dada por F(s) = 1/(s-a).",
-                isTrue: false,
-              },
-              {
-                text: "La T.L. de la función e^at está dada por F(s) = s/(s-a).",
-                isTrue: true,
-              },
-              {
-                text: "La T.L. de la función e^at está dada por F(s) = (s-a)/s.",
-                isTrue: false,
-              },
-              {
-                text: "La T.L. de la función e^at está dada por F(s) = s^2/(s-a).",
-                isTrue: false,
-              },
-            ],
-            justification:
-              "Según el texto, la propiedad de traslación compleja en la transformada de Laplace establece que la T.L. de la función e^at está dada por F(s) = s/(s-a).",
-          },
-          {
-            question: "¿Cuál es la transformada de Laplace de las derivadas?",
-            answers: [
-              {
-                text: "F(s) = sf(s) - f(0+).",
-                isTrue: true,
-              },
-              {
-                text: "F(s) = sf(s) + f(0+).",
-                isTrue: false,
-              },
-              {
-                text: "F(s) = f(s) - sf(0+).",
-                isTrue: false,
-              },
-              {
-                text: "F(s) = f(s) + sf(0+).",
-                isTrue: false,
-              },
-            ],
-            justification:
-              "Según el texto, la transformada de Laplace de las derivadas está dada por F(s) = sf(s) - f(0+).",
-          },
-          {
-            question:
-              "¿Cuál es la generalización de la transformada de Laplace de las derivadas?",
-            answers: [
-              {
-                text: "F(s) = s^n F(s) - s^(n-1) f(0+) - ... - f^(n-1)(0+).",
-                isTrue: true,
-              },
-              {
-                text: "F(s) = s^n F(s) + s^(n-1) f(0+) - ... - f^(n-1)(0+).",
-                isTrue: false,
-              },
-              {
-                text: "F(s) = s^n F(s) - s^(n-1) f(0+) + ... + f^(n-1)(0+).",
-                isTrue: false,
-              },
-              {
-                text: "F(s) = s^n F(s) + s^(n-1) f(0+) + ... + f^(n-1)(0+).",
-                isTrue: false,
-              },
-            ],
-            justification:
-              "Según el texto, la generalización de la transformada de Laplace de las derivadas está dada por F(s) = s^n F(s) - s^(n-1) f(0+) - ... - f^(n-1)(0+).",
-          },
-          {
-            question:
-              "¿Cuál es la transformada de Laplace de la función f(t) = e^(-t)?",
-            answers: [
-              {
-                text: "F(s) = 1/(s+1).",
-                isTrue: true,
-              },
-              {
-                text: "F(s) = 1/(s-1).",
-                isTrue: false,
-              },
-              {
-                text: "F(s) = 1/(s+e).",
-                isTrue: false,
-              },
-              {
-                text: "F(s) = 1/(s-e).",
-                isTrue: false,
-              },
-            ],
-            justification:
-              "Según el texto, la transformada de Laplace de la función f(t) = e^(-t) es F(s) = 1/(s+1).",
-          },
-        ]);
-      }, 1000);
-    });
+    const res = await generateCuestionario(text);
     if (res.error) {
       toast.error(res.error);
       setLoading(false);
@@ -362,16 +161,18 @@ const Cuestionario = ({ file, fin, saved }) => {
         >
           Finalizar
         </Button>
-        {!saved&&<Button
-          size="sm"
-          disabled={saving}
-          color="primary"
-          onClick={save}
-          className={`w-full transition-opacity duration-300 ${showFinishElement[3] ? "flex opacity-100" : "hidden opacity-100"}`}
-          variant="bordered"
-        >
-          {saving ? <Spinner /> : "Guardar Cuestionario"}
-        </Button>}
+        {!saved && (
+          <Button
+            size="sm"
+            disabled={saving}
+            color="primary"
+            onClick={save}
+            className={`w-full transition-opacity duration-300 ${showFinishElement[3] ? "flex opacity-100" : "hidden opacity-100"}`}
+            variant="bordered"
+          >
+            {saving ? <Spinner /> : "Guardar Cuestionario"}
+          </Button>
+        )}
 
         <h2
           className={`mt-9 text-xl transition-opacity duration-300 ${showFinishElement[4] ? "flex opacity-100" : "hidden opacity-100"}`}
