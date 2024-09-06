@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa";
 import { signIn, signOut, useSession } from "next-auth/react";
 import {
+  Badge,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -101,21 +102,17 @@ export const Navbar = () => {
             <ThemeSwitch />
           </NavbarItem>
           <NavbarItem className="flex gap-2">
-            <Button
+            <Link
               as={"a"}
               href="/estudiar"
               isIconOnly
               className="text-2xl font-normal text-default-600 rounded-full bg-transparent"
               variant="flat"
             >
-              <p className="text-primary-500 animated-star">
-                <PiStarFourFill />
-              </p>
-              {
-                user?.stars &&
-                <p className="font-bold text-sm">{user.stars.length}</p>
-              }
-            </Button>
+              <Badge content={user?.stars ? user.stars.length : 0} color="primary" placement="bottom-right">
+                <PiStarFourFill className="text-primary-500 animated-star" />
+              </Badge>
+            </Link>
           </NavbarItem>
           <NavbarItem className="hidden md:flex gap-2">
             <InfoPopover />
