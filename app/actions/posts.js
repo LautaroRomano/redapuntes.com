@@ -153,7 +153,6 @@ export async function get(type, limit = 10, offset = 0, filters) {
   }
 }
 
-
 export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
   try {
     const user = await getMyUser();
@@ -270,7 +269,29 @@ export async function setLike(post_id) {
         [post_id, user.user_id],
       );
 
-    return await getPostById(post_id);
+    const postById = await getPostById(post_id);
+
+    const { rows: missions } = await conn.query(
+      `select * from missions m 
+      WHERE TYPE ='GET_LIKE' and expiration >= CURRENT_DATE and reclaimed = false and completed = false and user_id = $1 
+      order by completed desc;`,
+      [postById.user_id],
+    );
+
+    for (const mission of missions) {
+      const { amount, final_amount, mission_id } = mission
+      const completed = (amount + 1) >= final_amount
+      await conn.query(
+        `update missions set amount = $1, completed =$2 where mission_id = $3`,
+        [
+          (amount + 1),
+          completed,
+          mission_id
+        ],
+      );
+    }
+
+    return postById
   } catch (error) {
     console.log("🚀 ~ get ~ error:", error);
 
@@ -325,6 +346,26 @@ export async function setComment(post_id, content) {
         `,
       [post_id],
     );
+
+    const { rows: missions } = await conn.query(
+      `select * from missions m 
+    WHERE TYPE ='MAKE_COMMENT' and expiration >= CURRENT_DATE and reclaimed = false and completed = false and user_id = $1 
+    order by completed desc;`,
+      [user.user_id],
+    );
+
+    for (const mission of missions) {
+      const { amount, final_amount, mission_id } = mission
+      const completed = (amount + 1) >= final_amount
+      await conn.query(
+        `update missions set amount = $1, completed =$2 where mission_id = $3`,
+        [
+          (amount + 1),
+          completed,
+          mission_id
+        ],
+      );
+    }
 
     return comments;
   } catch (error) {
