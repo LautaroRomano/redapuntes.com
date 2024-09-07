@@ -177,7 +177,7 @@ CREATE TABLE missions (
     completed boolean DEFAULT false,
     reclaimed boolean DEFAULT false,
     expiration date,
-    mission_text varchar(250);
+    mission_text varchar(250),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP 
 );

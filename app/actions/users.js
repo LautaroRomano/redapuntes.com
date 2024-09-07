@@ -93,11 +93,27 @@ export async function create({
       [insertedUserId]
     );
     await conn.query(
-      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_PUBLICATION',0,1,'01-01-2050','Sube un apunte a la red');`,
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_PUBLICATION',0,1,'01-01-2050','Sube 1 apunte a la red');`,
       [insertedUserId]
     );
     await conn.query(
-      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_PUBLICATION',0,5,'01-01-2050','Sube cinco apuntes a la red');`,
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_PUBLICATION',0,5,'01-01-2050','Sube 5 apuntes a la red');`,
+      [insertedUserId]
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_COMMENT',0,1,'01-01-2050','Realiza 1 comentario en algun apunte');`,
+      [insertedUserId]
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_COMMENT',0,5,'01-01-2050','Realiza 5 comentario en algun apunte');`,
+      [insertedUserId]
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'GET_LIKE',0,5,'01-01-2050','Recibe 5 likes en tus apuntes');`,
+      [insertedUserId]
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'GET_LIKE',0,15,'01-01-2050','Recibe 15 likes en tus apuntes');`,
       [insertedUserId]
     );
 

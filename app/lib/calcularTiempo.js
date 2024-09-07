@@ -12,6 +12,8 @@ const tiempoTranscurrido = (fecha) => {
     const minutos = Math.floor(segundos / 60);
     const horas = Math.floor(minutos / 60);
     const dias = Math.floor(horas / 24);
+    const meses = Math.floor(dias / 30);
+    const anio = Math.floor(meses / 12);
 
     if (segundos < 60) {
         return `${segundos} segundos`;
@@ -19,8 +21,12 @@ const tiempoTranscurrido = (fecha) => {
         return `${minutos} minutos`;
     } else if (horas < 24) {
         return `${horas} horas`;
-    } else {
+    } else if (dias <= 30) {
         return `${dias} días`;
+    } else if (meses <= 12) {
+        return `${dias} meses`;
+    } else {
+        return `${anio} años`;
     }
 }
 

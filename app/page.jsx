@@ -80,6 +80,11 @@ export default function Home() {
     getPosts(selectedValue);
   }, []);
 
+  const onRefresh = () => {
+    const selectedValue = Array.from(selectView)[0];
+    getPosts(selectedValue);
+  }
+
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
 
@@ -126,7 +131,7 @@ export default function Home() {
 
       if (
         myElement.scrollTop + myElement.clientHeight >=
-          myElement.scrollHeight - 150 &&
+        myElement.scrollHeight - 150 &&
         !loading
       ) {
         if (!isSearch && !endPosts) {
@@ -178,7 +183,7 @@ export default function Home() {
                   auto
                   flat
                   color="primary"
-                  onClick={()=>{
+                  onClick={() => {
                     onClose();
                     localStorage.setItem("hasVisited", "true");
                   }}
@@ -251,7 +256,7 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <CreatePost />
+          <CreatePost onRefresh={onRefresh} />
           <RenderPostsList postsList={postsList} />
           {!endPosts && <PostSkeleton />}
         </div>

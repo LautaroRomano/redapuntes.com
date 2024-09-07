@@ -103,7 +103,7 @@ export async function generateCuestionario(text) {
     ]);
 
     const openAiRes = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo-16k",
+      model: "GPT-4o-mini",
       messages: [
         {
           role: "system",
@@ -178,7 +178,7 @@ export async function generateCards(text) {
     ]);
 
     const openAiRes = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo-16k",
+      model: "GPT-4o-mini",
       messages: [
         {
           role: "system",
@@ -236,7 +236,7 @@ export async function generateMindMap(text) {
     ]);
 
     const openAiRes = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo-16k",
+      model: "GPT-4o-mini",
       messages: [
         {
           role: "system",

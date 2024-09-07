@@ -27,7 +27,7 @@ import SelectUniversity from "./SelectUniversity";
 import { uploadFile } from "@/app/lib/firebase";
 import { create } from "@/app/actions/posts";
 
-export default function CreatePost() {
+export default function CreatePost({onRefresh}) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { status } = useSession();
 
@@ -52,13 +52,13 @@ export default function CreatePost() {
         </CardBody>
       </Card>
       {status === "authenticated" && (
-        <NewPost isOpen={isOpen} onOpenChange={onOpenChange} />
+        <NewPost isOpen={isOpen} onOpenChange={onOpenChange} onRefresh={onRefresh} />
       )}
     </>
   );
 }
 
-const NewPost = ({ isOpen, onOpenChange }) => {
+const NewPost = ({ isOpen, onOpenChange,onRefresh }) => {
   const [content, setContent] = useState("");
   const [selected, setSelected] = useState({});
   const [files, setFiles] = useState([]);
@@ -123,6 +123,7 @@ const NewPost = ({ isOpen, onOpenChange }) => {
         setFiles([]);
         setSucces(false);
         onOpenChange();
+        onRefresh()
       }, 1000);
     } catch (error) {
       console.log(error);

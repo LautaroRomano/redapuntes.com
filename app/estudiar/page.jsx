@@ -169,7 +169,7 @@ const PdfHome = () => {
     );
   }
 
-  if(!user) return(
+  if (!user) return (
     <div className="flex flex-col w-full h-full items-center justify-center">
       <h1>Inicia sesion para continuar</h1>
     </div>
@@ -215,7 +215,7 @@ const PdfHome = () => {
 
       <div className="flex flex-col w-full gap-4">
         <h1 className="text-2xl font-bold">Consigue estrellas</h1>
-        <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+        <div className="flex p-2 gap-4 w-full justify-start overflow-x-auto" id="scroll">
           {user &&
             user.missions.map((mission) => (
               <MissionCard
@@ -270,92 +270,96 @@ const PdfHome = () => {
           ))}
         </div>
       </div>
-      <Divider className="my-5" />
-      <div className="flex flex-col items-center gap-4">
-        <h1 className="text-xl font-bold">Guardados</h1>
-        <Tabs aria-label="Saved">
-          {saved.cuestionarios.length > 0 && (
-            <Tab key="cuestionarios-guardados" title="Cuestionarios">
-              <div className="flex flex-col w-full gap-4">
-                <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
-                  {loadingSaved && <Star />}
-                  {saved.cuestionarios.map((fil) => (
-                    <div
-                      className="flex border p-2 flex-col items-center justify-evenly w-36 h-32 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
-                      onClick={() =>
-                        setSelectTool({ saved: fil, tool: "CUESTIONARIO" })
-                      }
-                    >
-                      <p className="text-4xl">
-                        <SiGoogleforms />
-                      </p>
-                      <div className="overflow-hidden">
-                        <p className="text-sm text-ellipsis w-full">
-                          {fil.file_name}
-                        </p>
-                      </div>
+      {(saved.cuestionarios.length > 0 || saved.flashCards.length > 0 || saved.mindMaps.length > 0) && (
+        <>
+          <Divider className="my-5" />
+          <div className="flex flex-col items-center gap-4">
+            <h1 className="text-xl font-bold">Guardados</h1>
+            <Tabs aria-label="Saved">
+              {saved.cuestionarios.length > 0 && (
+                <Tab key="cuestionarios-guardados" title="Cuestionarios">
+                  <div className="flex flex-col w-full gap-4">
+                    <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+                      {loadingSaved && <Star />}
+                      {saved.cuestionarios.map((fil) => (
+                        <div
+                          className="flex border p-2 flex-col items-center justify-evenly w-36 h-32 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
+                          onClick={() =>
+                            setSelectTool({ saved: fil, tool: "CUESTIONARIO" })
+                          }
+                        >
+                          <p className="text-4xl">
+                            <SiGoogleforms />
+                          </p>
+                          <div className="overflow-hidden">
+                            <p className="text-sm text-ellipsis w-full">
+                              {fil.file_name}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-            </Tab>
-          )}
+                  </div>
+                </Tab>
+              )}
 
-          {saved.flashCards.length > 0 && (
-            <Tab key="flash-cards" title="Flash Cards">
-              <div className="flex flex-col w-full gap-4">
-                <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
-                  {loadingSaved && <Star />}
-                  {saved.flashCards.map((fil) => (
-                    <div
-                      className="flex border p-2 flex-col items-center justify-evenly w-36 h-32 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
-                      onClick={() =>
-                        setSelectTool({ saved: fil, tool: "FLASHCARDS" })
-                      }
-                    >
-                      <p className="text-4xl">
-                        <CgCardClubs />
-                      </p>
-                      <div className="overflow-hidden">
-                        <p className="text-sm text-ellipsis w-full">
-                          {fil.file_name}
-                        </p>
-                      </div>
+              {saved.flashCards.length > 0 && (
+                <Tab key="flash-cards" title="Flash Cards">
+                  <div className="flex flex-col w-full gap-4">
+                    <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+                      {loadingSaved && <Star />}
+                      {saved.flashCards.map((fil) => (
+                        <div
+                          className="flex border p-2 flex-col items-center justify-evenly w-36 h-32 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
+                          onClick={() =>
+                            setSelectTool({ saved: fil, tool: "FLASHCARDS" })
+                          }
+                        >
+                          <p className="text-4xl">
+                            <CgCardClubs />
+                          </p>
+                          <div className="overflow-hidden">
+                            <p className="text-sm text-ellipsis w-full">
+                              {fil.file_name}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-            </Tab>
-          )}
+                  </div>
+                </Tab>
+              )}
 
-          {saved.mindMaps.length > 0 && (
-            <Tab key="mapas-mentales" title="Mapas Mentales">
-              <div className="flex flex-col w-full gap-4">
-                <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
-                  {loadingSaved && <Star />}
-                  {saved.mindMaps.map((fil) => (
-                    <div
-                      className="flex border p-2 flex-col items-center justify-evenly w-36 h-32 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
-                      onClick={() =>
-                        setSelectTool({ saved: fil, tool: "MINDMAP" })
-                      }
-                    >
-                      <p className="text-4xl">
-                        <TiFlowSwitch />
-                      </p>
-                      <div className="overflow-hidden">
-                        <p className="text-sm text-ellipsis w-full">
-                          {fil.file_name}
-                        </p>
-                      </div>
+              {saved.mindMaps.length > 0 && (
+                <Tab key="mapas-mentales" title="Mapas Mentales">
+                  <div className="flex flex-col w-full gap-4">
+                    <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+                      {loadingSaved && <Star />}
+                      {saved.mindMaps.map((fil) => (
+                        <div
+                          className="flex border p-2 flex-col items-center justify-evenly w-36 h-32 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
+                          onClick={() =>
+                            setSelectTool({ saved: fil, tool: "MINDMAP" })
+                          }
+                        >
+                          <p className="text-4xl">
+                            <TiFlowSwitch />
+                          </p>
+                          <div className="overflow-hidden">
+                            <p className="text-sm text-ellipsis w-full">
+                              {fil.file_name}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-            </Tab>
-          )}
-        </Tabs>
-      </div>
+                  </div>
+                </Tab>
+              )}
+            </Tabs>
+          </div>
+        </>
+      )}
     </div>
   );
 };

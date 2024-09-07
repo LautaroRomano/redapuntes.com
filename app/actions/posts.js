@@ -32,28 +32,30 @@ export async function create(content, files, selected) {
     }
 
 
-    const {rows: missions} = await conn.query(
-      `select * from missions m 
+    if (files && files.length > 0) {
+      const { rows: missions } = await conn.query(
+        `select * from missions m 
       WHERE TYPE ='MAKE_PUBLICATION' and expiration >= CURRENT_DATE and reclaimed = false and completed = false and user_id = $1 
       order by completed desc;`,
-      [user.user_id],
-    );
-
-    for(const mission of missions){
-      const {amount,final_amount,mission_id} = mission
-      const completed = (amount+1)>=final_amount
-      await conn.query(
-        `update missions set amount = $1, completed =$2 where mission_id = $3`,
-        [
-          (amount+1),
-          completed,
-          mission_id
-        ],
+        [user.user_id],
       );
+
+      for (const mission of missions) {
+        const { amount, final_amount, mission_id } = mission
+        const completed = (amount + 1) >= final_amount
+        await conn.query(
+          `update missions set amount = $1, completed =$2 where mission_id = $3`,
+          [
+            (amount + 1),
+            completed,
+            mission_id
+          ],
+        );
+      }
     }
 
     return { ok: true };
-    
+
   } catch (error) {
     console.log("🚀 ~ get ~ error:", error);
 
