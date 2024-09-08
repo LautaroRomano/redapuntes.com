@@ -1,8 +1,7 @@
 import { getServerSession } from "next-auth";
-import { PdfReader } from "pdfreader";
 
-import conn from "../../lib/db";
 import { authOptions } from "../auth/[...nextauth]/route";
+import conn from "../../lib/db";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -35,6 +34,12 @@ export async function POST(request) {
       [session.user.email],
     );
     const user = users[0];
+
+    if (!user)
+      return Response.json(
+        { mensaje: "Usuario no autenticado" },
+        { status: 403 },
+      );
 
     const formData = await request.formData();
     const file = formData.get("file");

@@ -181,4 +181,13 @@ CREATE TABLE missions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP 
 );
+CREATE TABLE transactions (
+    transaction_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    status varchar(150),
+    preference_id varchar(250) DEFAULT null,
+    clientId varchar(250) DEFAULT null,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP 
+);
 
