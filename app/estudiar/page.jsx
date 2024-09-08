@@ -275,32 +275,34 @@ const PdfPage = () => {
           className="flex p-2 gap-4 w-full justify-start overflow-x-auto"
           id="scroll"
         >
-          <Button
-            className="min-w-[100px] h-full hover:opacity-80 cursor-pointer relative"
-            color="primary"
-            onPress={handleBuyStars}
-          >
-            <div className="flex w-full h-full items-center justify-center">
-              {loadingBuy ? (
-                <Spinner />
-              ) : (
-                <div className="flex flex-col h-full items-center justify-center w-full ">
-                  <div className="flex flex-col gap-2 h-full items-center justify-center w-full">
-                    <p className="flex items-center justify-center text-white">
-                      <span className="ml-1 text-xl">10</span>
-                      <PiStarFourFill size={26} />
+          {!user.missions.find(m => m.completed) &&
+            <Button
+              className="min-w-[100px] h-full hover:opacity-80 cursor-pointer relative"
+              color="primary"
+              onPress={handleBuyStars}
+            >
+              <div className="flex w-full h-full items-center justify-center">
+                {loadingBuy ? (
+                  <Spinner />
+                ) : (
+                  <div className="flex flex-col h-full items-center justify-center w-full ">
+                    <div className="flex flex-col gap-2 h-full items-center justify-center w-full">
+                      <p className="flex items-center justify-center text-white">
+                        <span className="ml-1 text-xl">10</span>
+                        <PiStarFourFill size={26} />
+                      </p>
+                    </div>
+                    <div className="w-full h-7 flex items-center justify-center bg-gray-700 absolute bottom-0 left-0">
+                      <p>$2500</p>
+                    </div>
+                    <p className="flex items-center justify-center text-white absolute top-[0.30rem] left-0 rounded-e-sm bg-red-500 px-1">
+                      <span className="text-sm">+25%</span>
                     </p>
                   </div>
-                  <div className="w-full h-7 flex items-center justify-center bg-gray-700 absolute bottom-0 left-0">
-                    <p>$2500</p>
-                  </div>
-                  <p className="flex items-center justify-center text-white absolute top-[0.30rem] left-0 rounded-e-sm bg-red-500 px-1">
-                    <span className="text-sm">+25%</span>
-                  </p>
-                </div>
-              )}
-            </div>
-          </Button>
+                )}
+              </div>
+            </Button>
+          }
 
           {user &&
             user.missions.map((mission, i) => (
