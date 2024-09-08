@@ -47,7 +47,6 @@ function LoginPage() {
       await signIn("credentials", { username, password });
       setSucces(true);
     } catch (error) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
       setError(true);
     }
   };

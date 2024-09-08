@@ -37,16 +37,17 @@ import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { useTheme } from "next-themes";
 import { PiStarFourFill } from "react-icons/pi";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 import { ThemeSwitch } from "./theme-switch";
 
 import { siteConfig } from "@/config/site";
 import { getMyUser } from "@/app/actions/users";
 import { store, setUserLogged } from "@/state/index";
-import { useSelector } from "react-redux";
 
 export const Navbar = () => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const { isOpen, onOpenChange } = useDisclosure();
   const [myTheme, setMyTheme] = useState(null);
   const user = useSelector((state) => state.userLogged);
@@ -72,7 +73,7 @@ export const Navbar = () => {
 
   return (
     <>
-      <NextUINavbar maxWidth="xl" position="sticky" className="">
+      <NextUINavbar className="" maxWidth="xl" position="sticky">
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
           <NavbarBrand as="li" className="gap-3 max-w-fit">
             <NextLink className="flexjustify-start items-center gap-1" href="/">
@@ -109,13 +110,13 @@ export const Navbar = () => {
           <NavbarItem className="flex gap-2">
             <Link
               as={"a"}
-              href="/estudiar"
               className="text-2xl font-normal text-default-600 rounded-full bg-transparent"
+              href="/estudiar"
               variant="flat"
             >
               <Badge
-                content={user?.stars ? user.stars.length : 0}
                 color="primary"
+                content={user?.stars ? user.stars.length : 0}
                 placement="bottom-right"
               >
                 <PiStarFourFill className="text-primary-500 animated-star" />
@@ -241,7 +242,6 @@ const Login = ({ isOpen, onOpenChange }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [success, setSucces] = useState(false);
-  const [error, setError] = useState(false);
 
   const handleSubmit = () => {
     if (username.length === 0 || password.length === 0) return;
@@ -256,7 +256,7 @@ const Login = ({ isOpen, onOpenChange }) => {
         onOpenChange();
       }, 1000);
     } catch (error) {
-      setError(true);
+      toast.error("Ocurrio un error!");
     }
   };
 

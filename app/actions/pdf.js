@@ -1,7 +1,8 @@
 "use server";
+import OpenAI from "openai";
+
 import conn from "../lib/db";
 
-import OpenAI from "openai";
 import { getMyUser } from "./users";
 
 const openai = new OpenAI({
@@ -12,12 +13,11 @@ export async function getStar(user) {
   try {
     const { rows: data } = await conn.query(
       `select * from stars s where s.used = false and s.user_id = $1`,
-      [user.user_id]
+      [user.user_id],
     );
 
     return data[0];
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
     return { error: "Ocurrio un error!" };
   }
 }
@@ -25,17 +25,16 @@ export async function getStar(user) {
 export async function getMyPDF() {
   try {
     const user = await getMyUser();
+
     if (!user) return { error: "Debe iniciar sesion para continuar!" };
 
     const { rows: data } = await conn.query(
       `select * from files_ia fi where fi.user_id =$1 order by created_at desc`,
-      [user.user_id]
+      [user.user_id],
     );
 
     return data;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Ocurrio un error!" };
   }
 }
@@ -45,33 +44,38 @@ export async function getSaved(files) {
     let dataCuestionarios = [];
     let dataFlashCards = [];
     let dataMindMaps = [];
+
     for (const file of files) {
       const { rows: cuestionarios } = await conn.query(
         `select * from cuestionarios c where file_id =$1;`,
-        [file.file_id]
+        [file.file_id],
       );
+
       dataCuestionarios = dataCuestionarios.concat(
-        cuestionarios.map((d) => ({ ...d, file_name: file.name }))
+        cuestionarios.map((d) => ({ ...d, file_name: file.name })),
       );
 
       const { rows: mindMaps } = await conn.query(
         `select * from mind_maps mm where file_id = $1;`,
-        [file.file_id]
+        [file.file_id],
       );
+
       dataMindMaps = dataMindMaps.concat(
-        mindMaps.map((d) => ({ ...d, file_name: file.name }))
+        mindMaps.map((d) => ({ ...d, file_name: file.name })),
       );
 
       const { rows: fcList } = await conn.query(
         `select * from flashcars f where file_id = $1;`,
-        [file.file_id]
+        [file.file_id],
       );
       const flashCards = [];
+
       for (const fc of fcList) {
         const { rows: cards } = await conn.query(
           `select * from cards c where flash_card_id = $1`,
-          [fc.flash_card_id]
+          [fc.flash_card_id],
         );
+
         flashCards.push({ ...fc, cards, file_name: file.name });
       }
       dataFlashCards = dataFlashCards.concat(flashCards);
@@ -83,17 +87,17 @@ export async function getSaved(files) {
       flashCards: dataFlashCards,
     };
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Ocurrio un error!" };
   }
 }
 
 export async function generateCuestionario(text) {
   const user = await getMyUser();
+
   if (!user) return { error: "Debe iniciar sesion para continuar!" };
 
   const star = await getStar(user);
+
   if (!star) return { error: "Consigue estrellas para continuar!" };
 
   try {
@@ -149,12 +153,9 @@ export async function generateCuestionario(text) {
       ],
     });
     const resText = (await openAiRes).choices[0].message.content;
-    console.log("🚀 ~ resText:", resText);
 
     return JSON.parse(resText);
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
       false,
       star.star_id,
@@ -166,9 +167,11 @@ export async function generateCuestionario(text) {
 
 export async function generateCards(text) {
   const user = await getMyUser();
+
   if (!user) return { error: "Debe iniciar sesion para continuar!" };
 
   const star = await getStar(user);
+
   if (!star) return { error: "Consigue estrellas para continuar!" };
 
   try {
@@ -209,24 +212,25 @@ export async function generateCards(text) {
       ],
     });
     const resText = (await openAiRes).choices[0].message.content;
-    console.log("🚀 ~ resText:", resText);
 
     return JSON.parse(resText);
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
     await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
       false,
       star.star_id,
     ]);
+
     return { error: "Ocurrio un error!" };
   }
 }
 
 export async function generateMindMap(text) {
   const user = await getMyUser();
+
   if (!user) return { error: "Debe iniciar sesion para continuar!" };
 
   const star = await getStar(user);
+
   if (!star) return { error: "Consigue estrellas para continuar!" };
 
   try {
@@ -274,15 +278,14 @@ export async function generateMindMap(text) {
       ],
     });
     const resText = (await openAiRes).choices[0].message.content;
-    console.log("🚀 ~ resText:", resText);
 
     return JSON.parse(resText);
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
     await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
       false,
       star.star_id,
     ]);
+
     return { error: "Ocurrio un error!" };
   }
 }
@@ -290,6 +293,7 @@ export async function generateMindMap(text) {
 export async function saveCuestionario({ file_id, data }) {
   try {
     const user = await getMyUser();
+
     if (!user) return { error: "Debe iniciar sesion para continuar!" };
 
     const newData = data.map((d) => ({
@@ -300,12 +304,11 @@ export async function saveCuestionario({ file_id, data }) {
 
     await conn.query(
       `insert into cuestionarios(file_id,"data") values($1,$2)`,
-      [file_id, JSON.stringify(newData)]
+      [file_id, JSON.stringify(newData)],
     );
 
     return true;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
     return { error: "Ocurrio un error!" };
   }
 }
@@ -313,16 +316,16 @@ export async function saveCuestionario({ file_id, data }) {
 export async function saveMindMap({ file_id, edges, nodes }) {
   try {
     const user = await getMyUser();
+
     if (!user) return { error: "Debe iniciar sesion para continuar!" };
 
     await conn.query(
       `insert into mind_maps(file_id,edges,nodes) values($1,$2,$3);`,
-      [file_id, JSON.stringify(edges), JSON.stringify(nodes)]
+      [file_id, JSON.stringify(edges), JSON.stringify(nodes)],
     );
 
     return true;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
     return { error: "Ocurrio un error!" };
   }
 }
@@ -330,11 +333,12 @@ export async function saveMindMap({ file_id, edges, nodes }) {
 export async function saveCards({ file_id, cards }) {
   try {
     const user = await getMyUser();
+
     if (!user) return { error: "Debe iniciar sesion para continuar!" };
 
     const { rows: flashCards } = await conn.query(
       `insert into flashcars(file_id) values($1) RETURNING flash_card_id`,
-      [file_id]
+      [file_id],
     );
 
     const flashCardId = flashCards[0].flash_card_id;
@@ -342,13 +346,12 @@ export async function saveCards({ file_id, cards }) {
     for (const card of cards) {
       await conn.query(
         `insert into cards(flash_card_id,front,back) values($1,$2,$3)`,
-        [flashCardId, card.front, card.back]
+        [flashCardId, card.front, card.back],
       );
     }
 
     return true;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
     return { error: "Ocurrio un error!" };
   }
 }

@@ -1,12 +1,14 @@
 import { ReactFlow, Controls, Background } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { generateMindMap, saveMindMap } from "../actions/pdf";
 import { useEffect, useState } from "react";
-import Star from "@/components/loaders/Star";
 import { Button } from "@nextui-org/button";
 import { toast } from "react-toastify";
 import { Spinner } from "@nextui-org/react";
 import { IoMdArrowRoundBack } from "react-icons/io";
+
+import { generateMindMap, saveMindMap } from "../actions/pdf";
+
+import Star from "@/components/loaders/Star";
 
 function Flow({ file, fin, saved }) {
   const [loading, setLoading] = useState(false);
@@ -19,10 +21,12 @@ function Flow({ file, fin, saved }) {
     if (loading) return;
     setLoading(true);
     const res = await generateMindMap(text);
+
     if (res.error) {
       toast.error(res.error);
       setLoading(false);
       finishim();
+
       return;
     }
     setEdges(res.edges);
@@ -51,9 +55,11 @@ function Flow({ file, fin, saved }) {
   const save = async () => {
     setSaving(true);
     const res = await saveMindMap({ file_id: file.file_id, edges, nodes });
+
     if (res.error) {
       toast.error(res.error);
       setSaving(false);
+
       return;
     }
     setSaving(false);
@@ -84,7 +90,7 @@ function Flow({ file, fin, saved }) {
         </div>
       ) : (
         <div className="flex flex-col w-full h-full gap-1 px-2 text-black">
-          <ReactFlow nodes={nodes} edges={edges}>
+          <ReactFlow edges={edges} nodes={nodes}>
             <Background />
             <Controls />
           </ReactFlow>
@@ -92,9 +98,9 @@ function Flow({ file, fin, saved }) {
             <div className="flex gap-2 text-sm items-center">
               <h1 className="text-default-900">Te sirve?</h1>
               <Button
+                color="primary"
                 disabled={saving}
                 size="sm"
-                color="primary"
                 onClick={save}
               >
                 {saving ? <Spinner /> : "Guardar Mapa"}
@@ -103,8 +109,8 @@ function Flow({ file, fin, saved }) {
                 <>
                   <h1 className="text-default-900">Si no</h1>
                   <Button
-                    size="sm"
                     color="primary"
+                    size="sm"
                     variant="bordered"
                     onPress={() => getMap(file.text)}
                   >

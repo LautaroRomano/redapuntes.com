@@ -1,11 +1,15 @@
 "use server";
 import conn from "../lib/db";
+
 import { getMyUser } from "./users";
 
 export async function create(content, files, selected) {
   try {
     const user = await getMyUser();
+
     if (!user) return { error: "Debe iniciar sesion para continuar!" };
+    if (!content || content.length === 0)
+      return { error: "Debes escribir algo!" };
 
     const { rows: posts } = await conn.query(
       `
@@ -31,7 +35,6 @@ export async function create(content, files, selected) {
       );
     }
 
-
     if (files && files.length > 0) {
       const { rows: missions } = await conn.query(
         `select * from missions m 
@@ -41,24 +44,18 @@ export async function create(content, files, selected) {
       );
 
       for (const mission of missions) {
-        const { amount, final_amount, mission_id } = mission
-        const completed = (amount + 1) >= final_amount
+        const { amount, final_amount, mission_id } = mission;
+        const completed = amount + 1 >= final_amount;
+
         await conn.query(
           `update missions set amount = $1, completed =$2 where mission_id = $3`,
-          [
-            (amount + 1),
-            completed,
-            mission_id
-          ],
+          [amount + 1, completed, mission_id],
         );
       }
     }
 
     return { ok: true };
-
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Ocurrio un error!" };
   }
 }
@@ -117,19 +114,37 @@ export async function get(type, limit = 10, offset = 0, filters) {
     // Filtrar los posts de acuerdo a los contenidos si es necesario
     let data = posts.filter((po) => {
       if (!filters?.contents?.length) return true;
+
       return filters.contents.some((content) => po.tags.includes(content));
     });
 
     // Ejecutar todas las consultas en paralelo
     const promises = data.map(async (dat) => {
-      const [files, likes, comments, liked, university, career] = await Promise.all([
-        conn.query(`select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`, [dat.post_id]),
-        conn.query(`select count(*) from post_likes pl where pl.post_id = $1`, [dat.post_id]),
-        conn.query(`select count(*) from "comments" c where c.post_id = $1`, [dat.post_id]),
-        conn.query(`select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`, [dat.post_id, user.user_id]),
-        conn.query(`select * from universities u where u.university_id = $1`, [dat.university_id]),
-        conn.query(`select * from careers u where u.career_id = $1`, [dat.career_id])
-      ]);
+      const [files, likes, comments, liked, university, career] =
+        await Promise.all([
+          conn.query(
+            `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
+            [dat.post_id],
+          ),
+          conn.query(
+            `select count(*) from post_likes pl where pl.post_id = $1`,
+            [dat.post_id],
+          ),
+          conn.query(`select count(*) from "comments" c where c.post_id = $1`, [
+            dat.post_id,
+          ]),
+          conn.query(
+            `select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`,
+            [dat.post_id, user.user_id],
+          ),
+          conn.query(
+            `select * from universities u where u.university_id = $1`,
+            [dat.university_id],
+          ),
+          conn.query(`select * from careers u where u.career_id = $1`, [
+            dat.career_id,
+          ]),
+        ]);
 
       const isLiked = !!liked.rows[0];
 
@@ -148,7 +163,6 @@ export async function get(type, limit = 10, offset = 0, filters) {
 
     return response;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
     return { error: "Ocurrió un error!" };
   }
 }
@@ -171,14 +185,31 @@ export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
 
     // Ejecutar todas las consultas en paralelo
     const promises = data.map(async (dat) => {
-      const [files, likes, comments, liked, university, career] = await Promise.all([
-        conn.query(`select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`, [dat.post_id]),
-        conn.query(`select count(*) from post_likes pl where pl.post_id = $1`, [dat.post_id]),
-        conn.query(`select count(*) from "comments" c where c.post_id = $1`, [dat.post_id]),
-        conn.query(`select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`, [dat.post_id, user.user_id]),
-        conn.query(`select * from universities u where u.university_id = $1`, [dat.university_id]),
-        conn.query(`select * from careers u where u.career_id = $1`, [dat.career_id])
-      ]);
+      const [files, likes, comments, liked, university, career] =
+        await Promise.all([
+          conn.query(
+            `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
+            [dat.post_id],
+          ),
+          conn.query(
+            `select count(*) from post_likes pl where pl.post_id = $1`,
+            [dat.post_id],
+          ),
+          conn.query(`select count(*) from "comments" c where c.post_id = $1`, [
+            dat.post_id,
+          ]),
+          conn.query(
+            `select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`,
+            [dat.post_id, user.user_id],
+          ),
+          conn.query(
+            `select * from universities u where u.university_id = $1`,
+            [dat.university_id],
+          ),
+          conn.query(`select * from careers u where u.career_id = $1`, [
+            dat.career_id,
+          ]),
+        ]);
 
       const isLiked = !!liked.rows[0];
 
@@ -197,7 +228,6 @@ export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
 
     return response;
   } catch (error) {
-    console.log("🚀 ~ getPostsByUserId ~ error:", error);
     return { error: "Ocurrió un error!" };
   }
 }
@@ -219,14 +249,29 @@ export async function getPostById(post_id) {
     if (data.length === 0) return { error: "Post no encontrado!" };
 
     // Ejecutar todas las consultas en paralelo
-    const [files, likes, comments, liked, university, career] = await Promise.all([
-      conn.query(`select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`, [data[0].post_id]),
-      conn.query(`select count(*) from post_likes pl where pl.post_id = $1`, [data[0].post_id]),
-      conn.query(`select count(*) from "comments" c where c.post_id = $1`, [data[0].post_id]),
-      conn.query(`select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`, [data[0].post_id, user.user_id]),
-      conn.query(`select * from universities u where u.university_id = $1`, [data[0].university_id]),
-      conn.query(`select * from careers u where u.career_id = $1`, [data[0].career_id])
-    ]);
+    const [files, likes, comments, liked, university, career] =
+      await Promise.all([
+        conn.query(
+          `select pf.file_name, pf.file_path, pf.file_type from pdf_files pf where post_id = $1`,
+          [data[0].post_id],
+        ),
+        conn.query(`select count(*) from post_likes pl where pl.post_id = $1`, [
+          data[0].post_id,
+        ]),
+        conn.query(`select count(*) from "comments" c where c.post_id = $1`, [
+          data[0].post_id,
+        ]),
+        conn.query(
+          `select * from post_likes pl where pl.post_id = $1 and pl.user_id = $2`,
+          [data[0].post_id, user.user_id],
+        ),
+        conn.query(`select * from universities u where u.university_id = $1`, [
+          data[0].university_id,
+        ]),
+        conn.query(`select * from careers u where u.career_id = $1`, [
+          data[0].career_id,
+        ]),
+      ]);
 
     const isLiked = !!liked.rows[0];
 
@@ -240,11 +285,9 @@ export async function getPostById(post_id) {
       career: career.rows[0],
     };
   } catch (error) {
-    console.log("🚀 ~ getPostById ~ error:", error);
     return { error: "Ocurrió un error!" };
   }
 }
-
 
 export async function setLike(post_id) {
   try {
@@ -279,22 +322,17 @@ export async function setLike(post_id) {
     );
 
     for (const mission of missions) {
-      const { amount, final_amount, mission_id } = mission
-      const completed = (amount + 1) >= final_amount
+      const { amount, final_amount, mission_id } = mission;
+      const completed = amount + 1 >= final_amount;
+
       await conn.query(
         `update missions set amount = $1, completed =$2 where mission_id = $3`,
-        [
-          (amount + 1),
-          completed,
-          mission_id
-        ],
+        [amount + 1, completed, mission_id],
       );
     }
 
-    return postById
+    return postById;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return await getPostById(post_id);
   }
 }
@@ -318,8 +356,6 @@ export async function getComments(post_id) {
 
     return comments;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Ocurrio un error!" };
   }
 }
@@ -355,22 +391,17 @@ export async function setComment(post_id, content) {
     );
 
     for (const mission of missions) {
-      const { amount, final_amount, mission_id } = mission
-      const completed = (amount + 1) >= final_amount
+      const { amount, final_amount, mission_id } = mission;
+      const completed = amount + 1 >= final_amount;
+
       await conn.query(
         `update missions set amount = $1, completed =$2 where mission_id = $3`,
-        [
-          (amount + 1),
-          completed,
-          mission_id
-        ],
+        [amount + 1, completed, mission_id],
       );
     }
 
     return comments;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Ocurrio un error!" };
   }
 }
@@ -481,8 +512,6 @@ export async function searchPosts(query, limit = 10, offset = 0, filters) {
 
     return response;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Ocurrio un error!" };
   }
 }

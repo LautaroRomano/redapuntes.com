@@ -7,8 +7,6 @@ export async function getContents() {
 
     return data;
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Ocurrio un error!" };
   }
 }

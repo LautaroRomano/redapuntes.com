@@ -24,5 +24,3 @@ const store = configureStore({
 
 export const { setIsSidebarCollapsed, setUserLogged } = globalSlice.actions;
 export { store };
-
-store.subscribe(() => console.log("store.getState()", store.getState()));

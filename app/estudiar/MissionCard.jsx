@@ -1,10 +1,11 @@
 import { Button, Card, CardBody, Progress, Spinner } from "@nextui-org/react";
 import { FaFileAlt } from "react-icons/fa";
 import { PiStarFourFill } from "react-icons/pi";
-import { setUserLogged, store } from "@/state";
-import { reclaimStar } from "@/app/actions/stars";
 import { useState } from "react";
 import { toast } from "react-toastify";
+
+import { setUserLogged, store } from "@/state";
+import { reclaimStar } from "@/app/actions/stars";
 
 const MissionCard = ({ mission, uploaded, total }) => {
   const [loadingReclaim, setLoadingReclaim] = useState(false);
@@ -14,6 +15,7 @@ const MissionCard = ({ mission, uploaded, total }) => {
     setLoadingReclaim(true);
     try {
       const user = await reclaimStar(mission);
+
       if (user.error) {
         toast.error(user.error);
         throw user.error;
@@ -22,7 +24,6 @@ const MissionCard = ({ mission, uploaded, total }) => {
       setLoadingReclaim(false);
     } catch (error) {
       setLoadingReclaim(false);
-      console.log(error);
     }
   };
 
@@ -34,16 +35,16 @@ const MissionCard = ({ mission, uploaded, total }) => {
         <Card className="w-[250px]">
           <CardBody>
             <div className="flex items-center h-full">
-              <FaFileAlt size={24} className="text-blue-500" />
+              <FaFileAlt className="text-blue-500" size={24} />
               <p className="text-sm font-bold px-2">{mission.mission_text}</p>
             </div>
             <div className="flex items-center mt-4 relative">
               <Progress
-                value={progress}
-                color="primary"
-                className="w-full"
                 aria-label="Mission progress"
+                className="w-full"
+                color="primary"
                 size="lg"
+                value={progress}
               />
               <span className="ml-2 text-sm absolute z-10">{`${uploaded}/${total}`}</span>
               <div className="flex justify-end w-16">
@@ -65,7 +66,9 @@ const MissionCard = ({ mission, uploaded, total }) => {
               <Spinner />
             ) : (
               <>
-                <p className={`${mission.type === "FREE" ? 'text-md':'text-lg'} font-bold px-2 text-wrap`}>
+                <p
+                  className={`${mission.type === "FREE" ? "text-md" : "text-lg"} font-bold px-2 text-wrap`}
+                >
                   {mission.type === "FREE"
                     ? mission.mission_text
                     : "Completado!"}

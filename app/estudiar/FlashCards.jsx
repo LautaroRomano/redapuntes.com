@@ -1,17 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/button";
-import { generateCards, saveCards } from "../actions/pdf";
-import Star from "@/components/loaders/Star";
-import { toast } from "react-toastify";
-import {
-  Card,
-  CardBody,
-  Divider,
-  Spinner,
-} from "@nextui-org/react";
-import "./styles/FlashCards.css";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { toast } from "react-toastify";
+import { Card, CardBody, Divider, Spinner } from "@nextui-org/react";
+
+import { generateCards, saveCards } from "../actions/pdf";
+
+import Star from "@/components/loaders/Star";
+import "./styles/FlashCards.css";
 
 const FlashCards = ({ file, fin, saved }) => {
   const [loading, setLoading] = useState(false);
@@ -47,9 +44,10 @@ const FlashCards = ({ file, fin, saved }) => {
           const newState = Array(i)
             .fill(true)
             .concat(Array(6 - i).fill(false));
+
           setShowFinishElement(newState);
         },
-        400 + i * 400
+        400 + i * 400,
       );
     }
   }, [finish]);
@@ -70,6 +68,7 @@ const FlashCards = ({ file, fin, saved }) => {
       toast.error(res.error);
       setLoading(false);
       finishim();
+
       return;
     }
     setQuestions(res);
@@ -93,9 +92,11 @@ const FlashCards = ({ file, fin, saved }) => {
   const save = async () => {
     setSaving(true);
     const res = await saveCards({ file_id: file.file_id, cards: questions });
+
     if (res.error) {
       toast.error(res.error);
       setSaving(false);
+
       return;
     }
     setSaving(false);
@@ -109,8 +110,8 @@ const FlashCards = ({ file, fin, saved }) => {
           className={`w-36 transition-opacity duration-300 ${showFinishElement[0] ? "flex opacity-100" : "hidden opacity-100"}`}
         >
           <img
-            src="https://i.pinimg.com/originals/15/32/42/153242d25a0c6696d9eebd5847c16eb2.gif"
             alt=""
+            src="https://i.pinimg.com/originals/15/32/42/153242d25a0c6696d9eebd5847c16eb2.gif"
           />
         </div>
         <h1
@@ -125,21 +126,21 @@ const FlashCards = ({ file, fin, saved }) => {
         </h2>
 
         <Button
-          size="sm"
-          color="primary"
-          onClick={finishim}
           className={`w-full transition-opacity duration-300 mt-16 ${showFinishElement[3] ? "flex opacity-100" : "hidden opacity-100"}`}
+          color="primary"
+          size="sm"
+          onClick={finishim}
         >
           Finalizar
         </Button>
         {!saved && (
           <Button
-            size="sm"
-            disabled={saving}
-            color="primary"
-            onClick={save}
             className={`w-full transition-opacity duration-300 ${showFinishElement[3] ? "flex opacity-100" : "hidden opacity-100"}`}
+            color="primary"
+            disabled={saving}
+            size="sm"
             variant="bordered"
+            onClick={save}
           >
             {saving ? <Spinner /> : "Guardar FlashCards"}
           </Button>
@@ -205,13 +206,13 @@ const FlashCards = ({ file, fin, saved }) => {
               </CardBody>
             </Card>
             {viewResult ? (
-              <Button color="primary" className="flex" onPress={handleContinue}>
+              <Button className="flex" color="primary" onPress={handleContinue}>
                 Continuar
               </Button>
             ) : (
               <Button
-                color="primary"
                 className="flex"
+                color="primary"
                 onPress={() => setViewResult(true)}
               >
                 Voltear

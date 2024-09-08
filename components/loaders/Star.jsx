@@ -5,7 +5,7 @@ const Star = () => {
   return (
     <div className="loader loader-2">
       <div className="loader-star text-primary">
-        <PiStarFourFill size={50}/>
+        <PiStarFourFill size={50} />
       </div>
     </div>
   );

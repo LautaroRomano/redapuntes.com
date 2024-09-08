@@ -8,6 +8,7 @@ import { ThemeProviderProps } from "next-themes/dist/types";
 import { SessionProvider } from "next-auth/react";
 import { ToastContainer } from "react-toastify";
 import { Provider } from "react-redux";
+
 import "react-toastify/dist/ReactToastify.css";
 import { store } from "@/state";
 
@@ -22,21 +23,21 @@ export function Providers({ children, themeProps }: ProvidersProps) {
   return (
     <SessionProvider>
       <Provider store={store}>
-      <NextUIProvider navigate={router.push}>
-        <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
-      </NextUIProvider>
-      <ToastContainer
-        closeOnClick
-        draggable
-        hideProgressBar
-        newestOnTop
-        pauseOnHover
-        autoClose={1500}
-        pauseOnFocusLoss={false}
-        position="bottom-center"
-        rtl={false}
-        theme="dark"
-      />
+        <NextUIProvider navigate={router.push}>
+          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+        </NextUIProvider>
+        <ToastContainer
+          closeOnClick
+          draggable
+          hideProgressBar
+          newestOnTop
+          pauseOnHover
+          autoClose={1500}
+          pauseOnFocusLoss={false}
+          position="bottom-center"
+          rtl={false}
+          theme="dark"
+        />
       </Provider>
     </SessionProvider>
   );

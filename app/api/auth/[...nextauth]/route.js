@@ -21,8 +21,6 @@ const getUserGoogle = async (email) => {
 
     return user;
   } catch (error) {
-    console.log(error);
-
     return null;
   }
 };
@@ -47,8 +45,6 @@ const getUser = async (username, password) => {
       return null;
     }
   } catch (error) {
-    console.log(error);
-
     return null;
   }
 };

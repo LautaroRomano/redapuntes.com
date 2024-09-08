@@ -14,6 +14,7 @@ import {
 } from "@nextui-org/react";
 import { toast } from "react-toastify";
 import _ from "lodash";
+import { PiStarFourFill } from "react-icons/pi";
 
 import RenderPostsList from "../components/RenderPostsList";
 import CreatePost from "../components/main/CreatePost";
@@ -23,8 +24,6 @@ import { get, searchPosts } from "./actions/posts";
 
 import { SearchIcon } from "@/components/icons";
 import Filters from "@/components/Filters";
-import Star from "../components/loaders/Star";
-import { PiStarFourFill } from "react-icons/pi";
 
 export default function Home() {
   const [postsList, setPostList] = useState([]);
@@ -43,6 +42,7 @@ export default function Home() {
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("hasVisited");
+
     if (!hasVisited) {
       onOpen();
     }
@@ -70,20 +70,21 @@ export default function Home() {
       setOffset(newOffset);
       setLoading(false);
     } catch (error) {
-      console.log("🚀 ~ getPosts ~ error:", error);
       setLoading(false);
     }
   };
 
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
+
     getPosts(selectedValue);
   }, []);
 
   const onRefresh = () => {
     const selectedValue = Array.from(selectView)[0];
+
     getPosts(selectedValue);
-  }
+  };
 
   useEffect(() => {
     const selectedValue = Array.from(selectView)[0];
@@ -120,7 +121,6 @@ export default function Home() {
       setOffset(newOffset);
       setLoading(false);
     } catch (error) {
-      console.log("🚀 ~ getPosts ~ error:", error);
       setLoading(false);
     }
   };
@@ -131,7 +131,7 @@ export default function Home() {
 
       if (
         myElement.scrollTop + myElement.clientHeight >=
-        myElement.scrollHeight - 150 &&
+          myElement.scrollHeight - 150 &&
         !loading
       ) {
         if (!isSearch && !endPosts) {
@@ -178,16 +178,16 @@ export default function Home() {
               </ModalBody>
               <ModalFooter>
                 <Button
-                  as={"a"}
-                  href="/estudiar"
                   auto
                   flat
+                  as={"a"}
                   color="primary"
+                  href="/estudiar"
+                  startContent={<PiStarFourFill />}
                   onClick={() => {
                     onClose();
                     localStorage.setItem("hasVisited", "true");
                   }}
-                  startContent={<PiStarFourFill />}
                 >
                   ¡Comenzar ahora!
                 </Button>

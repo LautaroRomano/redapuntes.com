@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/button";
-import { generateCuestionario, saveCuestionario } from "../actions/pdf";
-import Star from "@/components/loaders/Star";
 import { toast } from "react-toastify";
 import { Divider, Spinner } from "@nextui-org/react";
 import { IoMdArrowRoundBack } from "react-icons/io";
+
+import { generateCuestionario, saveCuestionario } from "../actions/pdf";
+
+import Star from "@/components/loaders/Star";
 
 const Cuestionario = ({ file, fin, saved }) => {
   const [loading, setLoading] = useState(false);
@@ -45,7 +47,7 @@ const Cuestionario = ({ file, fin, saved }) => {
     questions[step].answers.forEach((_, index) => {
       setTimeout(
         () => setShowAnswers((prev) => [...prev, index]),
-        600 + index * 100
+        600 + index * 100,
       );
     });
   };
@@ -59,9 +61,10 @@ const Cuestionario = ({ file, fin, saved }) => {
           const newState = Array(i)
             .fill(true)
             .concat(Array(6 - i).fill(false));
+
           setShowFinishElement(newState);
         },
-        400 + i * 400
+        400 + i * 400,
       );
     }
   }, [finish]);
@@ -88,10 +91,12 @@ const Cuestionario = ({ file, fin, saved }) => {
     if (loading) return;
     setLoading(true);
     const res = await generateCuestionario(text);
+
     if (res.error) {
       toast.error(res.error);
       setLoading(false);
       finishim();
+
       return;
     }
     setQuestions(res);
@@ -120,9 +125,11 @@ const Cuestionario = ({ file, fin, saved }) => {
       file_id: file.file_id,
       data: questions,
     });
+
     if (res.error) {
       toast.error(res.error);
       setSaving(false);
+
       return;
     }
     setSaving(false);
@@ -136,8 +143,8 @@ const Cuestionario = ({ file, fin, saved }) => {
           className={`w-36 transition-opacity duration-300 ${showFinishElement[0] ? "flex opacity-100" : "hidden opacity-100"}`}
         >
           <img
-            src="https://i.pinimg.com/originals/15/32/42/153242d25a0c6696d9eebd5847c16eb2.gif"
             alt=""
+            src="https://i.pinimg.com/originals/15/32/42/153242d25a0c6696d9eebd5847c16eb2.gif"
           />
         </div>
         <h1
@@ -154,21 +161,21 @@ const Cuestionario = ({ file, fin, saved }) => {
         </h2>
 
         <Button
-          color="primary"
-          onClick={finishim}
           className={`w-full transition-opacity duration-300 mt-4 ${showFinishElement[3] ? "flex opacity-100" : "hidden opacity-100"}`}
+          color="primary"
           size="sm"
+          onClick={finishim}
         >
           Finalizar
         </Button>
         {!saved && (
           <Button
-            size="sm"
-            disabled={saving}
-            color="primary"
-            onClick={save}
             className={`w-full transition-opacity duration-300 ${showFinishElement[3] ? "flex opacity-100" : "hidden opacity-100"}`}
+            color="primary"
+            disabled={saving}
+            size="sm"
             variant="bordered"
+            onClick={save}
           >
             {saving ? <Spinner /> : "Guardar Cuestionario"}
           </Button>
@@ -184,7 +191,7 @@ const Cuestionario = ({ file, fin, saved }) => {
         >
           {questions.map((question, i) => {
             return (
-              <div className="gap-2" key={i}>
+              <div key={i} className="gap-2">
                 <p>
                   <strong>Pregunta {i + 1}:</strong> {question.question}
                 </p>
@@ -245,7 +252,6 @@ const Cuestionario = ({ file, fin, saved }) => {
             {questions[step].answers.map((a, index) => (
               <Button
                 key={index}
-                disabled={viewResult}
                 className={`w-full max-w-screen h-auto px-1 py-2 text-wrap transition-opacity duration-300 ${showAnswers.includes(index) ? "flex opacity-100 pointer-events-auto" : "hidden opacity-100 pointer-events-none"} ${
                   viewResult
                     ? a.isTrue
@@ -253,6 +259,7 @@ const Cuestionario = ({ file, fin, saved }) => {
                       : "bg-red-500"
                     : "primary"
                 }`}
+                disabled={viewResult}
                 onClick={() => handleSelectAnswer(a.isTrue)}
               >
                 {a.text}
@@ -261,7 +268,7 @@ const Cuestionario = ({ file, fin, saved }) => {
           </div>
           {viewResult && (
             <>
-              <Divider className="my-3"></Divider>
+              <Divider className="my-3" />
               <Button
                 className="w-full"
                 color="primary"

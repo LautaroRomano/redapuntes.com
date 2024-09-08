@@ -12,7 +12,7 @@ export const getMyUser = async () => {
 
   const { rows: result } = await conn.query(
     "SELECT * FROM users WHERE email=$1",
-    [session.user.email]
+    [session.user.email],
   );
 
   const user = result[0];
@@ -21,14 +21,14 @@ export const getMyUser = async () => {
 
   const { rows: stars } = await conn.query(
     "SELECT * FROM stars WHERE used=$1 and user_id=$2",
-    [false, user.user_id]
+    [false, user.user_id],
   );
 
   const { rows: missions } = await conn.query(
     `select * from missions m 
       WHERE expiration >= CURRENT_DATE and reclaimed = false and user_id=$1
       order by completed desc;`,
-    [user.user_id]
+    [user.user_id],
   );
 
   return { ...user, stars, missions };
@@ -58,7 +58,7 @@ export async function create({
         from users u
         where u.username = $1
         `,
-      [lowerUsername]
+      [lowerUsername],
     );
     const { rows: usersByEmail } = await conn.query(
       `
@@ -66,7 +66,7 @@ export async function create({
         from users u
         where u.email = $1
         `,
-      [lowerEmail]
+      [lowerEmail],
     );
 
     if (usersByUsername[0])
@@ -76,51 +76,49 @@ export async function create({
 
     const { rows: newUser } = await conn.query(
       `insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4) RETURNING user_id`,
-      [lowerEmail, hashedPassword, accountname, lowerUsername]
+      [lowerEmail, hashedPassword, accountname, lowerUsername],
     );
     const insertedUserId = newUser[0].user_id;
 
     await conn.query(
       `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text,completed) values($1,'FREE',1,1,'01-01-2050','Una gatis para que empieces a estudiar!',true);`,
-      [insertedUserId]
+      [insertedUserId],
     );
     await conn.query(
       `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text,completed) values($1,'FREE',1,1,'01-01-2050','Una gatis para que empieces a estudiar!',true);`,
-      [insertedUserId]
+      [insertedUserId],
     );
     await conn.query(
       `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text,completed) values($1,'FREE',1,1,'01-01-2050','Una gatis para que empieces a estudiar!',true);`,
-      [insertedUserId]
+      [insertedUserId],
     );
     await conn.query(
       `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_PUBLICATION',0,1,'01-01-2050','Sube 1 apunte a la red');`,
-      [insertedUserId]
+      [insertedUserId],
     );
     await conn.query(
       `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_PUBLICATION',0,5,'01-01-2050','Sube 5 apuntes a la red');`,
-      [insertedUserId]
+      [insertedUserId],
     );
     await conn.query(
       `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_COMMENT',0,1,'01-01-2050','Realiza 1 comentario en algun apunte');`,
-      [insertedUserId]
+      [insertedUserId],
     );
     await conn.query(
       `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_COMMENT',0,5,'01-01-2050','Realiza 5 comentario en algun apunte');`,
-      [insertedUserId]
+      [insertedUserId],
     );
     await conn.query(
       `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'GET_LIKE',0,5,'01-01-2050','Recibe 5 likes en tus apuntes');`,
-      [insertedUserId]
+      [insertedUserId],
     );
     await conn.query(
       `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'GET_LIKE',0,15,'01-01-2050','Recibe 15 likes en tus apuntes');`,
-      [insertedUserId]
+      [insertedUserId],
     );
 
     return { ok: true };
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Error inesperado" };
   }
 }
@@ -135,7 +133,7 @@ export async function getUserByUsername(username) {
         from users u
         where u.username = $1
         `,
-      [username]
+      [username],
     );
 
     if (data[0]) {
@@ -147,21 +145,21 @@ export async function getUserByUsername(username) {
 
       const { rows: follow } = await conn.query(
         `select * from follows f where f.follower_id = $1 and f.followed_id =$2`,
-        [user.user_id, profile.user_id]
+        [user.user_id, profile.user_id],
       );
 
       profile.isFollow = !!follow[0];
 
       const { rows: follows } = await conn.query(
         `select COUNT(*) as count from follows f where f.followed_id =$1`,
-        [profile.user_id]
+        [profile.user_id],
       );
 
       profile.follows = follows[0]?.count || 0;
 
       const { rows: followed } = await conn.query(
         `select COUNT(*) as count from follows f where f.follower_id = $1`,
-        [profile.user_id]
+        [profile.user_id],
       );
 
       profile.followed = followed[0]?.count || 0;
@@ -171,7 +169,7 @@ export async function getUserByUsername(username) {
       return { error: true };
     }
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
+    return { error: "Error inesperado" };
   }
 }
 
@@ -186,7 +184,7 @@ export async function updateUser({ accountName, about, img }) {
         select * from users 
         where email = $1
         `,
-      [session.user.email]
+      [session.user.email],
     );
 
     await conn.query(
@@ -197,13 +195,11 @@ export async function updateUser({ accountName, about, img }) {
         img = $3
         where user_id = $4
         `,
-      [accountName, about, img, users[0].user_id]
+      [accountName, about, img, users[0].user_id],
     );
 
     return { ok: true };
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Error inesperado" };
   }
 }
@@ -217,13 +213,11 @@ export async function follow(user_id) {
       `
         insert into follows(follower_id,followed_id) values($1,$2)
         `,
-      [user.user_id, user_id]
+      [user.user_id, user_id],
     );
 
     return { ok: true };
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Error inesperado" };
   }
 }
@@ -237,13 +231,11 @@ export async function unfollow(user_id) {
       `
         delete from follows where follower_id = $1 and followed_id = $2
         `,
-      [user.user_id, user_id]
+      [user.user_id, user_id],
     );
 
     return { ok: true };
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
     return { error: "Error inesperado" };
   }
 }
