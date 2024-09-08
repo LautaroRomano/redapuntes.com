@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "react-toastify";
 import { FaFilePdf } from "react-icons/fa6";
@@ -37,6 +37,14 @@ import { store, setUserLogged } from "@/state/index";
 import Star from "@/components/loaders/Star";
 
 const PdfHome = () => {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <PdfPage />
+    </Suspense>
+  );
+}
+
+const PdfPage = () => {
   const searchParams = useSearchParams();
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(null);
