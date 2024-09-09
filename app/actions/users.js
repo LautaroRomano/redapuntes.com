@@ -6,32 +6,36 @@ import conn from "../lib/db";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export const getMyUser = async () => {
-  const session = await getServerSession(authOptions);
+  try {
+    const session = await getServerSession(authOptions);
 
-  if (!session || !session.user.email) return { error: "Ocurrio un error!" };
+    if (!session || !session.user.email) return { error: "Ocurrio un error!" };
 
-  const { rows: result } = await conn.query(
-    "SELECT * FROM users WHERE email=$1",
-    [session.user.email],
-  );
+    const { rows: result } = await conn.query(
+      "SELECT * FROM users WHERE email=$1",
+      [session.user.email],
+    );
 
-  const user = result[0];
+    const user = result[0];
 
-  if (user && user.password_hash) delete user.password_hash;
+    if (user && user.password_hash) delete user.password_hash;
 
-  const { rows: stars } = await conn.query(
-    "SELECT * FROM stars WHERE used=$1 and user_id=$2",
-    [false, user.user_id],
-  );
+    const { rows: stars } = await conn.query(
+      "SELECT * FROM stars WHERE used=$1 and user_id=$2",
+      [false, user.user_id],
+    );
 
-  const { rows: missions } = await conn.query(
-    `select * from missions m 
+    const { rows: missions } = await conn.query(
+      `select * from missions m 
       WHERE expiration >= CURRENT_DATE and reclaimed = false and user_id=$1
       order by completed desc;`,
-    [user.user_id],
-  );
+      [user.user_id],
+    );
 
-  return { ...user, stars, missions };
+    return { ...user, stars, missions };
+  } catch (error) {
+    return { error: "Ocurrio un error!", message: error };
+  }
 };
 
 export async function create({
@@ -119,7 +123,7 @@ export async function create({
 
     return { ok: true };
   } catch (error) {
-    return { error: "Error inesperado" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -169,7 +173,7 @@ export async function getUserByUsername(username) {
       return { error: true };
     }
   } catch (error) {
-    return { error: "Error inesperado" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -200,7 +204,7 @@ export async function updateUser({ accountName, about, img }) {
 
     return { ok: true };
   } catch (error) {
-    return { error: "Error inesperado" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -218,7 +222,7 @@ export async function follow(user_id) {
 
     return { ok: true };
   } catch (error) {
-    return { error: "Error inesperado" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -236,6 +240,6 @@ export async function unfollow(user_id) {
 
     return { ok: true };
   } catch (error) {
-    return { error: "Error inesperado" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }

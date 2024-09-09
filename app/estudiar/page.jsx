@@ -42,7 +42,7 @@ const PdfHome = () => {
       <PdfPage />
     </Suspense>
   );
-}
+};
 
 const PdfPage = () => {
   const searchParams = useSearchParams();
@@ -275,7 +275,7 @@ const PdfPage = () => {
           className="flex p-2 gap-4 w-full justify-start overflow-x-auto"
           id="scroll"
         >
-          {!user.missions.find(m => m.completed) &&
+          {!user.missions.find((m) => m.completed) && (
             <Button
               className="min-w-[100px] h-full hover:opacity-80 cursor-pointer relative"
               color="primary"
@@ -302,7 +302,7 @@ const PdfPage = () => {
                 )}
               </div>
             </Button>
-          }
+          )}
 
           {user &&
             user.missions.map((mission, i) => (
@@ -364,98 +364,98 @@ const PdfPage = () => {
       {(saved.cuestionarios.length > 0 ||
         saved.flashCards.length > 0 ||
         saved.mindMaps.length > 0) && (
-          <>
-            <Divider className="my-5" />
-            <div className="flex flex-col items-center gap-4">
-              <h1 className="text-xl font-bold">Guardados</h1>
-              <Tabs aria-label="Saved">
-                {saved.cuestionarios.length > 0 && (
-                  <Tab key="cuestionarios-guardados" title="Cuestionarios">
-                    <div className="flex flex-col w-full gap-4">
-                      <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
-                        {loadingSaved && <Star />}
-                        {saved.cuestionarios.map((fil, i) => (
-                          <button
-                            key={i}
-                            className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
-                            onClick={() =>
-                              setSelectTool({ saved: fil, tool: "CUESTIONARIO" })
-                            }
-                          >
-                            <p className="text-2xl">
-                              <SiGoogleforms />
+        <>
+          <Divider className="my-5" />
+          <div className="flex flex-col items-center gap-4">
+            <h1 className="text-xl font-bold">Guardados</h1>
+            <Tabs aria-label="Saved">
+              {saved.cuestionarios.length > 0 && (
+                <Tab key="cuestionarios-guardados" title="Cuestionarios">
+                  <div className="flex flex-col w-full gap-4">
+                    <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+                      {loadingSaved && <Star />}
+                      {saved.cuestionarios.map((fil, i) => (
+                        <button
+                          key={i}
+                          className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
+                          onClick={() =>
+                            setSelectTool({ saved: fil, tool: "CUESTIONARIO" })
+                          }
+                        >
+                          <p className="text-2xl">
+                            <SiGoogleforms />
+                          </p>
+                          <div className="overflow-hidden">
+                            <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
+                              {fil.file_name}
                             </p>
-                            <div className="overflow-hidden">
-                              <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
-                                {fil.file_name}
-                              </p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
+                          </div>
+                        </button>
+                      ))}
                     </div>
-                  </Tab>
-                )}
+                  </div>
+                </Tab>
+              )}
 
-                {saved.flashCards.length > 0 && (
-                  <Tab key="flash-cards" title="Flash Cards">
-                    <div className="flex flex-col w-full gap-4">
-                      <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
-                        {loadingSaved && <Star />}
-                        {saved.flashCards.map((fil, i) => (
-                          <button
-                            key={i}
-                            className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
-                            onClick={() =>
-                              setSelectTool({ saved: fil, tool: "FLASHCARDS" })
-                            }
-                          >
-                            <p className="text-4xl">
-                              <CgCardClubs />
+              {saved.flashCards.length > 0 && (
+                <Tab key="flash-cards" title="Flash Cards">
+                  <div className="flex flex-col w-full gap-4">
+                    <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+                      {loadingSaved && <Star />}
+                      {saved.flashCards.map((fil, i) => (
+                        <button
+                          key={i}
+                          className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
+                          onClick={() =>
+                            setSelectTool({ saved: fil, tool: "FLASHCARDS" })
+                          }
+                        >
+                          <p className="text-4xl">
+                            <CgCardClubs />
+                          </p>
+                          <div className="overflow-hidden">
+                            <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
+                              {fil.file_name}
                             </p>
-                            <div className="overflow-hidden">
-                              <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
-                                {fil.file_name}
-                              </p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
+                          </div>
+                        </button>
+                      ))}
                     </div>
-                  </Tab>
-                )}
+                  </div>
+                </Tab>
+              )}
 
-                {saved.mindMaps.length > 0 && (
-                  <Tab key="mapas-mentales" title="Mapas Mentales">
-                    <div className="flex flex-col w-full gap-4">
-                      <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
-                        {loadingSaved && <Star />}
-                        {saved.mindMaps.map((fil, i) => (
-                          <button
-                            key={i}
-                            className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
-                            onClick={() =>
-                              setSelectTool({ saved: fil, tool: "MINDMAP" })
-                            }
-                          >
-                            <p className="text-4xl">
-                              <TiFlowSwitch />
+              {saved.mindMaps.length > 0 && (
+                <Tab key="mapas-mentales" title="Mapas Mentales">
+                  <div className="flex flex-col w-full gap-4">
+                    <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+                      {loadingSaved && <Star />}
+                      {saved.mindMaps.map((fil, i) => (
+                        <button
+                          key={i}
+                          className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
+                          onClick={() =>
+                            setSelectTool({ saved: fil, tool: "MINDMAP" })
+                          }
+                        >
+                          <p className="text-4xl">
+                            <TiFlowSwitch />
+                          </p>
+                          <div className="overflow-hidden">
+                            <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
+                              {fil.file_name}
                             </p>
-                            <div className="overflow-hidden">
-                              <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
-                                {fil.file_name}
-                              </p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
+                          </div>
+                        </button>
+                      ))}
                     </div>
-                  </Tab>
-                )}
-              </Tabs>
-            </div>
-          </>
-        )}
+                  </div>
+                </Tab>
+              )}
+            </Tabs>
+          </div>
+        </>
+      )}
     </div>
   );
 };

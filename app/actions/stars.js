@@ -30,6 +30,6 @@ export async function reclaimStar(mission) {
 
     return user;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }

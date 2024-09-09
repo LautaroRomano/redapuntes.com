@@ -7,7 +7,7 @@ export async function getUniversities() {
 
     return data;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -20,6 +20,6 @@ export async function getCarrer(university_id) {
 
     return data;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }

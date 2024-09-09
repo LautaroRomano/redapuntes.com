@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
-import { PdfReader } from "pdfreader"; 
+import { PdfReader } from "pdfreader";
+
 import { authOptions } from "../auth/[...nextauth]/route";
 import conn from "../../lib/db";
 

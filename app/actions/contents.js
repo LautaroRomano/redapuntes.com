@@ -7,6 +7,6 @@ export async function getContents() {
 
     return data;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }

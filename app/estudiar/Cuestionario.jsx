@@ -116,7 +116,8 @@ const Cuestionario = ({ file, fin, saved }) => {
   };
 
   useEffect(() => {
-    if (file && file.text) getCuestionario(file.text);
+    if (file && file.text && !loading && questions.length === 0)
+      getCuestionario(file.text);
   }, [file]);
 
   const save = async () => {
@@ -142,10 +143,7 @@ const Cuestionario = ({ file, fin, saved }) => {
         <div
           className={`w-36 transition-opacity duration-300 ${showFinishElement[0] ? "flex opacity-100" : "hidden opacity-100"}`}
         >
-          <img
-            alt=""
-            src="https://i.pinimg.com/originals/15/32/42/153242d25a0c6696d9eebd5847c16eb2.gif"
-          />
+          <img alt="" src="/success.gif" />
         </div>
         <h1
           className={`text-2xl  transition-opacity duration-300 ${showFinishElement[1] ? "flex opacity-100" : "hidden opacity-100"}`}

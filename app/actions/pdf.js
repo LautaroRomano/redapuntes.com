@@ -9,7 +9,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_API_KEY,
 });
 
-export async function getStar(user) {
+async function getStar(user) {
   try {
     const { rows: data } = await conn.query(
       `select * from stars s where s.used = false and s.user_id = $1`,
@@ -18,7 +18,7 @@ export async function getStar(user) {
 
     return data[0];
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -35,7 +35,7 @@ export async function getMyPDF() {
 
     return data;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -87,31 +87,32 @@ export async function getSaved(files) {
       flashCards: dataFlashCards,
     };
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
 export async function generateCuestionario(text) {
-  const user = await getMyUser();
-
-  if (!user) return { error: "Debe iniciar sesion para continuar!" };
-
-  const star = await getStar(user);
-
-  if (!star) return { error: "Consigue estrellas para continuar!" };
-
   try {
-    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
-      true,
-      star.star_id,
-    ]);
+    const user = await getMyUser();
 
-    const openAiRes = await openai.chat.completions.create({
-      model: "GPT-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `
+    if (!user) return { error: "Debe iniciar sesion para continuar!" };
+
+    const star = await getStar(user);
+
+    if (!star) return { error: "Consigue estrellas para continuar!" };
+
+    try {
+      await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+        true,
+        star.star_id,
+      ]);
+
+      const openAiRes = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: `
           Eres un profesor universitario especializado en crear cuestionarios para ayudar a los estudiantes a repasar antes de un examen. Dado un texto largo, tu tarea es generar exactamente 8 preguntas de opción múltiple que cubran los conceptos clave presentados en el texto. 
 
           Instrucciones específicas:
@@ -145,47 +146,59 @@ export async function generateCuestionario(text) {
             }
           ]
           `,
-        },
-        {
-          role: "user",
-          content: `texto: ${text}.`,
-        },
-      ],
-    });
-    const resText = (await openAiRes).choices[0].message.content;
+          },
+          {
+            role: "user",
+            content: `texto: ${text}.`,
+          },
+        ],
+      });
 
-    return JSON.parse(resText);
+      const resText = openAiRes.choices[0].message.content;
+
+      try {
+        return JSON.parse(resText);
+      } catch (parsingError) {
+        return {
+          error: "Error al parsear la respuesta de OpenAI",
+          message: parsingError,
+        };
+      }
+    } catch (error) {
+      await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+        false,
+        star.star_id,
+      ]);
+
+      return { error: "Ocurrio un error!", message: error };
+    }
   } catch (error) {
-    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
-      false,
-      star.star_id,
-    ]);
-
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
 export async function generateCards(text) {
-  const user = await getMyUser();
-
-  if (!user) return { error: "Debe iniciar sesion para continuar!" };
-
-  const star = await getStar(user);
-
-  if (!star) return { error: "Consigue estrellas para continuar!" };
-
   try {
-    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
-      true,
-      star.star_id,
-    ]);
+    const user = await getMyUser();
 
-    const openAiRes = await openai.chat.completions.create({
-      model: "GPT-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `
+    if (!user) return { error: "Debe iniciar sesion para continuar!" };
+
+    const star = await getStar(user);
+
+    if (!star) return { error: "Consigue estrellas para continuar!" };
+
+    try {
+      await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+        true,
+        star.star_id,
+      ]);
+
+      const openAiRes = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: `
           Eres un profesor universitario especializado en crear tarjetas didacticas para ayudar a los estudiantes a repasar antes de un examen. Dado un texto largo, tu tarea es generar exactamente 8 tarjetas con un frente y un dorso que cubran los conceptos clave presentados en el texto. 
 
           Instrucciones específicas:
@@ -204,47 +217,58 @@ export async function generateCards(text) {
             ...
           ]
           `,
-        },
-        {
-          role: "user",
-          content: `texto: ${text}.`,
-        },
-      ],
-    });
-    const resText = (await openAiRes).choices[0].message.content;
+          },
+          {
+            role: "user",
+            content: `texto: ${text}.`,
+          },
+        ],
+      });
+      const resText = openAiRes.choices[0].message.content;
 
-    return JSON.parse(resText);
+      try {
+        return JSON.parse(resText);
+      } catch (parsingError) {
+        return {
+          error: "Error al parsear la respuesta de OpenAI",
+          message: parsingError,
+        };
+      }
+    } catch (error) {
+      await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+        false,
+        star.star_id,
+      ]);
+
+      return { error: "Ocurrio un error!", message: error };
+    }
   } catch (error) {
-    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
-      false,
-      star.star_id,
-    ]);
-
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
 export async function generateMindMap(text) {
-  const user = await getMyUser();
-
-  if (!user) return { error: "Debe iniciar sesion para continuar!" };
-
-  const star = await getStar(user);
-
-  if (!star) return { error: "Consigue estrellas para continuar!" };
-
   try {
-    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
-      true,
-      star.star_id,
-    ]);
+    const user = await getMyUser();
 
-    const openAiRes = await openai.chat.completions.create({
-      model: "GPT-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `
+    if (!user) return { error: "Debe iniciar sesion para continuar!" };
+
+    const star = await getStar(user);
+
+    if (!star) return { error: "Consigue estrellas para continuar!" };
+
+    try {
+      await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+        true,
+        star.star_id,
+      ]);
+
+      const openAiRes = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: `
           Eres un profesor universitario experto en crear mapas mentales para ayudar a estudiantes a repasar antes de un examen. Tu tarea es identificar los conceptos clave de un texto largo y organizar estos conceptos en un mapa mental estructurado. Cada concepto clave debe convertirse en un nodo, y los nodos deben estar conectados entre sí de manera lógica según su relación en el texto.
 
           Instrucciones específicas:
@@ -270,23 +294,33 @@ export async function generateMindMap(text) {
 
           Asegúrate de que el mapa mental refleje con precisión las relaciones y jerarquías dentro del texto. Verifica que cada conexión entre nodos sea coherente y relevante en el contexto del tema.
           `,
-        },
-        {
-          role: "user",
-          content: `texto: ${text}.`,
-        },
-      ],
-    });
-    const resText = (await openAiRes).choices[0].message.content;
+          },
+          {
+            role: "user",
+            content: `texto: ${text}.`,
+          },
+        ],
+      });
+      const resText = openAiRes.choices[0].message.content;
 
-    return JSON.parse(resText);
+      try {
+        return JSON.parse(resText);
+      } catch (parsingError) {
+        return {
+          error: "Error al parsear la respuesta de OpenAI",
+          message: parsingError,
+        };
+      }
+    } catch (error) {
+      await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
+        false,
+        star.star_id,
+      ]);
+
+      return { error: "Ocurrio un error!", message: error };
+    }
   } catch (error) {
-    await conn.query(`update stars s set used=$1 where s.star_id=$2`, [
-      false,
-      star.star_id,
-    ]);
-
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -309,7 +343,7 @@ export async function saveCuestionario({ file_id, data }) {
 
     return true;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -326,7 +360,7 @@ export async function saveMindMap({ file_id, edges, nodes }) {
 
     return true;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -352,6 +386,6 @@ export async function saveCards({ file_id, cards }) {
 
     return true;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }

@@ -56,7 +56,7 @@ export async function create(content, files, selected) {
 
     return { ok: true };
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -163,7 +163,7 @@ export async function get(type, limit = 10, offset = 0, filters) {
 
     return response;
   } catch (error) {
-    return { error: "Ocurrió un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -228,7 +228,7 @@ export async function getPostsByUserId(user_id, limit = 10, offset = 0) {
 
     return response;
   } catch (error) {
-    return { error: "Ocurrió un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -285,7 +285,7 @@ export async function getPostById(post_id) {
       career: career.rows[0],
     };
   } catch (error) {
-    return { error: "Ocurrió un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -356,7 +356,7 @@ export async function getComments(post_id) {
 
     return comments;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -402,7 +402,7 @@ export async function setComment(post_id, content) {
 
     return comments;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
 
@@ -512,6 +512,6 @@ export async function searchPosts(query, limit = 10, offset = 0, filters) {
 
     return response;
   } catch (error) {
-    return { error: "Ocurrio un error!" };
+    return { error: "Ocurrio un error!", message: error };
   }
 }
