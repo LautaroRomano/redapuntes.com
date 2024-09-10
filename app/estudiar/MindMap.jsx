@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { Spinner } from "@nextui-org/react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
-import { generateMindMap, saveMindMap } from "../actions/pdf";
+import { saveMindMap } from "../actions/pdf";
 
 import Star from "@/components/loaders/Star";
 
@@ -20,18 +20,75 @@ function Flow({ file, fin, saved }) {
   const getMap = async (text) => {
     if (loading) return;
     setLoading(true);
-    const res = await generateMindMap(text);
 
-    if (res.error) {
-      toast.error(res.error);
+    try {
+      const res = await fetch("/api/openai/mindmap", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: text,
+        }),
+      });
+
+      if (!res.ok) {
+        if (res.status === 403) {
+          return toast.error("Iniciar sesión para continuar.");
+        }
+        if (res.status === 499) {
+          return toast.error("Debes conseguir estrellas para continuar!");
+        }
+
+        return toast.error("Ocurrió un error, inténtalo nuevamente más tarde.");
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let buffer = "";
+      let resultado = "";
+
+      while (!done) {
+        const { value, done: streamDone } = await reader.read();
+
+        done = streamDone;
+
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+
+          buffer += chunk; // Acumulamos en el buffer
+
+          // Dividimos por el separador
+          const parts = buffer.split("\n\n");
+
+          parts.slice(0, -1).forEach((part) => {
+            try {
+              const jsonChunk = JSON.parse(part); // Parseamos cada parte como JSON
+              const content = jsonChunk.choices[0]?.delta?.content || "";
+
+              resultado += content;
+            } catch (error) {
+              toast.error('Ocurrio un error!')
+            }
+          });
+
+          // Guardamos la última parte en el buffer (puede estar incompleta)
+          buffer = parts[parts.length - 1];
+        }
+      }
+      resultado = resultado.replace(/^```json/, "").replace(/```$/, "");
+      setEdges(JSON.parse(resultado).edges);
+      setNodes(JSON.parse(resultado).nodes);
+      setGenerated((prev) => prev + 1);
+    } catch (error) {
+      toast.error("Ocurrio un error inesperado!");
       setLoading(false);
       finishim();
 
       return;
     }
-    setEdges(res.edges);
-    setNodes(res.nodes);
-    setGenerated((prev) => prev + 1);
+
     setLoading(false);
   };
 

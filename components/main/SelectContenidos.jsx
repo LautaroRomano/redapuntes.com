@@ -1,18 +1,20 @@
 import { Select, SelectItem } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
-import { getContents } from "@/app/actions/contents";
+import axios from "axios";
 
 export default function SelectContenidos({ setMyContent, contents }) {
   const [values, setValues] = useState(new Set([]));
   const [tags, setTags] = useState([]);
 
   const get = async () => {
-    const res = await getContents();
+    try {
+      const { data: res } = await axios.get("/api/contents");
 
-    if (res.error) return toast.error(res.error);
-    setTags(res);
+      setTags(res);
+    } catch (error) {
+      toast.error("Ocurrio un error cargando los contenidos!");
+    }
   };
 
   useEffect(() => {

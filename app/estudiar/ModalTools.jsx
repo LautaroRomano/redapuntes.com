@@ -46,7 +46,7 @@ export default function ModalTools({ children, pdf, setSelectTool }) {
                   startContent={<TiFlowSwitch />}
                   onPress={() => setSelectTool({ file: pdf, tool: "MINDMAP" })}
                 >
-                  Generar un Mapa mental
+                  Generar un Mapa mental (beta)
                 </Button>
               </ModalBody>
               <ModalFooter>

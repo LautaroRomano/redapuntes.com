@@ -34,7 +34,7 @@ export const getMyUser = async () => {
 
     return { ...user, stars, missions };
   } catch (error) {
-    return { error: "Ocurrio un error!", message: error };
+    return { error: "Ocurrio un error!" };
   }
 };
 
@@ -123,7 +123,7 @@ export async function create({
 
     return { ok: true };
   } catch (error) {
-    return { error: "Ocurrio un error!", message: error };
+    return { error: "Ocurrio un error!" };
   }
 }
 
@@ -173,7 +173,7 @@ export async function getUserByUsername(username) {
       return { error: true };
     }
   } catch (error) {
-    return { error: "Ocurrio un error!", message: error };
+    return { error: "Ocurrio un error!" };
   }
 }
 
@@ -204,7 +204,7 @@ export async function updateUser({ accountName, about, img }) {
 
     return { ok: true };
   } catch (error) {
-    return { error: "Ocurrio un error!", message: error };
+    return { error: "Ocurrio un error!" };
   }
 }
 
@@ -222,7 +222,7 @@ export async function follow(user_id) {
 
     return { ok: true };
   } catch (error) {
-    return { error: "Ocurrio un error!", message: error };
+    return { error: "Ocurrio un error!" };
   }
 }
 
@@ -240,6 +240,6 @@ export async function unfollow(user_id) {
 
     return { ok: true };
   } catch (error) {
-    return { error: "Ocurrio un error!", message: error };
+    return { error: "Ocurrio un error!" };
   }
 }
