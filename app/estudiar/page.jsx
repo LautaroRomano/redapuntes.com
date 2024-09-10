@@ -283,7 +283,7 @@ const PdfPage = () => {
             >
               <div className="flex w-full h-full items-center justify-center">
                 {loadingBuy ? (
-                  <Spinner />
+                  <Spinner color="white"/>
                 ) : (
                   <div className="flex flex-col h-full items-center justify-center w-full ">
                     <div className="flex flex-col gap-2 h-full items-center justify-center w-full">
