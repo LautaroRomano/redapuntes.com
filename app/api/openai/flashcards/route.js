@@ -10,7 +10,7 @@ const openai = new OpenAI({
 export async function POST(request) {
   try {
     const body = await request.json();
-    const countCards = 10;
+    const countCards = 2;
 
     const user = await getMyUser();
 

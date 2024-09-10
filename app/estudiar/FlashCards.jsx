@@ -76,13 +76,19 @@ const FlashCards = ({ file, fin, saved }) => {
 
       if (!res.ok) {
         if (res.status === 403) {
-          return toast.error("Iniciar sesión para continuar.");
+          toast.error("Iniciar sesión para continuar.");
+          finishim()
+          return;
         }
         if (res.status === 499) {
-          return toast.error("Debes conseguir estrellas para continuar!");
+          toast.error("Debes conseguir estrellas para continuar!");
+          finishim()
+          return;
         }
-
-        return toast.error("Ocurrió un error, inténtalo nuevamente más tarde.");
+        
+        toast.error("Ocurrió un error, inténtalo nuevamente más tarde.");
+        finishim()
+        return;
       }
 
       const reader = res.body.getReader();
@@ -111,6 +117,7 @@ const FlashCards = ({ file, fin, saved }) => {
 
               resultado += content;
             } catch (error) {
+              console.log("🚀 ~ parts.slice ~ error:", error)
               toast.error("Ocurrio un error!");
             }
           });
@@ -122,6 +129,7 @@ const FlashCards = ({ file, fin, saved }) => {
       resultado = resultado.replace(/^```json/, "").replace(/```$/, "");
       setQuestions(JSON.parse(resultado));
     } catch (error) {
+      console.log("🚀 ~ getCuestionario ~ error:", error)
       toast.error("Ocurrio un error inesperado!");
       setLoading(false);
       finishim();
