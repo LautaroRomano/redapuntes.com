@@ -69,7 +69,7 @@ function Flow({ file, fin, saved }) {
 
               resultado += content;
             } catch (error) {
-              toast.error('Ocurrio un error!')
+              toast.error("Ocurrio un error!");
             }
           });
 

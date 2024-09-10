@@ -106,8 +106,6 @@ export async function POST(request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error en la solicitud:", error);
-
     return new Response(
       JSON.stringify({ mensaje: "Error en el servidor", error }),
       {
