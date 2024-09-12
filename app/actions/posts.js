@@ -1,7 +1,9 @@
 "use server";
 import conn from "../lib/db";
-
+import { Resend } from "resend";
+import { EmailTemplate } from '@/components/emailTemplates/EmialTemplate'
 import { getMyUser } from "./users";
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function create(content, files, selected) {
   try {
@@ -399,6 +401,18 @@ export async function setComment(post_id, content) {
         [amount + 1, completed, mission_id],
       );
     }
+
+    await resend.emails.send({
+      from: "info@redapuntes.com",
+      to: [user.email],
+      subject: "Alguien comentó tu publicación!",
+      react: EmailTemplate({
+        body: <p>Recibiste un comentario en tu publicación <br /><br />
+          <strong>"{content}"</strong><br /><br />
+          Para responder entra en <a href="https://www.instagram.com/red.apuntes" target='_blank'>tu publicacion.</a>
+        </p>
+      })
+    })
 
     return comments;
   } catch (error) {
