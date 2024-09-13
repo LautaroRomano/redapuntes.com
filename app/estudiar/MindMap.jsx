@@ -35,17 +35,20 @@ function Flow({ file, fin, saved }) {
       if (!res.ok) {
         if (res.status === 403) {
           toast.error("Iniciar sesión para continuar.");
-          finishim()
+          finishim();
+
           return;
         }
         if (res.status === 499) {
           toast.error("Debes conseguir estrellas para continuar!");
-          finishim()
+          finishim();
+
           return;
         }
-        
+
         toast.error("Ocurrió un error, inténtalo nuevamente más tarde.");
-        finishim()
+        finishim();
+
         return;
       }
 
@@ -75,7 +78,6 @@ function Flow({ file, fin, saved }) {
 
               resultado += content;
             } catch (error) {
-              console.log("🚀 ~ parts.slice ~ error:", error)
               toast.error("Ocurrio un error!");
             }
           });
@@ -89,7 +91,6 @@ function Flow({ file, fin, saved }) {
       setNodes(JSON.parse(resultado).nodes);
       setGenerated((prev) => prev + 1);
     } catch (error) {
-      console.log("🚀 ~ getMap ~ error:", error)
       toast.error("Ocurrio un error inesperado!");
       setLoading(false);
       finishim();

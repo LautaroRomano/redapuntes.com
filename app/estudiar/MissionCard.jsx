@@ -63,7 +63,7 @@ const MissionCard = ({ mission, uploaded, total }) => {
         >
           <div className="flex w-full h-full items-center justify-center">
             {loadingReclaim ? (
-              <Spinner color="white"/>
+              <Spinner color="white" />
             ) : (
               <>
                 <p

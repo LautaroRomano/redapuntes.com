@@ -1,9 +1,14 @@
 "use server";
 import { getServerSession } from "next-auth";
 import bcrypt from "bcryptjs";
+import { Resend } from "resend";
 
 import conn from "../lib/db";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+
+import { EmailTemplate } from "@/components/emailTemplates/EmialTemplate";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const getMyUser = async () => {
   try {
@@ -53,8 +58,8 @@ export async function create({
       return { error: "Las contrasenas no coinciden" };
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const lowerEmail = email.toLowerCase();
-    const lowerUsername = username.toLowerCase();
+    const lowerEmail = email.toLowerCase().trim();
+    const lowerUsername = username.toLowerCase().trim();
 
     const { rows: usersByUsername } = await conn.query(
       `
@@ -219,6 +224,35 @@ export async function follow(user_id) {
         `,
       [user.user_id, user_id],
     );
+
+    const { rows: followedSnapshot } = await conn.query(
+      `select * from users where users.user_id = $1`,
+      [user_id],
+    );
+    const followed = followedSnapshot[0];
+
+    await resend.emails.send({
+      from: "RedApuntes@redapuntes.com",
+      to: [followed.email],
+      subject: "Tienes un seguidor nuevo!",
+      react: EmailTemplate({
+        body: (
+          <p>
+            El usuario{" "}
+            <a
+              href={`https://www.redapuntes.com/profile/${followed.username}`}
+              rel="noreferrer"
+              target="_blank"
+            >
+              @{followed.username}
+            </a>{" "}
+            comenzó a seguirte!. <br />
+            Parece que a la gente le gusta tu contenido sigue asi 📚✨ <br />
+            <br />
+          </p>
+        ),
+      }),
+    });
 
     return { ok: true };
   } catch (error) {

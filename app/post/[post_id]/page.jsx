@@ -1,5 +1,12 @@
 "use client";
-import { Avatar, Button, Card, CardBody, Textarea } from "@nextui-org/react";
+import {
+  Avatar,
+  Button,
+  Card,
+  CardBody,
+  Spinner,
+  Textarea,
+} from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -13,6 +20,7 @@ export default function PostPage({ params }) {
   const [post, setPost] = useState();
   const [comments, setComments] = useState([]);
   const [myComment, setMyComment] = useState("");
+  const [isLoadingComent, setIsLoadingComent] = useState(false);
 
   const getPost = async (post_id) => {
     const myPost = await getPostById(post_id);
@@ -35,8 +43,10 @@ export default function PostPage({ params }) {
   }, [params]);
 
   const setNewComment = async () => {
+    setIsLoadingComent(true);
     const newComments = await setComment(params.post_id, myComment);
 
+    setIsLoadingComent(false);
     if (newComments.error) return toast.error(newComments.error);
     setComments(newComments);
     setMyComment("");
@@ -69,7 +79,7 @@ export default function PostPage({ params }) {
                 disabled={!post || myComment.length < 1}
                 onClick={setNewComment}
               >
-                Comentar
+                {isLoadingComent ? <Spinner /> : "Comentar"}
               </Button>
             </div>
 

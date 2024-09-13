@@ -1,8 +1,11 @@
 "use server";
-import conn from "../lib/db";
 import { Resend } from "resend";
-import { EmailTemplate } from '@/components/emailTemplates/EmialTemplate'
+
+import conn from "../lib/db";
+
 import { getMyUser } from "./users";
+
+import { EmailTemplate } from "@/components/emailTemplates/EmialTemplate";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function create(content, files, selected) {
@@ -352,6 +355,7 @@ export async function getComments(post_id) {
         from "comments" c 
         join users u on u.user_id = c.user_id
         where c.post_id = $1
+        order by created_at desc
         `,
       [post_id],
     );
@@ -368,6 +372,14 @@ export async function setComment(post_id, content) {
 
     if (user.error) return { error: "Debe iniciar sesion!" };
 
+    const { rows: posts } = await conn.query(
+      `select *
+        from posts p
+        where p.post_id = $1`,
+      [post_id],
+    );
+    const myPost = posts[0];
+
     await conn.query(
       `
         insert into "comments"(post_id,user_id,"content") values($1,$2,$3)
@@ -381,38 +393,62 @@ export async function setComment(post_id, content) {
         from "comments" c 
         join users u on u.user_id = c.user_id
         where c.post_id = $1
+        order by created_at desc
         `,
       [post_id],
     );
 
-    const { rows: missions } = await conn.query(
-      `select * from missions m 
-    WHERE TYPE ='MAKE_COMMENT' and expiration >= CURRENT_DATE and reclaimed = false and completed = false and user_id = $1 
-    order by completed desc;`,
-      [user.user_id],
-    );
-
-    for (const mission of missions) {
-      const { amount, final_amount, mission_id } = mission;
-      const completed = amount + 1 >= final_amount;
-
-      await conn.query(
-        `update missions set amount = $1, completed =$2 where mission_id = $3`,
-        [amount + 1, completed, mission_id],
+    if (myPost.user_id !== user.user_id) {
+      const { rows: missions } = await conn.query(
+        `select * from missions m 
+      WHERE TYPE ='MAKE_COMMENT' and expiration >= CURRENT_DATE and reclaimed = false and completed = false and user_id = $1 
+      order by completed desc;`,
+        [user.user_id],
       );
-    }
 
-    await resend.emails.send({
-      from: "info@redapuntes.com",
-      to: [user.email],
-      subject: "Alguien comentó tu publicación!",
-      react: EmailTemplate({
-        body: <p>Recibiste un comentario en tu publicación <br /><br />
-          <strong>"{content}"</strong><br /><br />
-          Para responder entra en <a href="https://www.instagram.com/red.apuntes" target='_blank'>tu publicacion.</a>
-        </p>
-      })
-    })
+      const { rows: userPostSnapshot } = await conn.query(
+        `select u.* from users u
+          join posts p on p.user_id = u.user_id 
+          where p.post_id = $1`,
+        [post_id],
+      );
+      const userPost = userPostSnapshot[0];
+
+      for (const mission of missions) {
+        const { amount, final_amount, mission_id } = mission;
+        const completed = amount + 1 >= final_amount;
+
+        await conn.query(
+          `update missions set amount = $1, completed =$2 where mission_id = $3`,
+          [amount + 1, completed, mission_id],
+        );
+      }
+
+      await resend.emails.send({
+        from: "RedApuntes@redapuntes.com",
+        to: [userPost.email],
+        subject: "Alguien comentó tu publicación!",
+        react: EmailTemplate({
+          body: (
+            <p>
+              Recibiste el siguiente comentario en tu publicación:
+              <br />
+              <strong>{'"' + content + '"'}</strong>
+              <br />
+              <br />
+              Puedes responder desde{" "}
+              <a
+                href={`https://www.redapuntes.com/post/${post_id}`}
+                rel="noreferrer"
+                target="_blank"
+              >
+                tu publicacion.
+              </a>
+            </p>
+          ),
+        }),
+      });
+    }
 
     return comments;
   } catch (error) {
