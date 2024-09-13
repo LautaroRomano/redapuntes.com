@@ -293,7 +293,7 @@ const PdfPage = () => {
                       </p>
                     </div>
                     <div className="w-full h-7 flex items-center justify-center bg-gray-700 absolute bottom-0 left-0">
-                      <p>$2500</p>
+                      <p>$2490</p>
                     </div>
                     <p className="flex items-center justify-center text-white absolute top-[0.30rem] left-0 rounded-e-sm bg-red-500 px-1">
                       <span className="text-sm">+25%</span>
