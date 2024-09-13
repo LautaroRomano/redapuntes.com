@@ -1,23 +1,46 @@
 "use server";
 import { getServerSession } from "next-auth";
 import bcrypt from "bcryptjs";
+import { Resend } from "resend";
 
 import conn from "../lib/db";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
+import { EmailTemplate } from "@/components/emailTemplates/EmialTemplate";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export const getMyUser = async () => {
-  const session = await getServerSession(authOptions);
+  try {
+    const session = await getServerSession(authOptions);
 
-  if (!session || !session.user.email) return { error: "Ocurrio un error!" };
+    if (!session || !session.user.email) return { error: "Ocurrio un error!" };
 
-  const { rows: result } = await conn.query(
-    "SELECT * FROM users WHERE email=$1",
-    [session.user.email],
-  );
+    const { rows: result } = await conn.query(
+      "SELECT * FROM users WHERE email=$1",
+      [session.user.email],
+    );
 
-  const user = result[0];
+    const user = result[0];
 
-  return user;
+    if (user && user.password_hash) delete user.password_hash;
+
+    const { rows: stars } = await conn.query(
+      "SELECT * FROM stars WHERE used=$1 and user_id=$2",
+      [false, user.user_id],
+    );
+
+    const { rows: missions } = await conn.query(
+      `select * from missions m 
+      WHERE expiration >= CURRENT_DATE and reclaimed = false and user_id=$1
+      order by completed desc;`,
+      [user.user_id],
+    );
+
+    return { ...user, stars, missions };
+  } catch (error) {
+    return { error: "Ocurrio un error!" };
+  }
 };
 
 export async function create({
@@ -35,8 +58,8 @@ export async function create({
       return { error: "Las contrasenas no coinciden" };
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const lowerEmail = email.toLowerCase();
-    const lowerUsername = username.toLowerCase();
+    const lowerEmail = email.toLowerCase().trim();
+    const lowerUsername = username.toLowerCase().trim();
 
     const { rows: usersByUsername } = await conn.query(
       `
@@ -60,18 +83,52 @@ export async function create({
 
     if (usersByEmail[0]) return { error: "Este email ya se encuentra en uso" };
 
-    await conn.query(
-      `
-        insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4)
-        `,
+    const { rows: newUser } = await conn.query(
+      `insert into users(email,password_hash,accountname,username) values($1,$2,$3,$4) RETURNING user_id`,
       [lowerEmail, hashedPassword, accountname, lowerUsername],
+    );
+    const insertedUserId = newUser[0].user_id;
+
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text,completed) values($1,'FREE',1,1,'01-01-2050','Una gatis para que empieces a estudiar!',true);`,
+      [insertedUserId],
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text,completed) values($1,'FREE',1,1,'01-01-2050','Una gatis para que empieces a estudiar!',true);`,
+      [insertedUserId],
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text,completed) values($1,'FREE',1,1,'01-01-2050','Una gatis para que empieces a estudiar!',true);`,
+      [insertedUserId],
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_PUBLICATION',0,1,'01-01-2050','Sube 1 apunte a la red');`,
+      [insertedUserId],
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_PUBLICATION',0,5,'01-01-2050','Sube 5 apuntes a la red');`,
+      [insertedUserId],
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_COMMENT',0,1,'01-01-2050','Realiza 1 comentario en algun apunte');`,
+      [insertedUserId],
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'MAKE_COMMENT',0,5,'01-01-2050','Realiza 5 comentario en algun apunte');`,
+      [insertedUserId],
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'GET_LIKE',0,5,'01-01-2050','Recibe 5 likes en tus apuntes');`,
+      [insertedUserId],
+    );
+    await conn.query(
+      `insert into missions(user_id,"type",amount,final_amount,expiration,mission_text) values($1,'GET_LIKE',0,15,'01-01-2050','Recibe 15 likes en tus apuntes');`,
+      [insertedUserId],
     );
 
     return { ok: true };
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
-    return { error: "Error inesperado" };
+    return { error: "Ocurrio un error!" };
   }
 }
 
@@ -121,7 +178,7 @@ export async function getUserByUsername(username) {
       return { error: true };
     }
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
+    return { error: "Ocurrio un error!" };
   }
 }
 
@@ -152,9 +209,7 @@ export async function updateUser({ accountName, about, img }) {
 
     return { ok: true };
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
-    return { error: "Error inesperado" };
+    return { error: "Ocurrio un error!" };
   }
 }
 
@@ -170,11 +225,38 @@ export async function follow(user_id) {
       [user.user_id, user_id],
     );
 
+    const { rows: followedSnapshot } = await conn.query(
+      `select * from users where users.user_id = $1`,
+      [user_id],
+    );
+    const followed = followedSnapshot[0];
+
+    await resend.emails.send({
+      from: "RedApuntes@redapuntes.com",
+      to: [followed.email],
+      subject: "Tienes un seguidor nuevo!",
+      react: EmailTemplate({
+        body: (
+          <p>
+            El usuario{" "}
+            <a
+              href={`https://www.redapuntes.com/profile/${followed.username}`}
+              rel="noreferrer"
+              target="_blank"
+            >
+              @{followed.username}
+            </a>{" "}
+            comenzó a seguirte!. <br />
+            Parece que a la gente le gusta tu contenido sigue asi 📚✨ <br />
+            <br />
+          </p>
+        ),
+      }),
+    });
+
     return { ok: true };
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
-    return { error: "Error inesperado" };
+    return { error: "Ocurrio un error!" };
   }
 }
 
@@ -192,8 +274,6 @@ export async function unfollow(user_id) {
 
     return { ok: true };
   } catch (error) {
-    console.log("🚀 ~ get ~ error:", error);
-
-    return { error: "Error inesperado" };
+    return { error: "Ocurrio un error!" };
   }
 }

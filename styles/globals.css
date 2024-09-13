@@ -2,25 +2,139 @@
 @tailwind components;
 @tailwind utilities;
 
-
 #scroll {
-    overflow-x: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #006FEE transparent;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #006fee transparent;
 }
 
 #scroll::-webkit-scrollbar {
-    width: 2px;
-    height: 4px;
-    border-radius: 4px;
+  width: 2px;
+  height: 4px;
+  border-radius: 4px;
 }
 
 #scroll::-webkit-scrollbar-thumb {
-    background-color: #006FEE;
-    border-radius: 4px;
+  background-color: #006fee;
+  border-radius: 4px;
 }
 
 #scroll::-webkit-scrollbar-track {
-    background-color: transparent;
-    border-radius: 4px;
+  background-color: transparent;
+  border-radius: 4px;
 }
+
+/*Loaders*/
+
+.loader {
+  position: relative;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.loader-star {
+  position: absolute;
+  top: calc(50% - 12px);
+}
+
+.loader-2 .loader-star {
+  position: static;
+  width: 60px;
+  height: 60px;
+  -webkit-transform: scale(0.7);
+  -ms-transform: scale(0.7);
+  transform: scale(0.7);
+  -webkit-animation: loader-2-star 1s ease alternate infinite;
+  animation: loader-2-star 1s ease alternate infinite;
+}
+
+.loader-2 .loader-circles {
+  width: 8px;
+  height: 8px;
+  background: #18ffff;
+  border-radius: 50%;
+  position: absolute;
+  left: calc(50% - 4px);
+  top: calc(50% - 4px);
+  -webkit-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  transition: all 1s ease;
+  -webkit-animation: loader-2-circles 1s ease-in-out alternate infinite;
+  animation: loader-2-circles 1s ease-in-out alternate infinite;
+}
+
+.css-star {
+  margin: 10px 0;
+  position: relative;
+  display: block;
+  width: 0px;
+  height: 0px;
+  border-right: 26px solid transparent;
+  border-bottom: 23px solid #1d7ff0;
+  border-left: 23px solid transparent;
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.css-star:before {
+  border-bottom: 18px solid #1d7ff0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  position: absolute;
+  height: 0;
+  width: 0;
+  top: -9px;
+  left: -16px;
+  display: block;
+  content: "";
+  transform: rotate(-35deg);
+  -moz-transform: rotate(-35deg);
+  -ms-transform: rotate(-35deg);
+  -o-transform: rotate(-35deg);
+}
+
+.css-star:after {
+  position: absolute;
+  display: block;
+  top: 2px;
+  left: -26px;
+  width: 0px;
+  height: 0px;
+  border-right: 25px solid transparent;
+  border-bottom: 22px solid #1d7ff0;
+  border-left: 27px solid transparent;
+  transform: rotate(-70deg);
+  -moz-transform: rotate(-70deg);
+  -ms-transform: rotate(-70deg);
+  -o-transform: rotate(-70deg);
+  content: "";
+}
+
+@keyframes loader-2-star {
+  0% {
+    -webkit-transform: scale(0) rotate(0deg);
+    transform: scale(0) rotate(0deg);
+  }
+  100% {
+    -webkit-transform: scale(0.7) rotate(360deg);
+    transform: scale(0.7) rotate(360deg);
+  }
+}
+
+.animated-star {
+    color: #1D7FF0;
+    animation: colorChange 1s infinite;
+}
+
+@keyframes colorChange {
+    0% {
+        color: #1D7FF0; /* Color inicial */
+    }
+    50% {
+        color: #4e9bf4; /* Color en el medio de la animación */
+    }
+    100% {
+        color: #1D7FF0; /* Regresa al color inicial */
+    }
+  }

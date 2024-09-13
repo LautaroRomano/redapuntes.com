@@ -8,9 +8,10 @@ import conn from "@/app/lib/db";
 
 const getUserGoogle = async (email) => {
   try {
+    const lowerEmail = email.toLowerCase().trim();
     const { rows: result } = await conn.query(
       "SELECT * FROM users WHERE email=$1",
-      [email],
+      [lowerEmail],
     );
 
     if (result.length === 0) {
@@ -21,17 +22,17 @@ const getUserGoogle = async (email) => {
 
     return user;
   } catch (error) {
-    console.log(error);
-
     return null;
   }
 };
 
 const getUser = async (username, password) => {
+  const lowerEmail = username.toLowerCase().trim();
+
   try {
     const { rows: result } = await conn.query(
       "SELECT * FROM users WHERE username=$1 OR email=$2",
-      [username, username],
+      [lowerEmail, lowerEmail],
     );
 
     if (result.length === 0) {
@@ -47,8 +48,6 @@ const getUser = async (username, password) => {
       return null;
     }
   } catch (error) {
-    console.log(error);
-
     return null;
   }
 };

@@ -120,3 +120,74 @@ INSERT INTO careers (university_id, name) VALUES
 (2, 'Licenciatura en Economia'),
 (2, 'Medicina'),
 (2, 'Psicologia');
+
+--Aqui comienza la actualizacion de la IA
+
+CREATE TABLE files_ia (
+    file_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    text TEXT,
+    name varchar(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE cuestionarios (
+    cuestionario_id SERIAL PRIMARY KEY,
+    file_id INT REFERENCES files_ia(file_id) ON DELETE CASCADE,
+    data JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE mind_maps (
+    mind_id SERIAL PRIMARY KEY,
+    file_id INT REFERENCES files_ia(file_id) ON DELETE CASCADE,
+    edges JSONB,
+    nodes JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE flashCars (
+    flash_card_id SERIAL PRIMARY KEY,
+    file_id INT REFERENCES files_ia(file_id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE cards (
+    card_id SERIAL PRIMARY KEY,
+    flash_card_id INT REFERENCES flashCars(flash_card_id) ON DELETE CASCADE,
+    front text,
+    back text,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE stars (
+    star_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    used boolean DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP 
+);
+
+CREATE TABLE missions (
+    mission_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    type varchar(150),
+    amount int,
+    final_amount int,
+    completed boolean DEFAULT false,
+    reclaimed boolean DEFAULT false,
+    expiration date,
+    mission_text varchar(250),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP 
+);
+CREATE TABLE transactions (
+    transaction_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    status varchar(150),
+    preference_id varchar(250) DEFAULT null,
+    clientId varchar(250) DEFAULT null,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP 
+);
+

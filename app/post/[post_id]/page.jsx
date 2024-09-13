@@ -1,11 +1,18 @@
 "use client";
-import { Avatar, Button, Card, CardBody, Textarea } from "@nextui-org/react";
+import {
+  Avatar,
+  Button,
+  Card,
+  CardBody,
+  Spinner,
+  Textarea,
+} from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { getComments, getPostById, setComment } from "../../actions/posts";
-import { tiempoTranscurrido } from '@/app/lib/calcularTiempo'
 
+import { tiempoTranscurrido } from "@/app/lib/calcularTiempo";
 import RenderPostsList from "@/components/RenderPostsList";
 import PostSkeleton from "@/components/PostSkeleton";
 
@@ -13,6 +20,7 @@ export default function PostPage({ params }) {
   const [post, setPost] = useState();
   const [comments, setComments] = useState([]);
   const [myComment, setMyComment] = useState("");
+  const [isLoadingComent, setIsLoadingComent] = useState(false);
 
   const getPost = async (post_id) => {
     const myPost = await getPostById(post_id);
@@ -35,8 +43,10 @@ export default function PostPage({ params }) {
   }, [params]);
 
   const setNewComment = async () => {
+    setIsLoadingComent(true);
     const newComments = await setComment(params.post_id, myComment);
 
+    setIsLoadingComent(false);
     if (newComments.error) return toast.error(newComments.error);
     setComments(newComments);
     setMyComment("");
@@ -47,29 +57,29 @@ export default function PostPage({ params }) {
       <Card className="mb-4 w-full">
         <CardBody className="px-3 py-0 text-small text-default-400 items-center gap-2">
           <div className="my-5 w-full">
-            {
-              post ?
-                <RenderPostsList
-                  disabled={{ linkComments: true }}
-                  postsList={[post]}
-                />
-                : <PostSkeleton />
-            }
+            {post ? (
+              <RenderPostsList
+                disabled={{ linkComments: true }}
+                postsList={[post]}
+              />
+            ) : (
+              <PostSkeleton />
+            )}
 
             <div className="w-full flex gap-2 items-center">
               <Textarea
                 className="h-12"
+                disabled={!post}
                 placeholder="Escribe tu comentario"
                 value={myComment}
                 onChange={({ target }) => setMyComment(target.value)}
-                disabled={!post}
               />
               <Button
                 color={myComment.length < 1 ? "default" : "primary"}
                 disabled={!post || myComment.length < 1}
                 onClick={setNewComment}
               >
-                Comentar
+                {isLoadingComent ? <Spinner /> : "Comentar"}
               </Button>
             </div>
 

@@ -71,8 +71,7 @@ const Privacy = () => {
 
       <p className="mt-4">
         Si tiene alguna pregunta sobre esta Política de Privacidad, puede
-        contactarnos por correo electrónico a
-        redapuntes.info@gmail.com
+        contactarnos por correo electrónico a redapuntes.info@gmail.com
       </p>
     </div>
   );

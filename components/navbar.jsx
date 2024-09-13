@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa";
 import { signIn, signOut, useSession } from "next-auth/react";
 import {
+  Badge,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -35,39 +36,44 @@ import { useEffect, useState } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { useTheme } from "next-themes";
+import { PiStarFourFill } from "react-icons/pi";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 import { ThemeSwitch } from "./theme-switch";
 
 import { siteConfig } from "@/config/site";
 import { getMyUser } from "@/app/actions/users";
+import { store, setUserLogged } from "@/state/index";
 
 export const Navbar = () => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const { isOpen, onOpenChange } = useDisclosure();
-  const [user, setUser] = useState(null);
   const [myTheme, setMyTheme] = useState(null);
+  const user = useSelector((state) => state.userLogged);
 
   const { theme } = useTheme();
 
   useEffect(() => {
-    if (theme)
-      setMyTheme(theme)
-  }, [theme])
-
+    if (theme) setMyTheme(theme);
+  }, [theme]);
 
   const getUser = async () => {
     const user = await getMyUser();
 
-    if (user && !user.error) setUser(user);
+    if (user && !user.error) {
+      store.dispatch(setUserLogged(user));
+    }
   };
 
   useEffect(() => {
     if (status === "authenticated") getUser();
+    else if (status === "unauthenticated") store.dispatch(setUserLogged(null));
   }, [status]);
 
   return (
     <>
-      <NextUINavbar maxWidth="xl" position="sticky" className="">
+      <NextUINavbar className="" maxWidth="xl" position="sticky">
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
           <NavbarBrand as="li" className="gap-3 max-w-fit">
             <NextLink className="flexjustify-start items-center gap-1" href="/">
@@ -75,14 +81,22 @@ export const Navbar = () => {
                 <Image
                   isBlurred
                   className="cover max-h-6 rounded-none"
-                  src={myTheme ? `/logo-lg-${myTheme}.webp` : '/logo-lg-default.webp'}
+                  src={
+                    myTheme
+                      ? `/logo-lg-${myTheme}.webp`
+                      : "/logo-lg-default.webp"
+                  }
                 />
               </div>
               <div className="font-bold flex md:hidden">
                 <Image
                   isBlurred
                   className="cover max-h-5 rounded-none"
-                  src={myTheme ? `/logo-sm-${myTheme}.webp` : '/logo-sm-default.webp'}
+                  src={
+                    myTheme
+                      ? `/logo-sm-${myTheme}.webp`
+                      : "/logo-sm-default.webp"
+                  }
                 />
               </div>
             </NextLink>
@@ -93,8 +107,26 @@ export const Navbar = () => {
           <NavbarItem className="flex gap-2">
             <ThemeSwitch />
           </NavbarItem>
+          <NavbarItem className="flex gap-2">
+            <Link
+              as={"a"}
+              className="text-2xl font-normal text-default-600 rounded-full bg-transparent"
+              href="/estudiar"
+              variant="flat"
+            >
+              <Badge
+                color="primary"
+                content={user?.stars ? user.stars.length : 0}
+                placement="bottom-right"
+              >
+                <PiStarFourFill className="text-primary-500 animated-star" />
+              </Badge>
+            </Link>
+          </NavbarItem>
           <NavbarItem className="hidden md:flex gap-2">
             <InfoPopover />
+          </NavbarItem>
+          <NavbarItem className="hidden md:flex gap-2">
             {status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
@@ -137,7 +169,6 @@ export const Navbar = () => {
           </NavbarItem>
 
           <NavbarItem className="flex md:hidden gap-2">
-            <InfoPopover />
             {status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
@@ -211,7 +242,6 @@ const Login = ({ isOpen, onOpenChange }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [success, setSucces] = useState(false);
-  const [error, setError] = useState(false);
 
   const handleSubmit = () => {
     if (username.length === 0 || password.length === 0) return;
@@ -226,7 +256,7 @@ const Login = ({ isOpen, onOpenChange }) => {
         onOpenChange();
       }, 1000);
     } catch (error) {
-      setError(true);
+      toast.error("Ocurrio un error!");
     }
   };
 

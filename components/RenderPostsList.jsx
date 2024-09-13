@@ -20,9 +20,7 @@ export default function RenderPostsList({ postsList, disabled }) {
       setPosts((prev) =>
         prev.map((post) => (post.post_id === newPost.post_id ? newPost : post)),
       );
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   return (

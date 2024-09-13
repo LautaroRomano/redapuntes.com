@@ -59,7 +59,7 @@ export default function LoginPage() {
       }
       if (res.error) setError(res.error);
     } catch (error) {
-      console.error("Error de red:", error);
+      toast.error("Ocurrio un error inesperado!");
     }
   };
 

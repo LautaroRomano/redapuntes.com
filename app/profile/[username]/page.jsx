@@ -68,7 +68,6 @@ export default function ProfilePage({ params }) {
       setOffset(newOffset);
       setLoading(false);
     } catch (error) {
-      console.log("🚀 ~ getPosts ~ error:", error);
       setLoading(false);
     }
   };
@@ -222,7 +221,6 @@ const Edit = ({ isOpen, onOpenChange, profile = {}, reload }) => {
   const [about, setAbout] = useState("");
   const [img, setImg] = useState();
   const [success, setSucces] = useState(false);
-  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const fileInputRef = useRef(null);
@@ -245,7 +243,7 @@ const Edit = ({ isOpen, onOpenChange, profile = {}, reload }) => {
         onOpenChange();
       }, 1000);
     } catch (error) {
-      setError(true);
+      toast.error("Ocurrio un error inesperado!");
     }
   };
 
@@ -262,8 +260,7 @@ const Edit = ({ isOpen, onOpenChange, profile = {}, reload }) => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.error(error);
-      setError("Ocurrio un error inesperado!");
+      toast.error("Ocurrio un error inesperado!");
     }
   };
 
