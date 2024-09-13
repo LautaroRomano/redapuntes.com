@@ -37,7 +37,7 @@ export async function POST() {
 
     const newPreference = {
       ...miPreference,
-      notification_url: `https://37c1-2803-9800-9440-a90a-8934-36c2-14e0-5527.ngrok-free.app/api/mercadopago/receivewebhook?transactionId=${transactionId}`,
+      notification_url: `https://www.redapuntes.com/api/mercadopago/receivewebhook?transactionId=${transactionId}`,
       external_reference: transactionId
     };
 
