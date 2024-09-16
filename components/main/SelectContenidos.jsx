@@ -11,7 +11,7 @@ export default function SelectContenidos({ setMyContent, contents }) {
     try {
       const { data: res } = await axios.get("/api/contents");
 
-      setTags(res);
+      setTags(res.contents);
     } catch (error) {
       toast.error("Ocurrio un error cargando los contenidos!");
     }
@@ -39,7 +39,7 @@ export default function SelectContenidos({ setMyContent, contents }) {
       size="sm"
       onSelectionChange={setValues}
     >
-      {tags.map((tag) => (
+      {tags&& tags.map((tag) => (
         <SelectItem key={tag.key}>{tag.label}</SelectItem>
       ))}
     </Select>
