@@ -60,7 +60,7 @@ const miPreference = {
       title: "10 Estrellas",
       quantity: 1,
       currency_id: "ARS",
-      unit_price: 2490,
+      unit_price: 1900,
     },
   ],
   back_urls: {

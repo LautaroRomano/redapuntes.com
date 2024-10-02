@@ -281,24 +281,29 @@ const PdfPage = () => {
               color="primary"
               onPress={handleBuyStars}
             >
-              <div className="flex w-full h-full items-center justify-center min-h-28">
+              <div className="flex w-full h-full items-center justify-evenly">
+
                 {loadingBuy ? (
                   <Spinner color="white" />
                 ) : (
-                  <div className="flex flex-col h-full items-center justify-center w-full ">
-                    <div className="flex flex-col gap-2 h-full items-center justify-center w-full">
-                      <p className="flex items-center justify-center text-white">
-                        <span className="ml-1 text-xl">10</span>
-                        <PiStarFourFill size={26} />
-                      </p>
+                  <>
+                    <div className="flex flex-col">
+                      <div
+                        className={`text-sm font-bold px-1 text-wrap justify-center items-center`}
+                      >
+                        Comprar<br />
+                        <div className="flex justify-center items-center">
+                          <span className="ml-1 text-lg">+10</span>
+                          <PiStarFourFill size={24} />
+                        </div>
+                      </div>
+
                     </div>
-                    <div className="w-full h-7 flex items-center justify-center bg-gray-700 absolute bottom-0 left-0">
-                      <p>$2490</p>
+                    <div className="flex flex-col px-2">
+                      <p className="text-xs line-through">$2375</p>
+                      <p className="">$1900</p>
                     </div>
-                    <p className="flex items-center justify-center text-white absolute top-[0.30rem] left-0 rounded-e-sm bg-red-500 px-1">
-                      <span className="text-sm">+25%</span>
-                    </p>
-                  </div>
+                  </>
                 )}
               </div>
             </Button>
@@ -364,98 +369,98 @@ const PdfPage = () => {
       {(saved.cuestionarios.length > 0 ||
         saved.flashCards.length > 0 ||
         saved.mindMaps.length > 0) && (
-        <>
-          <Divider className="my-5" />
-          <div className="flex flex-col items-center gap-4">
-            <h1 className="text-xl font-bold">Guardados</h1>
-            <Tabs aria-label="Saved">
-              {saved.cuestionarios.length > 0 && (
-                <Tab key="cuestionarios-guardados" title="Cuestionarios">
-                  <div className="flex flex-col w-full gap-4">
-                    <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
-                      {loadingSaved && <Star />}
-                      {saved.cuestionarios.map((fil, i) => (
-                        <button
-                          key={i}
-                          className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
-                          onClick={() =>
-                            setSelectTool({ saved: fil, tool: "CUESTIONARIO" })
-                          }
-                        >
-                          <p className="text-2xl">
-                            <SiGoogleforms />
-                          </p>
-                          <div className="overflow-hidden">
-                            <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
-                              {fil.file_name}
+          <>
+            <Divider className="my-5" />
+            <div className="flex flex-col items-center gap-4">
+              <h1 className="text-xl font-bold">Guardados</h1>
+              <Tabs aria-label="Saved">
+                {saved.cuestionarios.length > 0 && (
+                  <Tab key="cuestionarios-guardados" title="Cuestionarios">
+                    <div className="flex flex-col w-full gap-4">
+                      <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+                        {loadingSaved && <Star />}
+                        {saved.cuestionarios.map((fil, i) => (
+                          <button
+                            key={i}
+                            className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
+                            onClick={() =>
+                              setSelectTool({ saved: fil, tool: "CUESTIONARIO" })
+                            }
+                          >
+                            <p className="text-2xl">
+                              <SiGoogleforms />
                             </p>
-                          </div>
-                        </button>
-                      ))}
+                            <div className="overflow-hidden">
+                              <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
+                                {fil.file_name}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </Tab>
-              )}
+                  </Tab>
+                )}
 
-              {saved.flashCards.length > 0 && (
-                <Tab key="flash-cards" title="Flash Cards">
-                  <div className="flex flex-col w-full gap-4">
-                    <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
-                      {loadingSaved && <Star />}
-                      {saved.flashCards.map((fil, i) => (
-                        <button
-                          key={i}
-                          className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
-                          onClick={() =>
-                            setSelectTool({ saved: fil, tool: "FLASHCARDS" })
-                          }
-                        >
-                          <p className="text-4xl">
-                            <CgCardClubs />
-                          </p>
-                          <div className="overflow-hidden">
-                            <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
-                              {fil.file_name}
+                {saved.flashCards.length > 0 && (
+                  <Tab key="flash-cards" title="Flash Cards">
+                    <div className="flex flex-col w-full gap-4">
+                      <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+                        {loadingSaved && <Star />}
+                        {saved.flashCards.map((fil, i) => (
+                          <button
+                            key={i}
+                            className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
+                            onClick={() =>
+                              setSelectTool({ saved: fil, tool: "FLASHCARDS" })
+                            }
+                          >
+                            <p className="text-4xl">
+                              <CgCardClubs />
                             </p>
-                          </div>
-                        </button>
-                      ))}
+                            <div className="overflow-hidden">
+                              <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
+                                {fil.file_name}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </Tab>
-              )}
+                  </Tab>
+                )}
 
-              {saved.mindMaps.length > 0 && (
-                <Tab key="mapas-mentales" title="Mapas Mentales">
-                  <div className="flex flex-col w-full gap-4">
-                    <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
-                      {loadingSaved && <Star />}
-                      {saved.mindMaps.map((fil, i) => (
-                        <button
-                          key={i}
-                          className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
-                          onClick={() =>
-                            setSelectTool({ saved: fil, tool: "MINDMAP" })
-                          }
-                        >
-                          <p className="text-4xl">
-                            <TiFlowSwitch />
-                          </p>
-                          <div className="overflow-hidden">
-                            <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
-                              {fil.file_name}
+                {saved.mindMaps.length > 0 && (
+                  <Tab key="mapas-mentales" title="Mapas Mentales">
+                    <div className="flex flex-col w-full gap-4">
+                      <div className="flex p-2 flex-wrap gap-4 w-full justify-center">
+                        {loadingSaved && <Star />}
+                        {saved.mindMaps.map((fil, i) => (
+                          <button
+                            key={i}
+                            className="flex border p-2 flex-col items-center justify-evenly w-36 h-36 hover:border-blue-600 hover:text-blue-600 cursor-pointer"
+                            onClick={() =>
+                              setSelectTool({ saved: fil, tool: "MINDMAP" })
+                            }
+                          >
+                            <p className="text-4xl">
+                              <TiFlowSwitch />
                             </p>
-                          </div>
-                        </button>
-                      ))}
+                            <div className="overflow-hidden">
+                              <p className="text-[0.750rem] leading-[1rem] text-ellipsis w-full">
+                                {fil.file_name}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </Tab>
-              )}
-            </Tabs>
-          </div>
-        </>
-      )}
+                  </Tab>
+                )}
+              </Tabs>
+            </div>
+          </>
+        )}
     </div>
   );
 };
