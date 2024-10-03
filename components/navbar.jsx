@@ -40,13 +40,13 @@ import { useTheme } from "next-themes";
 import { PiStarFourFill } from "react-icons/pi";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 import { ThemeSwitch } from "./theme-switch";
 
 import { siteConfig } from "@/config/site";
 import { getMyUser } from "@/app/actions/users";
 import { store, setUserLogged } from "@/state/index";
-import { GiHamburgerMenu } from "react-icons/gi";
 
 export const Navbar = () => {
   const { status } = useSession();
@@ -130,9 +130,9 @@ export const Navbar = () => {
             <Dropdown>
               <DropdownTrigger>
                 <Button
+                  isIconOnly
                   className="text-sm font-normal text-default-600 "
                   variant="flat"
-                  isIconOnly
                 >
                   <GiHamburgerMenu />
                 </Button>
@@ -163,11 +163,11 @@ export const Navbar = () => {
                 </DropdownItem>
                 <DropdownItem color={"default"}>
                   <Link
+                    className="flex gap-2"
                     color={"foreground"}
                     href="/privacy"
                     size="sm"
                     target="_blank"
-                    className="flex gap-2"
                   >
                     <FaExternalLinkAlt />
                     <p className="me-2">Políticas de privacidad</p>
@@ -175,11 +175,11 @@ export const Navbar = () => {
                 </DropdownItem>
                 <DropdownItem color={"default"}>
                   <Link
+                    className="flex gap-2"
                     color={"foreground"}
                     href="/terms"
                     size="sm"
                     target="_blank"
-                    className="flex gap-2"
                   >
                     <FaExternalLinkAlt />
                     <p className="me-2">Términos y condiciones</p>
@@ -190,11 +190,11 @@ export const Navbar = () => {
                 </DropdownItem>
                 <DropdownItem color={"default"}>
                   <Link
+                    className="flex gap-2"
                     color={"foreground"}
                     href="https://github.com/LautaroRomano/redapuntes.com"
                     size="sm"
                     target="_blank"
-                    className="flex gap-2"
                   >
                     <FaGithub />
                     <p className="me-2">Colaborar</p>
@@ -202,11 +202,11 @@ export const Navbar = () => {
                 </DropdownItem>
                 <DropdownItem color={"default"}>
                   <Link
+                    className="flex gap-2"
                     color={"foreground"}
                     href="https://www.instagram.com/dev.soul.it"
                     size="sm"
                     target="_blank"
-                    className="flex gap-2"
                   >
                     <FaInstagram />
                     <p className="me-2">Quienes somos</p>

@@ -253,6 +253,7 @@ const Edit = ({ isOpen, onOpenChange, profile = {}, reload }) => {
     try {
       const file = selectedFiles[0];
       const formData = new FormData();
+
       formData.append(`files[]`, file);
 
       try {
@@ -264,15 +265,16 @@ const Edit = ({ isOpen, onOpenChange, profile = {}, reload }) => {
 
         if (res.ok) {
           const data = await res.json();
+
           if (data.files && data.files[0]) {
             const url = data.files[0].file_path;
+
             setImg(url);
           }
         } else {
           toast.error("Error al subir la imagen");
         }
       } catch (error) {
-        console.error("Error al subir los archivos:", error);
         toast.error("Ocurrió un error inesperado!");
       } finally {
         setLoading(false);
