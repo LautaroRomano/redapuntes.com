@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route.js";
+import { authOptions } from "../auth/[...nextauth]/route";
 import conn from "../../lib/db";
 import { getFirebaseBucket } from "../../lib/firebase";
 
