@@ -20,7 +20,6 @@ import { toast } from "react-toastify";
 
 import RenderPostsList from "@/components/RenderPostsList";
 import PostSkeleton from "@/components/PostSkeleton";
-import { uploadFile } from "@/app/lib/firebase";
 import {
   follow,
   getUserByUsername,
@@ -253,11 +252,31 @@ const Edit = ({ isOpen, onOpenChange, profile = {}, reload }) => {
 
     try {
       const file = selectedFiles[0];
-      const url = await uploadFile(file);
+      const formData = new FormData();
+      formData.append(`files[]`, file);
 
-      if (url.error) return toast.error(url.error);
-      setImg(url);
-      setLoading(false);
+      try {
+        toast.info("Subiendo imagen");
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.files && data.files[0]) {
+            const url = data.files[0].file_path;
+            setImg(url);
+          }
+        } else {
+          toast.error("Error al subir la imagen");
+        }
+      } catch (error) {
+        console.error("Error al subir los archivos:", error);
+        toast.error("Ocurrió un error inesperado!");
+      } finally {
+        setLoading(false);
+      }
     } catch (error) {
       setLoading(false);
       toast.error("Ocurrio un error inesperado!");
