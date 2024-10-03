@@ -2,7 +2,7 @@
 import { getServerSession } from "next-auth";
 
 import conn from "../lib/db";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "../api/auth/[...nextauth]/route.js";
 
 import { getMyUser } from "./users";
 

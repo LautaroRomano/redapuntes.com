@@ -36,8 +36,6 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
-import { IoMdInformationCircleOutline } from "react-icons/io";
 import { useTheme } from "next-themes";
 import { PiStarFourFill } from "react-icons/pi";
 import { useSelector } from "react-redux";
@@ -48,6 +46,7 @@ import { ThemeSwitch } from "./theme-switch";
 import { siteConfig } from "@/config/site";
 import { getMyUser } from "@/app/actions/users";
 import { store, setUserLogged } from "@/state/index";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 export const Navbar = () => {
   const { status } = useSession();
@@ -126,20 +125,21 @@ export const Navbar = () => {
               </Badge>
             </Link>
           </NavbarItem>
-          <NavbarItem className="hidden md:flex gap-2">
-            {status === "authenticated" ? (
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button
-                    className="text-sm font-normal text-default-600"
-                    startContent={<FaUser />}
-                    variant="flat"
-                  >
-                    Cuenta
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu aria-label="Dynamic Actions">
-                  <DropdownItem className={""}>
+
+          <NavbarItem className="flex  gap-2">
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  className="text-sm font-normal text-default-600 "
+                  variant="flat"
+                  isIconOnly
+                >
+                  <GiHamburgerMenu />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Dynamic Actions">
+                <DropdownItem className={""}>
+                  {status === "authenticated" ? (
                     <Link
                       isExternal
                       className="w-full h-full text-sm font-normal text-default-600 flex gap-2"
@@ -148,126 +148,88 @@ export const Navbar = () => {
                       <FaUser />
                       Ver perfil
                     </Link>
-                  </DropdownItem>
-                  <DropdownItem className={""}>
-                    <Divider />
-                  </DropdownItem>
-                  <DropdownItem color={"default"}>
-                    <Link
-                      color={"foreground"}
-                      href="/privacy"
-                      size="sm"
-                      target="_blank"
-                      className="flex gap-2"
+                  ) : (
+                    <Button
+                      className="text-sm font-normal text-default-600 w-full"
+                      variant="flat"
+                      onClick={onOpenChange}
                     >
-                      <FaExternalLinkAlt />
-                      <p className="me-2">Políticas de privacidad</p>
-                    </Link>
-                  </DropdownItem>
-                  <DropdownItem color={"default"}>
-                    <Link
-                      color={"foreground"}
-                      href="/terms"
-                      size="sm"
-                      target="_blank"
-                      className="flex gap-2"
-                    >
-                      <FaExternalLinkAlt />
-                      <p className="me-2">Términos y condiciones</p>
-                    </Link>
-                  </DropdownItem>
-                  <DropdownItem className={""}>
-                    <Divider />
-                  </DropdownItem>
-                  <DropdownItem color={"default"}>
-                    <Link
-                      color={"foreground"}
-                      href="https://github.com/LautaroRomano/redapuntes.com"
-                      size="sm"
-                      target="_blank"
-                      className="flex gap-2"
-                    >
-                      <FaGithub />
-                      <p className="me-2">Colaborar</p>
-                    </Link>
-                  </DropdownItem>
-                  <DropdownItem color={"default"}>
-                    <Link
-                      color={"foreground"}
-                      href="https://www.instagram.com/dev.soul.it"
-                      size="sm"
-                      target="_blank"
-                      className="flex gap-2"
-                    >
-                      <FaInstagram />
-                      <p className="me-2">Quienes somos</p>
-                    </Link>
-                  </DropdownItem>
-                  <DropdownItem className={""}>
-                    <Divider />
-                  </DropdownItem>
-                  <DropdownItem
-                    className={"text-danger"}
-                    color={"danger"}
-                    onClick={signOut}
+                      Iniciar sesion
+                    </Button>
+                  )}
+                </DropdownItem>
+                <DropdownItem className={""}>
+                  <Divider />
+                </DropdownItem>
+                <DropdownItem color={"default"}>
+                  <Link
+                    color={"foreground"}
+                    href="/privacy"
+                    size="sm"
+                    target="_blank"
+                    className="flex gap-2"
                   >
-                    <p className="flex w-full items-center justify-center">
-                      Cerrar sesion
-                    </p>
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            ) : (
-              <Button
-                className="text-sm font-normal text-default-600"
-                variant="flat"
-                onClick={onOpenChange}
-              >
-                Iniciar sesion
-              </Button>
-            )}
-          </NavbarItem>
-
-          <NavbarItem className="flex md:hidden gap-2">
-            {status === "authenticated" ? (
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button
-                    className="text-sm font-normal text-default-600 "
-                    startContent={<FaUser />}
-                    variant="flat"
+                    <FaExternalLinkAlt />
+                    <p className="me-2">Políticas de privacidad</p>
+                  </Link>
+                </DropdownItem>
+                <DropdownItem color={"default"}>
+                  <Link
+                    color={"foreground"}
+                    href="/terms"
+                    size="sm"
+                    target="_blank"
+                    className="flex gap-2"
                   >
-                    Cuenta
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu aria-label="Dynamic Actions">
-                  <DropdownItem className={""} color={"default"}>
-                    <Link
-                      isExternal
-                      className="w-full h-full text-sm font-normal text-default-600 "
-                      href={user ? `/profile/${user.username}` : "/profile"}
+                    <FaExternalLinkAlt />
+                    <p className="me-2">Términos y condiciones</p>
+                  </Link>
+                </DropdownItem>
+                <DropdownItem className={""}>
+                  <Divider />
+                </DropdownItem>
+                <DropdownItem color={"default"}>
+                  <Link
+                    color={"foreground"}
+                    href="https://github.com/LautaroRomano/redapuntes.com"
+                    size="sm"
+                    target="_blank"
+                    className="flex gap-2"
+                  >
+                    <FaGithub />
+                    <p className="me-2">Colaborar</p>
+                  </Link>
+                </DropdownItem>
+                <DropdownItem color={"default"}>
+                  <Link
+                    color={"foreground"}
+                    href="https://www.instagram.com/dev.soul.it"
+                    size="sm"
+                    target="_blank"
+                    className="flex gap-2"
+                  >
+                    <FaInstagram />
+                    <p className="me-2">Quienes somos</p>
+                  </Link>
+                </DropdownItem>
+                {status === "authenticated" && (
+                  <>
+                    <DropdownItem className={""}>
+                      <Divider />
+                    </DropdownItem>
+                    <DropdownItem
+                      className={"text-danger"}
+                      color={"danger"}
+                      onClick={signOut}
                     >
-                      Ver perfil
-                    </Link>
-                  </DropdownItem>
-                  <DropdownItem
-                    className={"text-danger"}
-                    color={"danger"}
-                    onClick={signOut}
-                  >
-                    Cerrar sesion
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            ) : (
-              <Button
-                className="text-sm font-normal text-default-600"
-                variant="flat"
-                onClick={onOpenChange}
-              >
-                Iniciar sesion
-              </Button>
-            )}
+                      <p className="flex w-full items-center justify-center">
+                        Cerrar sesion
+                      </p>
+                    </DropdownItem>
+                  </>
+                )}
+              </DropdownMenu>
+            </Dropdown>
           </NavbarItem>
         </NavbarContent>
 

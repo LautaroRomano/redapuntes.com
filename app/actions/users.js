@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { Resend } from "resend";
 
 import conn from "../lib/db";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "../api/auth/[...nextauth]/route.js";
 
 import { EmailTemplate } from "@/components/emailTemplates/EmialTemplate";
 
