@@ -14,12 +14,15 @@ import NextLink from "next/link";
 import {
   FaCheckCircle,
   FaExternalLinkAlt,
+  FaGithub,
   FaGoogle,
+  FaInstagram,
   FaUser,
 } from "react-icons/fa";
 import { signIn, signOut, useSession } from "next-auth/react";
 import {
   Badge,
+  Divider,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -124,9 +127,6 @@ export const Navbar = () => {
             </Link>
           </NavbarItem>
           <NavbarItem className="hidden md:flex gap-2">
-            <InfoPopover />
-          </NavbarItem>
-          <NavbarItem className="hidden md:flex gap-2">
             {status === "authenticated" ? (
               <Dropdown>
                 <DropdownTrigger>
@@ -139,21 +139,81 @@ export const Navbar = () => {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Dynamic Actions">
-                  <DropdownItem className={""} color={"default"}>
+                  <DropdownItem className={""}>
                     <Link
                       isExternal
-                      className="w-full h-full text-sm font-normal text-default-600 "
+                      className="w-full h-full text-sm font-normal text-default-600 flex gap-2"
                       href={user ? `/profile/${user.username}` : "/profile"}
                     >
+                      <FaUser />
                       Ver perfil
                     </Link>
+                  </DropdownItem>
+                  <DropdownItem className={""}>
+                    <Divider />
+                  </DropdownItem>
+                  <DropdownItem color={"default"}>
+                    <Link
+                      color={"foreground"}
+                      href="/privacy"
+                      size="sm"
+                      target="_blank"
+                      className="flex gap-2"
+                    >
+                      <FaExternalLinkAlt />
+                      <p className="me-2">Políticas de privacidad</p>
+                    </Link>
+                  </DropdownItem>
+                  <DropdownItem color={"default"}>
+                    <Link
+                      color={"foreground"}
+                      href="/terms"
+                      size="sm"
+                      target="_blank"
+                      className="flex gap-2"
+                    >
+                      <FaExternalLinkAlt />
+                      <p className="me-2">Términos y condiciones</p>
+                    </Link>
+                  </DropdownItem>
+                  <DropdownItem className={""}>
+                    <Divider />
+                  </DropdownItem>
+                  <DropdownItem color={"default"}>
+                    <Link
+                      color={"foreground"}
+                      href="https://github.com/LautaroRomano/redapuntes.com"
+                      size="sm"
+                      target="_blank"
+                      className="flex gap-2"
+                    >
+                      <FaGithub />
+                      <p className="me-2">Colaborar</p>
+                    </Link>
+                  </DropdownItem>
+                  <DropdownItem color={"default"}>
+                    <Link
+                      color={"foreground"}
+                      href="https://www.instagram.com/dev.soul.it"
+                      size="sm"
+                      target="_blank"
+                      className="flex gap-2"
+                    >
+                      <FaInstagram />
+                      <p className="me-2">Quienes somos</p>
+                    </Link>
+                  </DropdownItem>
+                  <DropdownItem className={""}>
+                    <Divider />
                   </DropdownItem>
                   <DropdownItem
                     className={"text-danger"}
                     color={"danger"}
                     onClick={signOut}
                   >
-                    Cerrar sesion
+                    <p className="flex w-full items-center justify-center">
+                      Cerrar sesion
+                    </p>
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
@@ -329,40 +389,3 @@ const Login = ({ isOpen, onOpenChange }) => {
     </Modal>
   );
 };
-
-function InfoPopover() {
-  return (
-    <Popover placement="bottom" showArrow={true}>
-      <PopoverTrigger>
-        <Button
-          isIconOnly
-          className="text-lg font-normal text-default-600"
-          variant="flat"
-        >
-          <IoMdInformationCircleOutline />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent>
-        <div className="px-1 py-2">
-          <div className="text-small m-2">
-            <Link
-              color={"foreground"}
-              href="/privacy"
-              size="sm"
-              target="_blank"
-            >
-              <p className="me-2">Políticas de privacidad</p>
-              <FaExternalLinkAlt />
-            </Link>
-          </div>
-          <div className="text-small m-2">
-            <Link color={"foreground"} href="/terms" size="sm" target="_blank">
-              <p className="me-2">Términos y condiciones</p>
-              <FaExternalLinkAlt />
-            </Link>
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-}
