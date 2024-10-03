@@ -86,7 +86,7 @@ const PdfPage = () => {
     formData.append("file", file);
     setLoading(true);
 
-    const res = await fetch("/api/upload", {
+    const res = await fetch("/api/openai/upload", {
       method: "POST",
       body: formData,
     });
