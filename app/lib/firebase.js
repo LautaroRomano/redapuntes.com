@@ -1,25 +1,28 @@
-import { initializeApp } from "firebase/app";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { v4 } from "uuid";
+'use server'
+import admin from 'firebase-admin';
+import { getStorage } from 'firebase-admin/storage';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD3nJREo8PlPM1yAfCs0hBw_nT8qh24CiY",
-  authDomain: "repositorio-universitario.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+const serviceAccount = {
+  type: process.env.FIREBASE_TYPE,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  privateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID,
+  privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  clientId: process.env.FIREBASE_CLIENT_ID,
+  authUri: process.env.FIREBASE_AUTH_URI,
+  tokenUri: process.env.FIREBASE_TOKEN_URI,
 };
 
-const app = initializeApp(firebaseConfig);
+// Inicializar Firebase Admin solo si no está ya inicializado
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  });
+}
 
-export const storage = getStorage(app);
-
-export async function uploadFile(file) {
-  const storageRef = ref(storage, `${v4()}-${file.name}`);
-
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
-
-  return url;
+// Exportar una función asíncrona que obtenga el bucket
+export async function getFirebaseBucket() {
+  const bucket = getStorage().bucket();
+  return bucket;
 }

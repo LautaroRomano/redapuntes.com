@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+"use client";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardBody,
@@ -17,14 +18,12 @@ import { FaCheckCircle } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
-import { v4 } from "uuid";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 
 import SelectContenidos from "./SelectContenidos";
 import SelectUniversity from "./SelectUniversity";
 
-import { uploadFile } from "@/app/lib/firebase";
 import { create } from "@/app/actions/posts";
 
 export default function CreatePost({ onRefresh }) {
@@ -70,38 +69,40 @@ const NewPost = ({ isOpen, onOpenChange, onRefresh }) => {
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
+  useEffect(() => {
+    setSucces(false);
+    setLoading(false);
+    setContent("");
+    setFiles([]);
+    setSelected({});
+
+    return () => {
+      setSucces(false);
+      setLoading(false);
+      setContent("");
+      setFiles([]);
+      setSelected({});
+    };
+  }, [isOpen]);
+
   const handleFileChange = async (event) => {
-    setLoading(true);
     const selectedFiles = Array.from(event.target.files);
 
-    if (files.length + selectedFiles.length > 5) {
-      setLoading(false);
+    const aceptedFiles = selectedFiles
+      .map((fil) => {
+        if (fil.size / 1000 < 25000) {
+          return fil;
+        } else {
+          toast.error("Tamaño maximo archivo 25MB");
+        }
+      })
+      .filter(Boolean);
 
-      return toast.error("Puedes subir un maximo de 5 archivos");
+    if (files.length + aceptedFiles.length > 10) {
+      return toast.error("Puedes subir un maximo de 10 archivos");
     }
 
-    try {
-      const files = [];
-
-      for (const file of selectedFiles) {
-        if (file.size / 1000 < 25000) {
-          const url = await uploadFile(file);
-
-          if (url.error) return toast.error(res.error);
-          files.push({
-            file_id: v4(),
-            file_name: file.name,
-            file_path: url,
-            file_type: file.type,
-          });
-        } else toast.error("Tamaño maximo 25MB");
-      }
-      setFiles((prevFiles) => [...prevFiles, ...files]);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      toast.error("Ocurrio un error inesperado!");
-    }
+    setFiles((prev) => [...prev, ...aceptedFiles]);
   };
 
   const handleFileButtonClick = () => {
@@ -109,28 +110,44 @@ const NewPost = ({ isOpen, onOpenChange, onRefresh }) => {
   };
 
   const handleSubmit = async () => {
+    if (!content || content.length === 0)
+      return toast.error("Debes escribir algo para publicar");
     setLoading(true);
+
+    const formData = new FormData();
+
+    files.forEach((file, index) => {
+      formData.append(`files[]`, file);
+    });
+
     try {
-      const res = await create(content, files, selected);
+      if (files.length > 0) toast.info("Subiendo archivos");
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      if (res.error) {
-        toast.error(res.error);
-
-        return toast.error(res.error);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.files.length > 0) toast.success("Archivos subidos con exito!");
+        if (data.files) {
+          const created = await create(content, data.files, selected);
+          if (created.ok) {
+            toast.success("Publicado con exito!");
+            setSucces(true);
+            setLoading(false);
+            onRefresh();
+            onOpenChange();
+          }
+        }
+      } else {
+        toast.error("Error al subir los archivos");
       }
-      setSucces(true);
-
-      setTimeout(() => {
-        setLoading(false);
-        setContent("");
-        setFiles([]);
-        setSucces(false);
-        onOpenChange();
-        onRefresh();
-      }, 1000);
     } catch (error) {
+      console.error("Error al subir los archivos:", error);
+      toast.error("Ocurrió un error inesperado!");
+    } finally {
       setLoading(false);
-      toast.error("Ocurrio un error inesperado!");
     }
   };
 
@@ -169,7 +186,7 @@ const NewPost = ({ isOpen, onOpenChange, onRefresh }) => {
                     key={index}
                     className="mt-2 flex items-center justify-between"
                   >
-                    <span>{file.file_name}</span>
+                    <span>{file.name || file.file_name}</span>
                     <Button
                       color="primary"
                       rel="noopener noreferrer"
@@ -177,7 +194,7 @@ const NewPost = ({ isOpen, onOpenChange, onRefresh }) => {
                       variant="ghost"
                       onClick={() => {
                         setFiles((prev) =>
-                          prev.filter((f) => f.file_id !== file.file_id),
+                          prev.filter((f) => f.name !== file.name)
                         );
                       }}
                     >

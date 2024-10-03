@@ -1,87 +1,72 @@
 import { getServerSession } from "next-auth";
-import { PdfReader } from "pdfreader";
-
 import { authOptions } from "../auth/[...nextauth]/route";
 import conn from "../../lib/db";
-
-export async function GET() {
-  const session = await getServerSession(authOptions);
-
-  if (!session)
-    return Response.json(
-      { mensaje: "Usuario no autenticado" },
-      { status: 403 },
-    );
-
-  const { rows: inmobiliarias } = await conn.query(
-    "SELECT * FROM inmobiliarias",
-  );
-
-  return Response.json({ inmobiliarias });
-}
+import { getFirebaseBucket } from "../../lib/firebase";
 
 export async function POST(request) {
   try {
+    const bucket = await getFirebaseBucket();
     const session = await getServerSession(authOptions);
 
     if (!session)
       return Response.json(
         { mensaje: "Usuario no autenticado" },
-        { status: 403 },
+        { status: 403 }
       );
 
     const { rows: users } = await conn.query(
       "select * from users where email = $1",
-      [session.user.email],
+      [session.user.email]
     );
     const user = users[0];
 
     if (!user)
       return Response.json(
         { mensaje: "Usuario no autenticado" },
-        { status: 403 },
+        { status: 403 }
       );
 
     const formData = await request.formData();
-    const file = formData.get("file");
+    
+    // Obtener los archivos del formData
+    const files = formData.getAll("files[]");
+    let responseFiles = [];
 
-    if (file.type !== "application/pdf")
-      return Response.json(
-        { error: "Solo puedes subir archivos PDF!" },
-        { status: 200 },
-      );
+    // Subir cada archivo a Firebase Storage
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer(); // Obtener el contenido del archivo como ArrayBuffer
+      const fileName = `${Date.now()}_${file.name}`; // Crear un nombre único para el archivo
+      
+      const fileUpload = bucket.file(fileName);
 
-    if (!file)
-      return Response.json(
-        { error: "Debes proporcionar un archivo PDF" },
-        { status: 200 },
-      );
-
-    const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    const pdfReader = new PdfReader();
-    let pdfText = "";
-
-    await new Promise((resolve, reject) => {
-      pdfReader.parseBuffer(uint8Array, (err, item) => {
-        if (err) {
-          reject(err);
-        } else if (!item) {
-          resolve();
-        } else if (item.text) {
-          pdfText += item.text + " ";
-        }
+      const writeStream = fileUpload.createWriteStream({
+        metadata: {
+          contentType: file.type,
+        },
       });
-    });
 
-    await conn.query(
-      "insert into files_ia(user_id,text,name) values($1,$2,$3)",
-      [user.user_id, pdfText, file.name],
-    );
+      // Escribir el buffer en el stream de Firebase Storage
+      writeStream.end(Buffer.from(arrayBuffer));
 
-    return Response.json({});
+      await new Promise((resolve, reject) => {
+        writeStream.on("finish", resolve);
+        writeStream.on("error", reject);
+      });
+
+      // Obtener la URL pública del archivo
+      await fileUpload.makePublic();
+      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+      
+      responseFiles.push({
+        file_name: file.name,
+        file_path: publicUrl,
+        file_type: file.type,
+      });
+    }
+
+    return Response.json({ mensaje: "Archivos subidos y URLs guardadas", files:responseFiles });
   } catch (error) {
+    console.log("🚀 ~ POST ~ error:", error);
     return Response.json(error, { status: 500 });
   }
 }
