@@ -193,7 +193,22 @@ export const Navbar = () => {
                     <p className="me-2">Quienes somos</p>
                   </Link>
                 </DropdownItem>
-                
+                {status === "authenticated" && (
+                  <>
+                    <DropdownItem className={""}>
+                      <Divider />
+                    </DropdownItem>
+                    <DropdownItem
+                      className={"text-danger"}
+                      color={"danger"}
+                      onClick={signOut}
+                    >
+                      <p className="flex w-full items-center justify-center">
+                        Cerrar sesion
+                      </p>
+                    </DropdownItem>
+                  </>
+                )}
               </DropdownMenu>
             </Dropdown>
           </NavbarItem>
