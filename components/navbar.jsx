@@ -195,9 +195,9 @@ export const Navbar = () => {
                 </DropdownItem>
                 {status === "authenticated" && (
                   <>
-                    <DropdownItem className={""}>
+                   {/*  <DropdownItem className={""}>
                       <Divider />
-                    </DropdownItem>
+                    </DropdownItem> */}
                     <DropdownItem
                       className={"text-danger"}
                       color={"danger"}
