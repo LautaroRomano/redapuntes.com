@@ -11,14 +11,6 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
 import NextLink from "next/link";
-/* import {
-  FaCheckCircle,
-  FaExternalLinkAlt,
-  FaGithub,
-  FaGoogle,
-  FaInstagram,
-  FaUser,
-} from "react-icons/fa"; */
 import { signIn, signOut, useSession } from "next-auth/react";
 import {
   Badge,
@@ -138,10 +130,29 @@ export const Navbar = () => {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu aria-label="Dynamic Actions">
-                
-                {/* <DropdownItem className={""}>
+                <DropdownItem className={""}>
+                  {status === "authenticated" ? (
+                    <Link
+                      isExternal
+                      className="w-full h-full text-sm font-normal text-default-600 flex gap-2"
+                      href={user ? `/profile/${user.username}` : "/profile"}
+                    >
+                      <FaUser />
+                      Ver perfil
+                    </Link>
+                  ) : (
+                    <Button
+                      className="text-sm font-normal text-default-600 w-full"
+                      variant="flat"
+                      onClick={onOpenChange}
+                    >
+                      Iniciar sesion
+                    </Button>
+                  )}
+                </DropdownItem>
+                <DropdownItem className={""}>
                   <Divider />
-                </DropdownItem> */}
+                </DropdownItem>
                 <DropdownItem color={"default"}>
                   <Link
                     className="flex gap-2"
@@ -150,7 +161,7 @@ export const Navbar = () => {
                     size="sm"
                     target="_blank"
                   >
-                    {/* <FaExternalLinkAlt /> */}
+                    <FaExternalLinkAlt />
                     <p className="me-2">Políticas de privacidad</p>
                   </Link>
                 </DropdownItem>
@@ -162,13 +173,13 @@ export const Navbar = () => {
                     size="sm"
                     target="_blank"
                   >
-                    {/* <FaExternalLinkAlt /> */}
+                    <FaExternalLinkAlt />
                     <p className="me-2">Términos y condiciones</p>
                   </Link>
                 </DropdownItem>
-                {/* <DropdownItem className={""}>
+                <DropdownItem className={""}>
                   <Divider />
-                </DropdownItem> */}
+                </DropdownItem>
                 <DropdownItem color={"default"}>
                   <Link
                     className="flex gap-2"
@@ -177,7 +188,7 @@ export const Navbar = () => {
                     size="sm"
                     target="_blank"
                   >
-                    {/* <FaGithub /> */}
+                    <FaGithub />
                     <p className="me-2">Colaborar</p>
                   </Link>
                 </DropdownItem>
@@ -189,16 +200,18 @@ export const Navbar = () => {
                     size="sm"
                     target="_blank"
                   >
-                    {/* <FaInstagram /> */}
+                    <FaInstagram />
                     <p className="me-2">Quienes somos</p>
                   </Link>
                 </DropdownItem>
                 {status === "authenticated" && (
-                  <>
-                   {/*  <DropdownItem className={""}>
-                      <Divider />
-                    </DropdownItem> */}
-                    <DropdownItem
+                  <DropdownItem className={""}>
+                    <Divider />
+                  </DropdownItem>
+                )}
+                {status === "authenticated" && (
+                  <DropdownItem className={""}>
+                    <Button
                       className={"text-danger"}
                       color={"danger"}
                       onClick={signOut}
@@ -206,8 +219,8 @@ export const Navbar = () => {
                       <p className="flex w-full items-center justify-center">
                         Cerrar sesion
                       </p>
-                    </DropdownItem>
-                  </>
+                    </Button>
+                  </DropdownItem>
                 )}
               </DropdownMenu>
             </Dropdown>
@@ -277,6 +290,7 @@ const Login = ({ isOpen, onOpenChange }) => {
                 color="primary"
                 radius="none"
                 size="md"
+                startContent={<FaGoogle />}
                 // startContent={<FaGoogle />}
                 variant={"solid"}
                 onPress={() => signIn("google")}
@@ -313,9 +327,7 @@ const Login = ({ isOpen, onOpenChange }) => {
                 Cancelar
               </Button>
               {success ? (
-                <Button color="success" 
-                // startContent={<FaCheckCircle />}
-                >
+                <Button color="success" startContent={<FaCheckCircle />}>
                   Listo
                 </Button>
               ) : (
