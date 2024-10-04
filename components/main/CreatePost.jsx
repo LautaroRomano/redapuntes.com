@@ -116,7 +116,7 @@ const NewPost = ({ isOpen, onOpenChange, onRefresh }) => {
 
     const formData = new FormData();
 
-    files.forEach((file, index) => {
+    files.forEach((file) => {
       formData.append(`files[]`, file);
     });
 
@@ -129,9 +129,11 @@ const NewPost = ({ isOpen, onOpenChange, onRefresh }) => {
 
       if (res.ok) {
         const data = await res.json();
+
         if (data.files.length > 0) toast.success("Archivos subidos con exito!");
         if (data.files) {
           const created = await create(content, data.files, selected);
+
           if (created.ok) {
             toast.success("Publicado con exito!");
             setSucces(true);
@@ -144,7 +146,6 @@ const NewPost = ({ isOpen, onOpenChange, onRefresh }) => {
         toast.error("Error al subir los archivos");
       }
     } catch (error) {
-      console.error("Error al subir los archivos:", error);
       toast.error("Ocurrió un error inesperado!");
     } finally {
       setLoading(false);
@@ -194,7 +195,7 @@ const NewPost = ({ isOpen, onOpenChange, onRefresh }) => {
                       variant="ghost"
                       onClick={() => {
                         setFiles((prev) =>
-                          prev.filter((f) => f.name !== file.name)
+                          prev.filter((f) => f.name !== file.name),
                         );
                       }}
                     >

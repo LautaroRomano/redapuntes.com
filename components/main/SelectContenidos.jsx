@@ -39,9 +39,8 @@ export default function SelectContenidos({ setMyContent, contents }) {
       size="sm"
       onSelectionChange={setValues}
     >
-      {tags&& tags.map((tag) => (
-        <SelectItem key={tag.key}>{tag.label}</SelectItem>
-      ))}
+      {tags &&
+        tags.map((tag) => <SelectItem key={tag.key}>{tag.label}</SelectItem>)}
     </Select>
   );
 }

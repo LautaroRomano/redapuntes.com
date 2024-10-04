@@ -38,7 +38,7 @@ export async function POST() {
     const newPreference = {
       ...miPreference,
       notification_url: `https://www.redapuntes.com/api/mercadopago/receivewebhook?transactionId=${transactionId}`,
-      external_reference: transactionId
+      external_reference: transactionId,
     };
 
     const result = await preference.create({ body: newPreference });
