@@ -138,26 +138,7 @@ export const Navbar = () => {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu aria-label="Dynamic Actions">
-                <DropdownItem className={""}>
-                  {status === "authenticated" ? (
-                    <Link
-                      isExternal
-                      className="w-full h-full text-sm font-normal text-default-600 flex gap-2"
-                      href={user ? `/profile/${user.username}` : "/profile"}
-                    >
-                      {/* <FaUser /> */}
-                      Ver perfil
-                    </Link>
-                  ) : (
-                    <Button
-                      className="text-sm font-normal text-default-600 w-full"
-                      variant="flat"
-                      onClick={onOpenChange}
-                    >
-                      Iniciar sesion
-                    </Button>
-                  )}
-                </DropdownItem>
+                
                 {/* <DropdownItem className={""}>
                   <Divider />
                 </DropdownItem> */}
@@ -212,22 +193,7 @@ export const Navbar = () => {
                     <p className="me-2">Quienes somos</p>
                   </Link>
                 </DropdownItem>
-                {status === "authenticated" && (
-                  <>
-                    <DropdownItem className={""}>
-                      <Divider />
-                    </DropdownItem>
-                    <DropdownItem
-                      className={"text-danger"}
-                      color={"danger"}
-                      onClick={signOut}
-                    >
-                      <p className="flex w-full items-center justify-center">
-                        Cerrar sesion
-                      </p>
-                    </DropdownItem>
-                  </>
-                )}
+                
               </DropdownMenu>
             </Dropdown>
           </NavbarItem>
