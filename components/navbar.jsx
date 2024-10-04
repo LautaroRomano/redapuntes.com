@@ -11,6 +11,14 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
 import NextLink from "next/link";
+import {
+  FaCheckCircle,
+  FaExternalLinkAlt,
+  FaGithub,
+  FaGoogle,
+  FaInstagram,
+  FaUser,
+} from "react-icons/fa";
 import { signIn, signOut, useSession } from "next-auth/react";
 import {
   Badge,
