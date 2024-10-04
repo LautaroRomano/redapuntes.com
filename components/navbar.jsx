@@ -158,9 +158,9 @@ export const Navbar = () => {
                     </Button>
                   )}
                 </DropdownItem>
-                <DropdownItem className={""}>
+                {/* <DropdownItem className={""}>
                   <Divider />
-                </DropdownItem>
+                </DropdownItem> */}
                 <DropdownItem color={"default"}>
                   <Link
                     className="flex gap-2"
@@ -185,9 +185,9 @@ export const Navbar = () => {
                     <p className="me-2">Términos y condiciones</p>
                   </Link>
                 </DropdownItem>
-                <DropdownItem className={""}>
+                {/* <DropdownItem className={""}>
                   <Divider />
-                </DropdownItem>
+                </DropdownItem> */}
                 <DropdownItem color={"default"}>
                   <Link
                     className="flex gap-2"
