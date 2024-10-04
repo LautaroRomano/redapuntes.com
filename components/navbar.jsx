@@ -220,8 +220,8 @@ export const Navbar = () => {
                 {status === "authenticated" && (
                   <DropdownItem className={""}>
                     <Button
-                      className={"text-danger"}
-                      color={"danger"}
+                      className={"text-danger w-full bg-transparent"}
+                      color={"default"}
                       onClick={signOut}
                     >
                       <p className="flex w-full items-center justify-center">
