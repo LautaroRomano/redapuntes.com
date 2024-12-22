@@ -1,7 +1,8 @@
 {
   "build": {
     "env": {
-      "NODE_VERSION": "20.x"
+      "NODE_VERSION": "20.x",
+      "NODE_OPTIONS": "--openssl-legacy-provider"
     }
   }
 }
