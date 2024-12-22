@@ -12,11 +12,11 @@ import {
   ModalFooter,
   useDisclosure,
   ModalContent,
+  Spinner
 } from "@nextui-org/react";
 import { LuFiles } from "react-icons/lu";
 import { FaCheckCircle } from "react-icons/fa";
 import { useSession } from "next-auth/react";
-import { Spinner } from "@nextui-org/spinner";
 import { toast } from "react-toastify";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";

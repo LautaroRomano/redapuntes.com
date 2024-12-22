@@ -168,6 +168,7 @@ export async function get(type, limit = 10, offset = 0, filters) {
 
     return response;
   } catch (error) {
+    console.log("🚀 ~ get ~ error:", error)
     return { error: "Ocurrio un error!" };
   }
 }

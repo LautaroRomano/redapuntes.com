@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button } from "@nextui-org/button";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { toast } from "react-toastify";
-import { Card, CardBody, Divider, Spinner } from "@nextui-org/react";
+import { Card, CardBody, Divider, Spinner,Button } from "@nextui-org/react";
 
 import { saveCards } from "../actions/pdf";
 
