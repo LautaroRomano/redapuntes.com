@@ -1,15 +1,13 @@
 "use client";
 import {
+  Input, Link, Button,
   Navbar as NextUINavbar,
   NavbarContent,
   NavbarMenu,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem,
-} from "@nextui-org/navbar";
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
-import { Input } from "@nextui-org/input";
+  NavbarMenuItem
+} from "@nextui-org/react";
 import NextLink from "next/link";
 import {
   FaCheckCircle,

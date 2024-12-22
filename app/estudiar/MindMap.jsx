@@ -1,9 +1,8 @@
 import { ReactFlow, Controls, Background } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useEffect, useState } from "react";
-import { Button } from "@nextui-org/button";
 import { toast } from "react-toastify";
-import { Spinner } from "@nextui-org/react";
+import { Spinner,Button } from "@nextui-org/react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
 import { saveMindMap } from "../actions/pdf";

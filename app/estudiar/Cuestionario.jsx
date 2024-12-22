@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button } from "@nextui-org/button";
 import { toast } from "react-toastify";
-import { Divider, Spinner } from "@nextui-org/react";
+import { Divider, Spinner,Button } from "@nextui-org/react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
 import { saveCuestionario } from "../actions/pdf";

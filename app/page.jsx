@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
 import {
   Modal,
   ModalBody,
@@ -11,6 +9,8 @@ import {
   Select,
   SelectItem,
   useDisclosure,
+  Input,
+  Button
 } from "@nextui-org/react";
 import { toast } from "react-toastify";
 import _ from "lodash";
