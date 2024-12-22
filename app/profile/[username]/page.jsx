@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@nextui-org/button";
 import {
   Avatar,
   Modal,
@@ -10,6 +9,7 @@ import {
   Textarea,
   Spinner,
   useDisclosure,
+  Button
 } from "@nextui-org/react";
 import _ from "lodash";
 import { useRouter } from "next/navigation";
